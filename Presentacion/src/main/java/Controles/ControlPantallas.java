@@ -29,7 +29,9 @@ public class ControlPantallas {
      * @param ventanaAnterior a cerrar
      */
     public static void abrirMenuPrincipal(JFrame ventanaAnterior) {
-        ventanaAnterior.dispose();
+        if (ventanaAnterior != null) {
+            ventanaAnterior.dispose();
+        }
         MenuPrincipal ventana = new MenuPrincipal();
         ventana.setVisible(true);
     }

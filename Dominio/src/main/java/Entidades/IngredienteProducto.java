@@ -1,9 +1,4 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package Entidades;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -19,8 +14,8 @@ import javax.persistence.Table;
  * Esta tabla sirve para poder identificar cada ingrediente y poder calcular su stock
  */
 @Entity
-@Table(name = "productos_y_sus_ingredientes")
-public class producto_con_ingrediente {
+@Table(name = "ingrediente_producto")
+public class IngredienteProducto {
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -44,20 +39,20 @@ public class producto_con_ingrediente {
     @JoinColumn(name = "ingrediente_id")
     private Ingrediente ingrediente;
 
-    public producto_con_ingrediente(Long id, Double cantidad, Producto producto, Ingrediente ingrediente) {
+    public IngredienteProducto(Long id, Double cantidad, Producto producto, Ingrediente ingrediente) {
         this.id = id;
         this.cantidad = cantidad;
         this.producto = producto;
         this.ingrediente = ingrediente;
     }
 
-    public producto_con_ingrediente(Double cantidad, Producto producto, Ingrediente ingrediente) {
+    public IngredienteProducto(Double cantidad, Producto producto, Ingrediente ingrediente) {
         this.cantidad = cantidad;
         this.producto = producto;
         this.ingrediente = ingrediente;
     }
 
-    public producto_con_ingrediente() {
+    public IngredienteProducto() {
     }
 
     public Long getId() {
@@ -91,9 +86,4 @@ public class producto_con_ingrediente {
     public void setIngrediente(Ingrediente ingrediente) {
         this.ingrediente = ingrediente;
     }
-    
-    
-    
-    
 }
-

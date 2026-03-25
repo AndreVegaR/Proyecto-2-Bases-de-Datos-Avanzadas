@@ -1,4 +1,5 @@
 package Entidades;
+import Enumeradores.EstadoComanda;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -35,8 +36,9 @@ public class Comanda implements Serializable {
     @Column(name = "folio", nullable = false, length = 15)
     private String folio;
     
+    //Una comanda es abierta apenas se crea
     @Column(name = "estado", nullable = false)
-    private String estado = "Abierta";
+    private EstadoComanda estadoComanda = EstadoComanda.ABIERTA;
     
     @ManyToOne
     @JoinColumn(name = "id_clienteFrecuente")
@@ -90,8 +92,7 @@ public class Comanda implements Serializable {
         //Le da valor al folio
         folio = PREFIJO + "-" + fechaString + "-" + clave;
     }
-    
-    
+
     
     //Getters y setters
     public Long getId() {
@@ -118,12 +119,12 @@ public class Comanda implements Serializable {
         this.folio = folio;
     }
 
-    public String getEstado() {
-        return estado;
+    public EstadoComanda getEstadoComanda() {
+        return estadoComanda;
     }
 
-    public void setEstado(String estado) {
-        this.estado = estado;
+    public void setEstadoComanda(EstadoComanda estadoComanda) {
+        this.estadoComanda = estadoComanda;
     }
 
     public ClienteFrecuente getCliente() {
@@ -132,6 +133,14 @@ public class Comanda implements Serializable {
 
     public void setCliente(ClienteFrecuente cliente) {
         this.cliente = cliente;
+    }
+
+    public String getComentarios() {
+        return comentarios;
+    }
+
+    public void setComentarios(String comentarios) {
+        this.comentarios = comentarios;
     }
 
     public static int getContador() {

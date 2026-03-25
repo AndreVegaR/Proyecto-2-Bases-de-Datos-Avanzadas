@@ -4,6 +4,8 @@
  */
 package Entidades;
 
+import Enumeradores.EstadoProducto;
+import Enumeradores.TipoProducto;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.CascadeType;
@@ -43,36 +45,28 @@ public class Producto {
     */
    @Enumerated(EnumType.STRING)  
    @Column(name = "tipo_producto",nullable = false)
-    private TipoProducto tipo;
-    
-   public enum TipoProducto {
-    PLATILLO,
-    BEBIDA,
-    POSTRE
-   }
+   private TipoProducto tipoProducto;
+
    
    @Column(name = "estado", nullable = false)
-   private boolean estado;
+   private EstadoProducto estadoProducto = EstadoProducto.ACTIVO;
    
    //mapeo para tabla intermedia entre product e ingrediente
    @OneToMany(mappedBy = "producto",cascade = CascadeType.PERSIST)
-   private List<producto_con_ingrediente> productosIngredientes = new ArrayList<>();
+   private List<IngredienteProducto> productosIngredientes = new ArrayList<>();
 
-    public Producto(Long id, String nombre, TipoProducto tipo, boolean estado) {
+   
+    public Producto(Long id, String nombre, TipoProducto tipo) {
         this.id = id;
         this.nombre = nombre;
-        this.tipo = tipo;
-        this.estado = estado;
+        this.tipoProducto = tipoProducto;
     }
 
-    public Producto(String nombre, TipoProducto tipo, boolean estado) {
+    public Producto(String nombre, TipoProducto tipo) {
         this.nombre = nombre;
-        this.tipo = tipo;
-        this.estado = estado;
+        this.tipoProducto = tipo;
     }
     
-    
-
     public Producto() {
     }
 
@@ -93,29 +87,26 @@ public class Producto {
     }
 
     public TipoProducto getTipo() {
-        return tipo;
+        return tipoProducto;
     }
 
-    public void setTipo(TipoProducto tipo) {
-        this.tipo = tipo;
+    public void setTipo(TipoProducto tipoProducto) {
+        this.tipoProducto = tipoProducto;
     }
 
-    public boolean isEstado() {
-        return estado;
+    public EstadoProducto isEstado() {
+        return estadoProducto;
     }
 
-    public void setEstado(boolean estado) {
-        this.estado = estado;
+    public void setEstado(EstadoProducto estadoProducto) {
+        this.estadoProducto = estadoProducto;
     }
 
-    public List<producto_con_ingrediente> getProductosIngredientes() {
+    public List<IngredienteProducto> getProductosIngredientes() {
         return productosIngredientes;
     }
 
-    public void setProductosIngredientes(List<producto_con_ingrediente> productosIngredientes) {
+    public void setProductosIngredientes(List<IngredienteProducto> productosIngredientes) {
         this.productosIngredientes = productosIngredientes;
-    }
-   
-   
-   
+    } 
 }

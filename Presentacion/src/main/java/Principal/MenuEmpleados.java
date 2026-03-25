@@ -42,12 +42,12 @@ public class MenuEmpleados extends JFrame {
         //Crea los botones
         JButton botonAdministrador = UtilBoton.crearBoton("Administrador");
         JButton botonMesero = UtilBoton.crearBoton("Mesero");
-        JButton botonSalir = UtilBoton.crearBotonSalir();
+        JButton botonRegresar = UtilBoton.crearBoton("Regresar");
         
         //Añade los botones a su frame
         panelCentral.add(botonAdministrador);
         panelCentral.add(botonMesero);
-        panelCentral.add(botonSalir);
+        panelCentral.add(botonRegresar);
         
         //Panel intermedio para evitar que los botones se expandan de más
         JPanel panelIntermedio = new JPanel(new GridBagLayout());
@@ -66,13 +66,19 @@ public class MenuEmpleados extends JFrame {
         //Lógica del botón para acceder como administrador
         botonAdministrador.addActionListener(e -> {
             UtilGeneral.admin = true;
-            ControlPantallas.abrirMenuPrincipal(null);
+            ControlPantallas.abrirMenuPrincipal(this);
         });
         
         //Lógica del botón para acceder como mesero
         botonMesero.addActionListener(e -> {
             UtilGeneral.admin = false;
-            ControlPantallas.abrirMenuPrincipal(null);
+            ControlPantallas.abrirMenuPrincipal(this);
+        });
+        
+        //Lógica del botón para regresar al menú de empleados
+        botonRegresar.addActionListener(e -> {
+            UtilGeneral.admin = false;
+            ControlPantallas.abrirMenuPrincipal(this);
         });
     }
 }

@@ -40,7 +40,7 @@ public class Ingrediente {
     
     //mapeo para tabla intermedia entre product e ingrediente
     @OneToMany(mappedBy = "ingrediente")
-    private List<producto_con_ingrediente> productosIngredientes = new ArrayList<>();
+    private List<IngredienteProducto> productosIngredientes = new ArrayList<>();
 
     public Ingrediente(Long id, String nombre, String unidadMedida, Double stock) {
         this.id = id;
@@ -93,11 +93,11 @@ public class Ingrediente {
         this.stock = stock;
     }
 
-    public List<producto_con_ingrediente> getProductosIngredientes() {
+    public List<IngredienteProducto> getProductosIngredientes() {
         return productosIngredientes;
     }
 
-    public void setProductosIngredientes(List<producto_con_ingrediente> productosIngredientes) {
+    public void setProductosIngredientes(List<IngredienteProducto> productosIngredientes) {
         this.productosIngredientes = productosIngredientes;
     }
     
