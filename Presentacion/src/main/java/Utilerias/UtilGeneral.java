@@ -6,7 +6,7 @@ import java.awt.Color;
  */
 public class UtilGeneral {
     
-    //Variable que define si el usuario es administrador o empleado
+    //Variable todavía más temporal jaja
     public static boolean admin = false;
     
     //Colores centralizados
@@ -15,4 +15,42 @@ public class UtilGeneral {
     public static Color COLOR_TEXTO_BOTONES = Color.WHITE;
     public static Color COLOR_FONDO = Color.WHITE;
     public static String FUENTE = "SansSerif";
+    
+    
+    //#####LO SIGUIENTE ES UNA SOLUCIÓN TEMPORAL!!!#####
+    //####Y por ahora ni se usa xd pero seguramente será empleado#####
+    //Guarda el tipo de empleado con sesión activa
+    public static TipoEmpleado tipoEmpleado;
+    
+    /**
+     * Enumerador anidado que guardan los tipos de empleados
+     */
+    public static enum TipoEmpleado {
+        ADMINISTRADOR,
+        MESERO
+    }
+    
+    /**
+     * Asigna la sesión actual a un tipo de empleado
+     * @param tipo del empleado
+     */
+    public static void iniciarSesion(TipoEmpleado tipo) {
+        tipoEmpleado = tipo;
+    }
+    
+    /**
+     * Cierra la sesión
+     */
+    public static void cerrarSesion() {
+        tipoEmpleado = null;
+    }
+    
+    /**
+     * Determina si la sesión actual pertenece a un tipo de empleado
+     * @param tipo de empleado a determinar
+     * @return si la sesión es de ese tipo
+     */
+    public static boolean es(TipoEmpleado tipo) {
+        return tipoEmpleado == tipo;
+    }
 }

@@ -13,6 +13,9 @@ public class MenuEmpleados extends JFrame {
     public static Color COLOR_CUADRO = new Color(245, 247, 250);
     
     public MenuEmpleados() {
+        //Cada vez que se entra a este menú es como cerrar sesión de administrador
+        UtilGeneral.admin = false;
+
         //Configuración de la ventana
         setTitle("Restaurante");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -42,12 +45,12 @@ public class MenuEmpleados extends JFrame {
         //Crea los botones
         JButton botonAdministrador = UtilBoton.crearBoton("Administrador");
         JButton botonMesero = UtilBoton.crearBoton("Mesero");
-        JButton botonRegresar = UtilBoton.crearBoton("Regresar");
+        JButton botonSalir = UtilBoton.crearBotonSalir();
         
         //Añade los botones a su frame
         panelCentral.add(botonAdministrador);
         panelCentral.add(botonMesero);
-        panelCentral.add(botonRegresar);
+        panelCentral.add(botonSalir);
         
         //Panel intermedio para evitar que los botones se expandan de más
         JPanel panelIntermedio = new JPanel(new GridBagLayout());
@@ -66,19 +69,12 @@ public class MenuEmpleados extends JFrame {
         //Lógica del botón para acceder como administrador
         botonAdministrador.addActionListener(e -> {
             UtilGeneral.admin = true;
-            ControlPantallas.abrirMenuPrincipal(this);
+            ControlPantallas.navegar(this, MenuPrincipal::new);
         });
         
         //Lógica del botón para acceder como mesero
         botonMesero.addActionListener(e -> {
-            UtilGeneral.admin = false;
-            ControlPantallas.abrirMenuPrincipal(this);
-        });
-        
-        //Lógica del botón para regresar al menú de empleados
-        botonRegresar.addActionListener(e -> {
-            UtilGeneral.admin = false;
-            ControlPantallas.abrirMenuPrincipal(this);
+            ControlPantallas.navegar(this, MenuPrincipal::new);
         });
     }
 }

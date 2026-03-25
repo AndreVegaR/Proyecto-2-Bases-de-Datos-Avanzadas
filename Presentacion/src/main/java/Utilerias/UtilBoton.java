@@ -1,12 +1,15 @@
 package Utilerias;
+import Controles.ControlPantallas;
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
+import java.util.function.Supplier;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
+import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
 /**
@@ -99,6 +102,23 @@ public class UtilBoton {
             if (respuesta == JOptionPane.YES_OPTION) {
                 System.exit(0);
             }
+        });
+        return boton;
+    }
+    
+    
+    
+    /**
+     * Fábrica de un botón para navegar entre pantallas
+     * 
+     * @param ventanaActual
+     * @param ventanaSiguiente
+     * @return el botón funcional
+     */
+    public static JButton crearBotonNavegar(String texto, JFrame ventanaActual, Supplier<JFrame> ventanaSiguiente) {
+        JButton boton = crearBoton(texto);
+        boton.addActionListener(e -> {
+            ControlPantallas.navegar(ventanaActual, ventanaSiguiente);
         });
         return boton;
     }

@@ -1,9 +1,11 @@
 package Principal;
+import Controles.ControlPantallas;
 import Utilerias.UtilBoton;
 import Utilerias.UtilGeneral;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
+import pantallas.AdministrarClientes;
 
 /**
  * Dibuja el menú principal del sistema
@@ -40,23 +42,30 @@ public class MenuPrincipal extends JFrame {
         //En caso de que el usuario sea administrador añade funciones extra
         if (UtilGeneral.admin) {
             //Crea botones
+            JButton botonAdministrarComandas = UtilBoton.crearBoton("Administrar comandas");
             JButton botonAdministrarProductos = UtilBoton.crearBoton("Administrar productos");
             JButton botonAdministrarIngredientes = UtilBoton.crearBoton("Administrar ingredientes");
-            JButton botonClientesFrecuentes = UtilBoton.crearBoton("Clientes frecuentes");
+            JButton administrarClientes = UtilBoton.crearBotonNavegar("Administrar clientes", this, AdministrarClientes::new);
             JButton botonReportesComandas = UtilBoton.crearBoton("Reporte de comandas");
             
             //Los agrega al panel central
+            panelCentral.add(botonAdministrarComandas);
             panelCentral.add(botonAdministrarProductos);
             panelCentral.add(botonAdministrarIngredientes);
-            panelCentral.add(botonClientesFrecuentes);
+            panelCentral.add(administrarClientes);
             panelCentral.add(botonReportesComandas);
         }
         
-        //Siempre crea los botones de comandas y el de salir
-        JButton botonAdministrarComandas = UtilBoton.crearBoton("Administrar comandas");
-        JButton botonSalir = UtilBoton.crearBotonSalir();
-        panelCentral.add(botonAdministrarComandas);
-        panelCentral.add(botonSalir);
+        //Si es mesero
+        if (!UtilGeneral.admin) {
+            JButton botonRegistrarComanda = UtilBoton.crearBoton("Registrar comanda");
+            panelCentral.add(botonRegistrarComanda);
+        }
+        
+        
+        //Siempre crea el botón de regresar
+        JButton botonRegresar = UtilBoton.crearBotonNavegar("Regresar", this, MenuEmpleados::new);
+        panelCentral.add(botonRegresar);
  
         //Panel intermedio para evitar que los botones se expandan de más
         JPanel panelIntermedio = new JPanel(new GridBagLayout());
