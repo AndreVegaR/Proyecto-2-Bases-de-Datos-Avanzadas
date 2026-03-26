@@ -1,5 +1,6 @@
 package Utilerias;
 import Controles.ControlPantallas;
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Font;
@@ -35,10 +36,10 @@ public class UtilBoton {
             
             //Define el arco de la curva
             g2.fillRoundRect(0, 0, getWidth(), getHeight(), 20, 20);
-            g2.dispose();
-            
-            //Dibuja el texto encima
+
+            //Dibuja
             super.paintComponent(g);
+            g2.dispose();
         }
     }
     
@@ -54,13 +55,13 @@ public class UtilBoton {
         JButton boton = new BotonRedondeado(texto);
         
         //Configura la fuente del botón
-        boton.setFont(new Font(UtilGeneral.FUENTE, Font.PLAIN, 18));
+        boton.setFont(Constantes.FUENTE);
         
         //Configura el color del botón
-        boton.setBackground(UtilGeneral.COLOR_BOTONES);
+        boton.setBackground(Constantes.COLOR_BOTONES);
         
         //Configura el color del texto del botón
-        boton.setForeground(UtilGeneral.COLOR_TEXTO_BOTONES);
+        boton.setForeground(Constantes.COLOR_TEXTO_BOTONES);
         
         //Elimina el contorno del texto al cliquear un botón
         boton.setFocusPainted(false);
@@ -78,11 +79,11 @@ public class UtilBoton {
         boton.addMouseListener(new java.awt.event.MouseAdapter() {
             //Cambia el color cuando pasa encima
             public void mouseEntered(java.awt.event.MouseEvent evt) {
-                boton.setBackground(UtilGeneral.COLOR_BOTON_HOVER);
+                boton.setBackground(Constantes.COLOR_BOTON_HOVER);
             }
             //Regesa al color original cuando se quita
             public void mouseExited(java.awt.event.MouseEvent evt) {
-                boton.setBackground(UtilGeneral.COLOR_BOTONES);
+                boton.setBackground(Constantes.COLOR_BOTONES);
             }
         });
         return boton;

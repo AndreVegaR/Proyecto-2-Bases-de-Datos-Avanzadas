@@ -1,5 +1,6 @@
 package Principal;
 import Controles.ControlPantallas;
+import Utilerias.Constantes;
 import Utilerias.UtilBoton;
 import Utilerias.UtilGeneral;
 import javax.swing.*;
@@ -13,16 +14,10 @@ public class MenuEmpleados extends JFrame {
     public static Color COLOR_CUADRO = new Color(245, 247, 250);
     
     public MenuEmpleados() {
+        UtilGeneral.configurarFrame("Menú empleados", this);
+
         //Cada vez que se entra a este menú es como cerrar sesión de administrador
         UtilGeneral.admin = false;
-
-        //Configuración de la ventana
-        setTitle("Restaurante");
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(900, 600);
-        setLocationRelativeTo(null);
-        getContentPane().setBackground(COLOR_CUADRO);
-        setLayout(new BorderLayout());
         
         //Panel del título
         JPanel panelTitulo = new JPanel(new BorderLayout());
@@ -30,11 +25,11 @@ public class MenuEmpleados extends JFrame {
         panelTitulo.setBorder(new EmptyBorder(40, 0, 30, 0));
 
         //Título
-        JLabel titleLabel = new JLabel("Menú de empleados", SwingConstants.CENTER);
-        titleLabel.setFont(new Font(UtilGeneral.FUENTE, Font.PLAIN, 42));
-        titleLabel.setForeground(new Color(44, 62, 80));
-        panelTitulo.add(titleLabel, BorderLayout.CENTER);
-
+        JLabel titulo = new JLabel("Menú de empleados", SwingConstants.CENTER);
+        titulo.setFont(Constantes.FUENTE);
+        titulo.setForeground(new Color(44, 62, 80));
+        panelTitulo.add(titulo, BorderLayout.CENTER);
+        
         //Cuadro central
         JPanel panelCentral = new JPanel();
         panelCentral.setBackground(Color.WHITE);

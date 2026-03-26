@@ -5,7 +5,7 @@
 package DAOs;
 
 import conexion.ConexionBD;
-import entidades.Cliente;
+import Entidades.Cliente;
 import java.util.List;
 import javax.persistence.EntityManager;
 

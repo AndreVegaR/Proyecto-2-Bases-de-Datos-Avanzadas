@@ -1,5 +1,6 @@
 package Principal;
 import Controles.ControlPantallas;
+import Utilerias.Constantes;
 import Utilerias.UtilBoton;
 import Utilerias.UtilGeneral;
 import javax.swing.*;
@@ -14,13 +15,7 @@ public class MenuPrincipal extends JFrame {
     public static Color COLOR_CUADRO = new Color(245, 247, 250);
     
     public MenuPrincipal() {
-        //Configuración de la ventana
-        setTitle("Restaurante");
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(900, 600);
-        setLocationRelativeTo(null);
-        getContentPane().setBackground(COLOR_CUADRO);
-        setLayout(new BorderLayout());
+        UtilGeneral.configurarFrame("Restaurante", this);
         
         //Panel del título
         JPanel panelTitulo = new JPanel(new BorderLayout());
@@ -29,7 +24,7 @@ public class MenuPrincipal extends JFrame {
 
         //Título
         JLabel titleLabel = new JLabel("Menu principal", SwingConstants.CENTER);
-        titleLabel.setFont(new Font(UtilGeneral.FUENTE, Font.PLAIN, 42));
+        titleLabel.setFont(Constantes.FUENTE);
         titleLabel.setForeground(new Color(44, 62, 80));
         panelTitulo.add(titleLabel, BorderLayout.CENTER);
 
@@ -61,7 +56,6 @@ public class MenuPrincipal extends JFrame {
             JButton botonRegistrarComanda = UtilBoton.crearBoton("Registrar comanda");
             panelCentral.add(botonRegistrarComanda);
         }
-        
         
         //Siempre crea el botón de regresar
         JButton botonRegresar = UtilBoton.crearBotonNavegar("Regresar", this, MenuEmpleados::new);

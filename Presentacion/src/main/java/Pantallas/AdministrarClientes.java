@@ -1,69 +1,58 @@
 package pantallas;
+import Principal.MenuPrincipal;
 import Utilerias.UtilBoton;
+import Utilerias.UtilGeneral;
 import java.awt.*;
 import javax.swing.*;
-import javax.swing.table.DefaultTableModel;
 
+/**
+ * Pantalla que muestra la tabla de clientes
+ * @author Andre
+ */
 public class AdministrarClientes extends JFrame {
 
-    private JTable tablaClientes;
-    private DefaultTableModel modeloTabla;
-    private JTextField txtBuscar;
-    private JSpinner spnStockMinimo;
-
     public AdministrarClientes() {
-
-        //Configuración básica
-        setTitle("Administrar clientes");
-        setSize(1000, 650);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setLocationRelativeTo(null);
-        setLayout(new BorderLayout(15, 15));
+        UtilGeneral.configurarFrame("Administrar clientes", this);
         
         //Crea el panel de búsqueda
         JPanel panelBusqueda = new JPanel(new FlowLayout(FlowLayout.LEFT, 20, 10));
         
-        //Encabezado
-        panelBusqueda.setBorder(BorderFactory.createTitledBorder("Búsqueda por"));
-        
         //Búsqueda por nombre
-        panelBusqueda.add(new JLabel("Nombre"));
-        txtBuscar = new JTextField(20);
-        panelBusqueda.add(txtBuscar);
+        panelBusqueda.add(new JLabel("Buscar"));
+        JTextField textoBuscar = UtilGeneral.crearCampoTexto(20);
+        textoBuscar.setFont(new Font("SansSerif", Font.PLAIN, 14));
+        textoBuscar.setPreferredSize(new Dimension(250, 35)); // Un poco más alto
+        textoBuscar.setToolTipText("Ingrese el término a buscar...");
+        panelBusqueda.add(textoBuscar);
         
-        //Búsqueda por teléfono
-        panelBusqueda.add(new JLabel("Teléfono"));
-        txtBuscar = new JTextField(10);
-        panelBusqueda.add(txtBuscar);
-        
-        //Búsqueda por correo
-        panelBusqueda.add(new JLabel("Correo"));
-        txtBuscar = new JTextField(20);
-        panelBusqueda.add(txtBuscar);
+        //Botones para cambiar el criterio de búsqueda
+        JButton botonBuscarNombre = UtilBoton.crearBoton("Nombre");
+        JButton botonBuscarTelefono = UtilBoton.crearBoton("Teléfono");
+        JButton botonBuscarCorreo = UtilBoton.crearBoton("Correo");
+        panelBusqueda.add(botonBuscarNombre);
+        panelBusqueda.add(botonBuscarTelefono);
+        panelBusqueda.add(botonBuscarCorreo);
         
         //Arreglo con las partes de la tabla
         String[] columnas = {"Nombre completo", "Teléfono", "Correo", "Fecha de registro", "Tipo"};
         
-        //Toma los valores del arreglo columnas, y despliega con 0 columnas iniciales (si no hay nada)
-        modeloTabla = new DefaultTableModel(columnas, 0);
-        
-        //Crea la tabla y evita que sea arrastrable desde ejecución
-        tablaClientes = new JTable(modeloTabla);
-        tablaClientes.getTableHeader().setReorderingAllowed(false);
+        JTable tabla = UtilGeneral.crearTabla(columnas);
         
         //Agrega para scrollear
-        JScrollPane scrollPane = new JScrollPane(tablaClientes);
+        JScrollPane scrollPane = new JScrollPane(tabla);
 
         //Crea panel de botones de abajo
         JPanel panelBotones = new JPanel(new FlowLayout(FlowLayout.RIGHT, 15, 15));
 
         //Crea los botones
         JButton botonAgregar = UtilBoton.crearBoton("Agregar cliente");
+        JButton botonEditar = UtilBoton.crearBoton("Editar cliente");
         JButton botonEliminar = UtilBoton.crearBoton("Eliminar cliente");
-        JButton botonRegresar = UtilBoton.crearBoton("Regresar");
+        JButton botonRegresar = UtilBoton.crearBotonNavegar("Regresar", this, MenuPrincipal::new);
 
         //Agrega los botones
         panelBotones.add(botonAgregar);
+        panelBotones.add(botonEditar);
         panelBotones.add(botonEliminar);
         panelBotones.add(botonRegresar);
 

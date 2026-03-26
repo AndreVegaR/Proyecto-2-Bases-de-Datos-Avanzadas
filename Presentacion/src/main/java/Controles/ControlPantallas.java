@@ -9,6 +9,8 @@ public class ControlPantallas {
 
     /**
      * Centraliza la lógica de cambiar de una ventana a otras
+     * El supplier hace una instancia rápida solo al hacer clic, sin ya tenerla hecha
+     * 
      * @param ventanaActual
      * @param ventanaSiguiente 
      */
