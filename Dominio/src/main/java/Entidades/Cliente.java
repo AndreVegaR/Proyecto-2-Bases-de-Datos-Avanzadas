@@ -40,7 +40,7 @@ public class Cliente implements Serializable {
     private String correo;
     
     @Column(name = "fecha_registro", nullable = false)
-    private LocalDateTime fechaRegistro = LocalDateTime.now();
+    private LocalDateTime fechaRegistro;
     
     @OneToMany(mappedBy = "cliente")
     private List<Comanda> comandas = new ArrayList<>();
@@ -53,11 +53,12 @@ public class Cliente implements Serializable {
      * @param telefono
      * @param correo 
      */
-    public Cliente(String nombres, String apellidoPaterno, String apellidoMaterno, String telefono, String correo) {
+    public Cliente(String nombres, String apellidoPaterno, String apellidoMaterno, String telefono, LocalDateTime fechaRegistro, String correo) {
         this.nombres = nombres;
         this.apellidoPaterno = apellidoPaterno;
         this.apellidoMaterno = apellidoMaterno;
         this.telefono = telefono;
+        this.fechaRegistro = fechaRegistro;
         this.correo = correo;
     }
     
@@ -68,11 +69,12 @@ public class Cliente implements Serializable {
      * @param apellidoMaterno
      * @param telefono
      */
-    public Cliente(String nombres, String apellidoPaterno, String apellidoMaterno, String telefono) {
+    public Cliente(String nombres, String apellidoPaterno, String apellidoMaterno, String telefono, LocalDateTime fechaRegistro) {
         this.nombres = nombres;
         this.apellidoPaterno = apellidoPaterno;
         this.apellidoMaterno = apellidoMaterno;
         this.telefono = telefono;
+        this.fechaRegistro = fechaRegistro;
     }
     
     

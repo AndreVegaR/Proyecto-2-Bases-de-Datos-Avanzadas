@@ -1,15 +1,7 @@
 package Entidades;
-import Enumeradores.EstadoComanda;
 import java.io.Serializable;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
 import javax.persistence.Transient;
 
 /**
@@ -20,24 +12,17 @@ import javax.persistence.Transient;
 public class ClienteFrecuente extends Cliente implements Serializable {
     private static final long serialVersionUID = 1L;
     
-    //Atributos
-    @Transient
-    private int visitas = 0;
-    
+    //Atributo
     @Transient
     private double gastoTotal = 0;
-    
-    @Transient
-    private int puntosFidelidad;
-    
-    
+
     
     //Constructores
     /**
      * Constructors
      */
-    public ClienteFrecuente(String nombres, String apellidoPaterno, String apellidoMaterno, String telefono, String correo) {
-        super(nombres, apellidoPaterno, apellidoMaterno, telefono, correo);
+    public ClienteFrecuente(String nombres, String apellidoPaterno, String apellidoMaterno, String telefono, LocalDateTime fechaRegistro, String correo) {
+        super(nombres, apellidoPaterno, apellidoMaterno, telefono, fechaRegistro, correo);
     }
     
      /**
@@ -46,6 +31,11 @@ public class ClienteFrecuente extends Cliente implements Serializable {
     public ClienteFrecuente() {
         super();
     }
+    
+    
+    
+    
+    
     
     
     
@@ -81,11 +71,7 @@ public class ClienteFrecuente extends Cliente implements Serializable {
     public int getVisitas() {
         return getComandas().size();
     }
-
-    public void setVisitas(int visitas) {
-        this.visitas = visitas;
-    }
-
+    
     public double getGastoTotal() {
         return gastoTotal;
     }
@@ -102,9 +88,5 @@ public class ClienteFrecuente extends Cliente implements Serializable {
      */
     public int getPuntosFidelidad() {
         return (int) (gastoTotal/20);
-    }
-
-    public void setPuntosFidelidad(int puntosFidelidad) {
-        this.puntosFidelidad = puntosFidelidad;
     }
 }
