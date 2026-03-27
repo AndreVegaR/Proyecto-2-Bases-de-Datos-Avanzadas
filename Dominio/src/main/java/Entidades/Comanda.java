@@ -40,10 +40,11 @@ public class Comanda implements Serializable {
     @Column(name = "estado", nullable = false)
     private EstadoComanda estadoComanda = EstadoComanda.ABIERTA;
     
+    
     @ManyToOne
-    @JoinColumn(name = "id_clienteFrecuente")
-    @Column(name = "cliente", nullable = true)
-    private ClienteFrecuente cliente;
+    @JoinColumn(name = "id_Cliente")
+//    @Column(name = "cliente", nullable = true)
+    private Cliente cliente;
     
     @Column(name = "comentarios", nullable = true, length = 200)
     private String comentarios;
@@ -127,9 +128,7 @@ public class Comanda implements Serializable {
         this.estadoComanda = estadoComanda;
     }
 
-    public ClienteFrecuente getCliente() {
-        return cliente;
-    }
+  
 
     public void setCliente(ClienteFrecuente cliente) {
         this.cliente = cliente;

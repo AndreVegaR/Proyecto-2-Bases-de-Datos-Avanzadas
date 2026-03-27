@@ -20,11 +20,16 @@ import utilerias.Utilerias;
  * @author Jazmin
  */
 public class ClienteFrecuenteBO {
+    
     private ClienteFrecuenteDAO dao;
     
+
     /**
      * Constructor que inicializa el DAO usando el patrón Singleton
      */
+
+    
+
     public ClienteFrecuenteBO() {
         this.dao = ClienteFrecuenteDAO.getInstance();
       
