@@ -1,9 +1,6 @@
 package Utilerias;
 import Coordinadores.CoordinadorPantallas;
-import java.awt.BasicStroke;
-import java.awt.Color;
 import java.awt.Cursor;
-import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
@@ -79,16 +76,20 @@ public class UtilBoton {
         //Hace el efecto "hover" al pasar el ratón encima
         boton.addMouseListener(new java.awt.event.MouseAdapter() {
             //Cambia el color cuando pasa encima
+            @Override
             public void mouseEntered(java.awt.event.MouseEvent evt) {
                 boton.setBackground(Constantes.COLOR_BOTON_HOVER);
             }
             //Regesa al color original cuando se quita
+            @Override
             public void mouseExited(java.awt.event.MouseEvent evt) {
                 boton.setBackground(Constantes.COLOR_BOTONES);
             }
+            @Override
             public void mousePressed(java.awt.event.MouseEvent evt){
                 boton.setBackground(Constantes.COLOR_BOTON_HOVER.darker());
             }
+            @Override
             public void mouseReleased(java.awt.event.MouseEvent evt){
                 boton.setBackground(Constantes.COLOR_BOTON_HOVER);
             }

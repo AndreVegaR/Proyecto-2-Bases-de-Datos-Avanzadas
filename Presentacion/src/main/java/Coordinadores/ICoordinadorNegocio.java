@@ -12,16 +12,10 @@ public interface ICoordinadorNegocio {
     void setClienteFrecuente(ClienteFrecuenteDTO clienteFrecuente);
     ClienteFrecuenteDTO getClienteFrecuente();
     
-    /**
-     * Registra un cliente frecuente al sistema
-     * 
-     * @param clienteFrecuente 
-     */
+    //Métodos de clientes
     void registrarClienteFrecuente(ClienteFrecuenteDTO clienteFrecuente);
     
-    /**
-     * Obtiene todos los clientes
-     * @return 
-     */
     public List<ClienteFrecuenteDTO> consultarClientesFrecuentes();
+    
+    public ClienteFrecuenteDTO actualizarCliente(ClienteFrecuenteDTO clienteFrecuente);
 }

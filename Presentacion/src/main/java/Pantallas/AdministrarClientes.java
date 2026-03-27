@@ -42,7 +42,7 @@ public class AdministrarClientes extends JFrame implements IObservador{
         panelBusqueda.add(botonBuscarCorreo);
         
         //Crea la tabla
-        String[] columnas = {"ID", "Nombres", "Apellido paterno", "Apellido materno", "Teléfono", "Correo", "Fecha de registro", "Gasto total", "Puntos de fidelidad", "Visitas"};
+        String[] columnas = {"ID", "Nombre", "Apellido Paterno", "Apellido Materno", "Teléfono", "Correo", "Fecha de registro", "Gasto total", "Puntos de fidelidad", "Visitas"};
         tabla = UtilGeneral.crearTabla(columnas);
         
         //Agrega para scrollear
@@ -78,6 +78,7 @@ public class AdministrarClientes extends JFrame implements IObservador{
      * Escucha el llamado el formulario y activa la lógica de registrar al cliente en la tabla
      * Hace una lista con el único elemento, esto para poder trabajar bien con el método
      */
+
     @Override
     public void notificarCambio() {
         ClienteFrecuenteDTO dto = CoordinadorNegocio.getInstance().getClienteFrecuente();
@@ -89,15 +90,19 @@ public class AdministrarClientes extends JFrame implements IObservador{
                         c.getApellidoPaterno(),
                         c.getApellidoMaterno(),
                         c.getTelefono(),
-                        c.getCorreo(),
-                        c.getVisitas(),
+                        (c.getCorreo() !=null && !c.getCorreo().isEmpty()) ? c.getCorreo() : "No tiene",
+                        c.getFechaRegistro(),
                         "$ " + c.getGastoTotal(),
-                        c.getPuntosFidelidad()
+                        c.getPuntosFidelidad(),
+                        c.getVisitas()
                     });
+
     }
+
     
+
     
-    
+
     /**
      * Llena la tabla con los registros
      * Obtiene del coordinador todos los registros de la BD
@@ -111,10 +116,13 @@ public class AdministrarClientes extends JFrame implements IObservador{
                         c.getApellidoPaterno(),
                         c.getApellidoMaterno(),
                         c.getTelefono(),
+                        (c.getCorreo() !=null && !c.getCorreo().isEmpty()) ? c.getCorreo() : "No tiene",
                         c.getCorreo(),
+                        c.getFechaRegistro(),
                         c.getVisitas(),
                         "$ " + c.getGastoTotal(),
                         c.getPuntosFidelidad()
                     });
+
     }
 }

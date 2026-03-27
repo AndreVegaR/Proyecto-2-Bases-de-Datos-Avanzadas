@@ -60,7 +60,21 @@ public class CoordinadorNegocio implements ICoordinadorNegocio {
      * 
      * @return lista de clientes ya registrados
      */
+    @Override
     public List<ClienteFrecuenteDTO> consultarClientesFrecuentes() {
         return ClienteFrecuenteBO.getInstance().verClientes();
+    }
+    
+    
+    
+    /**
+     * Actualiza un cliente
+     * 
+     * @param clienteFrecuente
+     * @return el cliente actualizado
+     */
+    @Override
+    public ClienteFrecuenteDTO actualizarCliente(ClienteFrecuenteDTO clienteFrecuente) {
+        return ClienteFrecuenteBO.getInstance().modificarCliente(clienteFrecuente);
     }
 }

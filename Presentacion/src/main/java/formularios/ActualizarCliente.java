@@ -1,5 +1,4 @@
 package formularios;
-
 import Coordinadores.CoordinadorNegocio;
 import DTOs.ClienteFrecuenteDTO;
 import Utilerias.UtilBoton;
@@ -24,7 +23,7 @@ import javax.swing.JTextField;
 public class ActualizarCliente extends JDialog {
     public ActualizarCliente(JFrame padre) {
         //Bloquea la ventana de atrás
-        super(padre, "Registrar Cliente", true);
+        super(padre, "Actualizar Cliente", true);
         
         //Configuración
         setLayout(new BorderLayout());
@@ -47,11 +46,11 @@ public class ActualizarCliente extends JDialog {
         JButton botonAceptar = UtilBoton.crearBoton("Aceptar");
         panelBotones.add(botonAceptar);
 
-        //Agregamos todo al JDialog
+        //Agrega todo al JDialog
         add(panel, BorderLayout.CENTER);
         add(panelBotones, BorderLayout.SOUTH);
 
-        //Evento del botón Aceptar
+        //Actualizar
         botonAceptar.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -98,7 +97,7 @@ public class ActualizarCliente extends JDialog {
                     dto.setCorreo(correo); 
 
                     //Agrega
-                    CoordinadorNegocio.getInstance().registrarClienteFrecuente(dto);
+                    CoordinadorNegocio.getInstance().actualizarCliente(dto);
                     JOptionPane.showMessageDialog(ActualizarCliente.this, "Cliente actualizado correctamente");
                 }
             }
