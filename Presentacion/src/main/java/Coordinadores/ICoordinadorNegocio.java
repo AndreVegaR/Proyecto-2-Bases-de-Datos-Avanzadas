@@ -1,5 +1,6 @@
 package Coordinadores;
 import DTOs.ClienteFrecuenteDTO;
+import java.util.List;
 
 /**
  * @author Angel
@@ -7,10 +8,20 @@ import DTOs.ClienteFrecuenteDTO;
  */
 public interface ICoordinadorNegocio {
     
+    //Getter y setter de clienteFrecuente
+    void setClienteFrecuente(ClienteFrecuenteDTO clienteFrecuente);
+    ClienteFrecuenteDTO getClienteFrecuente();
+    
     /**
      * Registra un cliente frecuente al sistema
      * 
      * @param clienteFrecuente 
      */
     void registrarClienteFrecuente(ClienteFrecuenteDTO clienteFrecuente);
+    
+    /**
+     * Obtiene todos los clientes
+     * @return 
+     */
+    public List<ClienteFrecuenteDTO> consultarClientesFrecuentes();
 }

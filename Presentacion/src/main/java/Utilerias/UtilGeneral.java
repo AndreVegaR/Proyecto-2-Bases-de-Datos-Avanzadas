@@ -2,7 +2,8 @@ package Utilerias;
 import java.awt.Color;
 import javax.swing.*;
 import java.awt.*;
-import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Function;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
 
@@ -143,11 +144,31 @@ public class UtilGeneral {
  
     
     
-    
-    
-    
-    
-    
+    /**
+     * Método que añade un registro a la tabla
+     * Utiliza el último guardado por el coordinador
+     * 
+     * @param <T> puede ser cualquier DTO
+     * @param tabla 
+     * @param lista
+     * @param mapeador el método lambda para que sea flexible con cualquier clase
+     */
+    public static <T> void registrarTabla(JTable tabla, List<T> lista, Function<T, Object[]> mapeador) {
+        DefaultTableModel modelo = (DefaultTableModel) tabla.getModel();
+        
+        //Si la lista tiene más de un elemento, entonces es para cargar toda la tabla con registros ya existentes
+        //Si solo tiene uno, es porque se va a ejecutar al registrar individualmente uno y no se deben limpiar los ya existentes
+        if (lista.size() > 1) {
+            modelo.setRowCount(0);
+        }
+        
+        //Itera para mapear
+        if (lista != null) {
+            for (T elemento : lista) {
+                modelo.addRow(mapeador.apply(elemento));
+            }
+        }
+    }
     
     
     

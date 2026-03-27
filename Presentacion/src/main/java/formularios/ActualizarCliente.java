@@ -14,19 +14,17 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
-import observadores.IObservador;
+
+ //####IGNORAR POR AHORA#####
 
 /**
- * JDialog para registrar un cliente
- * @author Angel
+ * JDialog para actualizar un cliente
+ * @author Andre
  */
-public class RegistrarCliente extends JDialog {
-    private IObservador observador;
-    
-    public RegistrarCliente(JFrame padre, IObservador observador) {
+public class ActualizarCliente extends JDialog {
+    public ActualizarCliente(JFrame padre) {
         //Bloquea la ventana de atrás
         super(padre, "Registrar Cliente", true);
-        this.observador = observador;
         
         //Configuración
         setLayout(new BorderLayout());
@@ -66,7 +64,7 @@ public class RegistrarCliente extends JDialog {
 
                 //Validaciones
                 if (nombre.isEmpty() || apellidoP.isEmpty() || apellidoM.isEmpty() || telefono.isEmpty()) {
-                    JOptionPane.showMessageDialog(RegistrarCliente.this, 
+                    JOptionPane.showMessageDialog(ActualizarCliente.this, 
                         "Todos los campos son obligatorios (excepto el correo)", 
                         "Campos vacíos", JOptionPane.WARNING_MESSAGE);
                     return;
@@ -84,8 +82,8 @@ public class RegistrarCliente extends JDialog {
 
                 //Confirmación
                 int opcion = JOptionPane.showConfirmDialog(
-                        RegistrarCliente.this,
-                        "¿Deseas registrar este cliente?",
+                        ActualizarCliente.this,
+                        "¿Actualizar al cliente?",
                         "Confirmar",
                         JOptionPane.YES_NO_OPTION
                 );
@@ -99,14 +97,9 @@ public class RegistrarCliente extends JDialog {
                     dto.setTelefono(telefono);
                     dto.setCorreo(correo); 
 
-                    //Agrega al cliente al sistema
+                    //Agrega
                     CoordinadorNegocio.getInstance().registrarClienteFrecuente(dto);
-                    JOptionPane.showMessageDialog(RegistrarCliente.this, "Cliente creado correctamente");
-                    
-                    //Notifica al observador sobre el nuevo cliente para que lo registre
-                    if (RegistrarCliente.this.observador != null) {
-                        RegistrarCliente.this.observador.notificarCambio();
-                    }
+                    JOptionPane.showMessageDialog(ActualizarCliente.this, "Cliente actualizado correctamente");
                 }
             }
         });

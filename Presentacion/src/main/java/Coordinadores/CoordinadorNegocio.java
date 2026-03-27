@@ -1,6 +1,8 @@
 package Coordinadores;
 import BO.ClienteFrecuenteBO;
 import DTOs.ClienteFrecuenteDTO;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Angel
@@ -8,6 +10,15 @@ import DTOs.ClienteFrecuenteDTO;
  * Utiliza un singleton
  */
 public class CoordinadorNegocio implements ICoordinadorNegocio {
+    private ClienteFrecuenteDTO clienteFrecuente = new ClienteFrecuenteDTO();
+    public void setClienteFrecuente(ClienteFrecuenteDTO clienteFrecuente) {
+        this.clienteFrecuente = clienteFrecuente;
+    }
+    public ClienteFrecuenteDTO getClienteFrecuente(){
+        return clienteFrecuente;
+    }
+
+
     //Única instancia
     private static CoordinadorNegocio instancia;
     
@@ -32,11 +43,24 @@ public class CoordinadorNegocio implements ICoordinadorNegocio {
     
     /**
      * Recibe un DTO con los datos del cliente y los guarda mediante el BO de cliente
+     * También lo guarda para ser usado
      * 
      * @param clienteFrecuente 
      */
     @Override
     public void registrarClienteFrecuente(ClienteFrecuenteDTO clienteFrecuente){
+        setClienteFrecuente(clienteFrecuente);
         ClienteFrecuenteBO.getInstance().guardarCliente(clienteFrecuente);
+    }
+    
+    
+    
+    /**
+     * Consulta todos los clientes de la BD
+     * 
+     * @return lista de clientes ya registrados
+     */
+    public List<ClienteFrecuenteDTO> consultarClientesFrecuentes() {
+        return ClienteFrecuenteBO.getInstance().verClientes();
     }
 }

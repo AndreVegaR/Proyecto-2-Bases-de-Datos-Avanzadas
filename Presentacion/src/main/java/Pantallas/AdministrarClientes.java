@@ -1,22 +1,24 @@
 package pantallas;
-import Coordinadores.CoordinadorPantallas;
-import Coordinadores.ICoordinadorPantallas;
-import Coordinadores.CoordinadorPantallas;
-import Coordinadores.ICoordinadorPantallas;
+import Coordinadores.CoordinadorNegocio;
+import DTOs.ClienteFrecuenteDTO;
 import Principal.MenuPrincipal;
 import formularios.RegistrarCliente;
 import Utilerias.UtilBoton;
 import Utilerias.UtilGeneral;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.util.ArrayList;
 import javax.swing.*;
+import java.util.List;
+import observadores.IObservador;
 
 /**
  * Pantalla que muestra la tabla de clientes
+ * Observa al formulario de registro de cliente
  * @author Andre
  */
-public class AdministrarClientes extends JFrame {
+public class AdministrarClientes extends JFrame implements IObservador{
+    private JTable tabla;
+    
     public AdministrarClientes() {
         UtilGeneral.configurarFrame("Administrar clientes", this);
         
@@ -39,10 +41,9 @@ public class AdministrarClientes extends JFrame {
         panelBusqueda.add(botonBuscarTelefono);
         panelBusqueda.add(botonBuscarCorreo);
         
-        //Arreglo con las partes de la tabla
-        String[] columnas = {"Nombre completo", "Teléfono", "Correo", "Fecha de registro", "Tipo"};
-        
-        JTable tabla = UtilGeneral.crearTabla(columnas);
+        //Crea la tabla
+        String[] columnas = {"ID", "Nombres", "Apellido paterno", "Apellido materno", "Teléfono", "Correo", "Fecha de registro", "Gasto total", "Puntos de fidelidad", "Visitas"};
+        tabla = UtilGeneral.crearTabla(columnas);
         
         //Agrega para scrollear
         JScrollPane scrollPane = new JScrollPane(tabla);
@@ -51,7 +52,7 @@ public class AdministrarClientes extends JFrame {
         JPanel panelBotones = new JPanel(new FlowLayout(FlowLayout.RIGHT, 15, 15));
 
         //Crea los botones
-        JButton botonAgregar = UtilBoton.crearBotonDialogo("Nuevo Cliente", () -> new RegistrarCliente(this));
+        JButton botonAgregar = UtilBoton.crearBotonDialogo("Nuevo Cliente", () -> new RegistrarCliente(this, this));
         JButton botonEditar = UtilBoton.crearBoton("Editar cliente");
         JButton botonEliminar = UtilBoton.crearBoton("Eliminar cliente");
         JButton botonRegresar = UtilBoton.crearBotonNavegar("Regresar", this, MenuPrincipal::new);
@@ -66,5 +67,54 @@ public class AdministrarClientes extends JFrame {
         add(panelBusqueda, BorderLayout.NORTH);
         add(scrollPane, BorderLayout.CENTER);
         add(panelBotones, BorderLayout.SOUTH);   
+        
+        //Llena la tabla
+        llenarTabla();
+    }
+    
+    
+    
+    /**
+     * Escucha el llamado el formulario y activa la lógica de registrar al cliente en la tabla
+     * Hace una lista con el único elemento, esto para poder trabajar bien con el método
+     */
+    @Override
+    public void notificarCambio() {
+        ClienteFrecuenteDTO dto = CoordinadorNegocio.getInstance().getClienteFrecuente();
+        List<ClienteFrecuenteDTO> lista = new ArrayList<>();
+        lista.add(dto);
+        UtilGeneral.registrarTabla(tabla, lista, c -> new Object[]{
+                        c.getId(),
+                        c.getNombres(),
+                        c.getApellidoPaterno(),
+                        c.getApellidoMaterno(),
+                        c.getTelefono(),
+                        c.getCorreo(),
+                        c.getVisitas(),
+                        "$ " + c.getGastoTotal(),
+                        c.getPuntosFidelidad()
+                    });
+    }
+    
+    
+    
+    /**
+     * Llena la tabla con los registros
+     * Obtiene del coordinador todos los registros de la BD
+     * Con el lambda CASTEA a la clase en concreto para aplicar getters
+     */
+    public void llenarTabla() {
+        List<ClienteFrecuenteDTO> lista = CoordinadorNegocio.getInstance().consultarClientesFrecuentes();
+        UtilGeneral.registrarTabla(tabla, lista, (ClienteFrecuenteDTO c) -> new Object[]{
+                        c.getId(),
+                        c.getNombres(),
+                        c.getApellidoPaterno(),
+                        c.getApellidoMaterno(),
+                        c.getTelefono(),
+                        c.getCorreo(),
+                        c.getVisitas(),
+                        "$ " + c.getGastoTotal(),
+                        c.getPuntosFidelidad()
+                    });
     }
 }
