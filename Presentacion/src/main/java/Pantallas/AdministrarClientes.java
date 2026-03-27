@@ -1,8 +1,12 @@
 package pantallas;
+import Coordinador.CoordinadorPantallas;
+import Coordinador.ICoordinadorPantallas;
 import Principal.MenuPrincipal;
 import Utilerias.UtilBoton;
 import Utilerias.UtilGeneral;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import javax.swing.*;
 
 /**
@@ -11,6 +15,7 @@ import javax.swing.*;
  */
 public class AdministrarClientes extends JFrame {
 
+     ICoordinadorPantallas coordinador = new CoordinadorPantallas();
     public AdministrarClientes() {
         UtilGeneral.configurarFrame("Administrar clientes", this);
         
@@ -60,5 +65,20 @@ public class AdministrarClientes extends JFrame {
         add(panelBusqueda, BorderLayout.NORTH);
         add(scrollPane, BorderLayout.CENTER);
         add(panelBotones, BorderLayout.SOUTH);
+        
+        //Boton que al seleccionarlo llama al metodo de CoordinadorPantallas y muestra la pantalla de agregarCliente
+        botonAgregar.addActionListener(new ActionListener(){
+            @Override
+            public void actionPerformed(ActionEvent e) {
+            coordinador.mostrarPantalla();
+          
+            }
+            
+            
+            
+        });
     }
+    
+    
+ 
 }

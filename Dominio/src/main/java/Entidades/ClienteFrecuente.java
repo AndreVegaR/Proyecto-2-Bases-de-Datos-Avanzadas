@@ -23,6 +23,7 @@ public class ClienteFrecuente extends Cliente implements Serializable {
      */
     public ClienteFrecuente(String nombres, String apellidoPaterno, String apellidoMaterno, String telefono, LocalDateTime fechaRegistro, String correo) {
         super(nombres, apellidoPaterno, apellidoMaterno, telefono, fechaRegistro, correo);
+     
     }
     
      /**

@@ -27,6 +27,9 @@ public class ClienteMapper {
         entidad.setApellidoMaterno(dto.getApellidoMaterno());
         entidad.setTelefono(dto.getTelefono());
         
+        //Le asignamos automaticamente la fecha del registro
+        entidad.setFechaRegistro(LocalDateTime.now());
+        
         //Correo opcional
         String correo = dto.getCorreo();
         if (correo != null) {

@@ -19,8 +19,10 @@ import utilerias.Utilerias;
  * @author Jazmin
  */
 public class ClienteFrecuenteBO {
+    
     private ClienteFrecuenteDAO dao;
-
+    
+    
     public ClienteFrecuenteBO() {
         this.dao = ClienteFrecuenteDAO.getInstance();
       
