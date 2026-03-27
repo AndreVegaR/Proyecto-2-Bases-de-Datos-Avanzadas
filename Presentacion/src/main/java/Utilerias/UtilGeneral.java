@@ -2,6 +2,7 @@ package Utilerias;
 import java.awt.Color;
 import javax.swing.*;
 import java.awt.*;
+import java.util.ArrayList;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
 
@@ -10,10 +11,7 @@ import javax.swing.table.JTableHeader;
  */
 public class UtilGeneral {
     
-    //Variable todavía más temporal jaja
     public static boolean admin = false;
-    
-    
     
     //Clase anidada de un campo de texto redondeado
     private static class CampoTextoRedondeado extends JTextField {
@@ -71,22 +69,21 @@ public class UtilGeneral {
 
         //Configura colores
         tabla.setSelectionBackground(Constantes.COLOR_TABLA);
-        tabla.setSelectionForeground(Constantes.COLOR_TABLA);
+        tabla.setSelectionForeground(Color.WHITE);
 
-        //Elimina bordes famosos
+        //Elimina bordes
         tabla.setShowGrid(false);
         tabla.setIntercellSpacing(new Dimension(0, 0));
 
         //Encabezado
         JTableHeader header = tabla.getTableHeader();
         header.setFont(new Font("Segoe UI", Font.BOLD, 13));
-        header.setBackground(new Color(45, 52, 54));
+        header.setBackground(Constantes.COLOR_TABLA);
         header.setForeground(Color.WHITE);           
         header.setPreferredSize(new Dimension(0, 35));
         
         return tabla;
     }
-    
     
     
     
@@ -111,17 +108,51 @@ public class UtilGeneral {
     /**
      * Fábrica de un campo de texto redondeado
      * 
-     * @param tamaño
+     * @param tamanio
      * @return el campo redondeado
      */
-    public static CampoTextoRedondeado crearCampoTexto(int tamaño) {
-        return new CampoTextoRedondeado(tamaño);
+    public static CampoTextoRedondeado crearCampoTexto(int tamanio) {
+        return new CampoTextoRedondeado(tamanio);
     }
-
     
     
-    //#####LO SIGUIENTE ES UNA SOLUCIÓN TEMPORAL!!!#####
-    //####Y por ahora ni se usa xd pero seguramente será empleado#####
+    
+    /**
+     * Crea un campo de texto ya configurado
+     * 
+     * @param panel
+     * @param etiqueta el label
+     * @param tamanio
+     */
+    public static JTextField crearCampoFormulario(JPanel panel, String etiqueta, int tamanio) {
+        CampoTextoRedondeado campo = crearCampoTexto(tamanio);
+        JLabel label = new JLabel(etiqueta);
+        
+        //Configura de qué lado van a aparecer
+        label.setAlignmentX(Component.LEFT_ALIGNMENT);
+        campo.setAlignmentX(Component.LEFT_ALIGNMENT);
+        
+        //Agrega al panel y define pequeño espacio
+        panel.add(label);
+        panel.add(Box.createVerticalStrut(5));
+        panel.add(campo);
+        panel.add(Box.createVerticalStrut(15));
+        
+        return campo;
+    }
+ 
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    //####Esto por ahora ni se usa xd pero seguramente será usado#####
     //Guarda el tipo de empleado con sesión activa
     public static TipoEmpleado tipoEmpleado;
     

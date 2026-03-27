@@ -1,6 +1,6 @@
 package Principal;
 
-import Controles.ControlPantallas;
+import Coordinadores.CoordinadorPantallas;
 import Utilerias.Constantes;
 import Utilerias.UtilBoton;
 import Utilerias.UtilGeneral;

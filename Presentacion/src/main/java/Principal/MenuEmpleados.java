@@ -1,6 +1,5 @@
 package Principal;
-
-import Controles.ControlPantallas;
+import Coordinadores.CoordinadorPantallas;
 import Utilerias.Constantes;
 import Utilerias.UtilBoton;
 import Utilerias.UtilGeneral;
@@ -41,15 +40,13 @@ public class MenuEmpleados extends JFrame {
         JButton botonMesero = UtilBoton.crearBoton("Mesero");
         JButton botonAdministrador = UtilBoton.crearBoton("Administrador");
 
-        JPanel panelMesero = crearPanelOpciones(
-                "/imagenes/iconMesero.png",
-                botonMesero
-        );
+        //Crea el panel de mesero
+        String rutaIcono = "/imagenes/iconMesero.png";
+        JPanel panelMesero = crearPanelOpciones(rutaIcono, botonMesero);
 
-        JPanel panelAdmin = crearPanelOpciones(
-                "/imagenes/iconAdmin.png",
-                botonAdministrador
-        );
+        //Crea el panel de administrador
+        rutaIcono = "/imagenes/iconAdmin.png";
+        JPanel panelAdmin = crearPanelOpciones(rutaIcono, botonAdministrador);
 
         //Añade los botones a su frame
         panelCentral.add(panelMesero);
@@ -62,10 +59,12 @@ public class MenuEmpleados extends JFrame {
         panelIntermedio.setOpaque(false);
         panelIntermedio.add(panelCentral);
 
+        //Panel sur para que el botón de salir esté aislado
         JPanel panelSalir = new JPanel();
         panelSalir.setOpaque(false);
         JButton botonSalir = UtilBoton.crearBotonSalir();
         panelSalir.add(botonSalir);
+        
         //Agrega los otros  paneles al panel intermedio
         add(panelTitulo, BorderLayout.NORTH);
         add(panelIntermedio, BorderLayout.CENTER);
@@ -74,30 +73,42 @@ public class MenuEmpleados extends JFrame {
         //Lógica del botón para acceder como administrador
         botonAdministrador.addActionListener(e -> {
             UtilGeneral.admin = true;
-            ControlPantallas.navegar(this, MenuPrincipal::new);
+            CoordinadorPantallas.getInstance().navegar(this, MenuPrincipal::new);
         });
 
         //Lógica del botón para acceder como mesero
         botonMesero.addActionListener(e -> {
-            //temporal
-            String pin = JOptionPane.showInputDialog(this,"Ingresa tu Pin de Mesero", "Acceso",
+            //temporal, no valida todavía
+            /**
+             * String pin = JOptionPane.showInputDialog(this,"Ingresa tu Pin de Mesero", "Acceso",
                     JOptionPane.QUESTION_MESSAGE);
             
-            ControlPantallas.navegar(this, MenuPrincipal::new);
+             */
+            CoordinadorPantallas.getInstance().navegar(this, MenuPrincipal::new);
         });
     }
 
+    
+    
+    /**
+     * Crea un contenedor visual con botón e imagen
+     * 
+     * @param rutaIcono
+     * @param boton
+     * @return el panel
+     */
     private JPanel crearPanelOpciones(String rutaIcono, JButton boton) {
+        //Configura el panel
         JPanel panel = new JPanel(new BorderLayout());
-        panel.setBackground(Color.WHITE);
+        panel.setBackground(Constantes.COLOR_FONDO);
         panel.setBorder(new EmptyBorder(20, 20, 20, 20));
         panel.setPreferredSize(new Dimension(300, 250));
 
+        //Configura el ícono
         JLabel icono = new JLabel(new ImageIcon(getClass().getResource(rutaIcono)));
         icono.setHorizontalAlignment(SwingConstants.CENTER);
         panel.add(icono, BorderLayout.CENTER);
         panel.add(boton, BorderLayout.SOUTH);
         return panel;
-
     }
 }

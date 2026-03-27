@@ -43,6 +43,12 @@ public class Producto {
     Por ejemplo Producto p = new Producto();
     p.setTipo(TipoProducto.BEBIDA);
     */
+    public enum TipoProducto {
+        ENTRADA,
+        PLATILLO,
+        BEBIDA,
+        POSTRE
+    }
    @Enumerated(EnumType.STRING)  
    @Column(name = "tipo_producto",nullable = false)
    private TipoProducto tipoProducto;

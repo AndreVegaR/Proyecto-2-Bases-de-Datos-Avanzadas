@@ -1,11 +1,7 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package BO;
-
 import DAOs.ClienteFrecuenteDAO;
 import DTOs.ClienteFrecuenteDTO;
+import Entidades.Cliente;
 import Entidades.ClienteFrecuente;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -16,110 +12,142 @@ import utilerias.Utilerias;
 
 
 /**
- *Logica de negocio para ClienteFrecuentes
+ * Logica de negocio para ClienteFrecuentes
+ * Utiliza el singleton de ClienteFrecuenteDAO
  * @author Jazmin
  */
 public class ClienteFrecuenteBO {
     
-    private ClienteFrecuenteDAO dao;
+    //Instancia
+    private static ClienteFrecuenteBO instancia;
     
-
+    //Constructor privado
+    private ClienteFrecuenteBO() {}
+    
     /**
-     * Constructor que inicializa el DAO usando el patrón Singleton
+     * Singleton
+     * 
+     * @return el BO listo
      */
-
-    
-
-    public ClienteFrecuenteBO() {
-        this.dao = ClienteFrecuenteDAO.getInstance();
-      
+    public static ClienteFrecuenteBO getInstance() {
+        if (instancia == null) {
+            instancia = new ClienteFrecuenteBO();
+        }
+        return instancia;
     }
+    
+    
+    
     /**
      * Guarda un cliente frecuente despues de validarse
+     * 
      * @param clienteDTO datos del cliente capturado desde la capa de presentación
-     * @return ClienteFrecuenteDTO con los datos guardados.
+     * @return ClienteFrecuenteDTO con los datos guardados
      */
     public ClienteFrecuenteDTO guardarCliente(ClienteFrecuenteDTO clienteDTO){
+        //Validaciones
         Utilerias.esNulo(clienteDTO);
         Utilerias.esCadenadaVacia(clienteDTO.getNombres(), "Nombres");
         Utilerias.esCadenadaVacia(clienteDTO.getApellidoPaterno(), "Apellido Paterno");
         Utilerias.esCadenadaVacia(clienteDTO.getApellidoMaterno(), "Apellido Materno");
         Utilerias.esCadenadaVacia(clienteDTO.getTelefono(),"Teléfono");
         
+        //Crea la fecha del registro al persistirse
         if(clienteDTO.getFechaRegistro() == null){
             clienteDTO.setFechaRegistro(LocalDateTime.now());
         }
-        //mapeo dto a entidad
+        
+        //Mapeo a entidad
         ClienteFrecuente cliente = ClienteMapper.mapearDTOEntidad(clienteDTO);
-        //encriptar antes de guardar
+        
+        //Encriptar antes de guardar
         String telefono = cliente.getTelefono();
         String telefonoEncriptado = EncriptarTelefono.encriptar(telefono);
         cliente.setTelefono(telefonoEncriptado);
-        cliente = dao.guardarCliente(cliente);
-        //mapeo entidad guardada a dto
+        cliente = ClienteFrecuenteDAO.getInstance().guardarCliente(cliente);
+        
+        //Mapeo a DTO
         ClienteFrecuenteDTO resultado = ClienteMapper.mapearEntidadDTO(cliente);
-        //desencriptar para volverlo legible 
+        
+        //Desencriptar para volverlo legible 
         String telefonoDesencriptado = EncriptarTelefono.desencriptar(resultado.getTelefono());
         resultado.setTelefono(telefonoDesencriptado);
         return resultado;
-            }
+    }
+    
+    
     
     /**
-     * Elimina un cliente frecuente por ID
+     * Elimina un cliente frecuente por ID y lo regresa
+     * 
      * @param id identificador unico del cliente a eliminar
+     * @return el cliente eliminado
      */
-    public void eliminarCliente(Long id){
-        Utilerias.esNulo(id);
-        dao.eliminarCliente(id);
+    public ClienteFrecuenteDTO eliminarCliente(Long id){
+        Utilerias.esNumeroPositivo(id, "ID");
+        ClienteFrecuente eliminado = ClienteFrecuenteDAO.getInstance().eliminarCliente(id);
+        return ClienteMapper.mapearEntidadDTO(eliminado);
     }
+    
+    
+    
     /**
      * Modifica un cliente frecuente
+     * 
      * @param dto datos modificados del cliente frecuente
-     * @return ClienteFrecuenteDTO con la informacion actualizada.
+     * @return ClienteFrecuenteDTO con la informacion actualizada
      */
     public ClienteFrecuenteDTO modificarCliente(ClienteFrecuenteDTO dto){
+        //Validaciones
         Utilerias.esNulo(dto);
         Utilerias.esNulo(dto.getId());
         Utilerias.esCadenadaVacia(dto.getNombres(), "Nombres");
         Utilerias.esCadenadaVacia(dto.getApellidoPaterno(), "Apellido Paterno");
         Utilerias.esCadenadaVacia(dto.getApellidoMaterno(), "Apellido Materno");
         Utilerias.esCadenadaVacia(dto.getTelefono(),"Teléfono");
-        
         if(dto.getFechaRegistro() == null){
             dto.setFechaRegistro(LocalDateTime.now());
         }
         
+        //Mapea
         ClienteFrecuente cliente = ClienteMapper.mapearDTOEntidad(dto);
-         //encriptar antes de actualizar
+        
+        //Encriptar antes de actualizar
         String telefono = cliente.getTelefono();
         String telefonoEncriptado = EncriptarTelefono.encriptar(telefono);
         cliente.setTelefono(telefonoEncriptado);
         
-        cliente = dao.modificarCliente(cliente);
+        //Modifica
+        cliente = ClienteFrecuenteDAO.getInstance().modificarCliente(cliente);
         
+        //Mapear
         ClienteFrecuenteDTO resultado = ClienteMapper.mapearEntidadDTO(cliente);
+        
         //desencriptar para volverlo legible 
         String telefonoDesencriptado = EncriptarTelefono.desencriptar(resultado.getTelefono());
         resultado.setTelefono(telefonoDesencriptado);
         return resultado;
-      
-       
     }
+    
+    
+    
     /**
-     * Obtiene la lista de todos los clientes frecuentes registrados.
+     * Obtiene la lista de todos los clientes frecuentes registrados
+     * 
      * @return lista de ClienteFrecuente con los datos actualizados
      */
     public List<ClienteFrecuenteDTO> verClientes(){
-        List<ClienteFrecuente> lista = dao.verClientes();
+        List<ClienteFrecuente> lista = ClienteFrecuenteDAO.getInstance().verClientes();
         
-        List<ClienteFrecuenteDTO> listaDtos = lista.stream().map(ClienteMapper :: mapearEntidadDTO)
-                .collect(Collectors.toList());
+        List<ClienteFrecuenteDTO> listaDtos = lista.stream()
+                                              .map(ClienteMapper :: mapearEntidadDTO)
+                                              .collect(Collectors.toList());
         listaDtos.forEach(dto -> {
             String telEncriptado = dto.getTelefono();
             String telDesencriptado = EncriptarTelefono.desencriptar(telEncriptado);
             dto.setTelefono(telEncriptado);
         });
+        
         return listaDtos;
     }
-    
 }

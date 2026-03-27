@@ -1,7 +1,10 @@
 package pantallas;
-import Coordinador.CoordinadorPantallas;
-import Coordinador.ICoordinadorPantallas;
+import Coordinadores.CoordinadorPantallas;
+import Coordinadores.ICoordinadorPantallas;
+import Coordinadores.CoordinadorPantallas;
+import Coordinadores.ICoordinadorPantallas;
 import Principal.MenuPrincipal;
+import formularios.RegistrarCliente;
 import Utilerias.UtilBoton;
 import Utilerias.UtilGeneral;
 import java.awt.*;
@@ -14,8 +17,6 @@ import javax.swing.*;
  * @author Andre
  */
 public class AdministrarClientes extends JFrame {
-
-     ICoordinadorPantallas coordinador = new CoordinadorPantallas();
     public AdministrarClientes() {
         UtilGeneral.configurarFrame("Administrar clientes", this);
         
@@ -50,7 +51,7 @@ public class AdministrarClientes extends JFrame {
         JPanel panelBotones = new JPanel(new FlowLayout(FlowLayout.RIGHT, 15, 15));
 
         //Crea los botones
-        JButton botonAgregar = UtilBoton.crearBoton("Agregar cliente");
+        JButton botonAgregar = UtilBoton.crearBotonDialogo("Nuevo Cliente", () -> new RegistrarCliente(this));
         JButton botonEditar = UtilBoton.crearBoton("Editar cliente");
         JButton botonEliminar = UtilBoton.crearBoton("Eliminar cliente");
         JButton botonRegresar = UtilBoton.crearBotonNavegar("Regresar", this, MenuPrincipal::new);
@@ -64,21 +65,6 @@ public class AdministrarClientes extends JFrame {
         //Agrega todo al frame
         add(panelBusqueda, BorderLayout.NORTH);
         add(scrollPane, BorderLayout.CENTER);
-        add(panelBotones, BorderLayout.SOUTH);
-        
-        //Boton que al seleccionarlo llama al metodo de CoordinadorPantallas y muestra la pantalla de agregarCliente
-        botonAgregar.addActionListener(new ActionListener(){
-            @Override
-            public void actionPerformed(ActionEvent e) {
-            coordinador.mostrarPantalla();
-          
-            }
-            
-            
-            
-        });
+        add(panelBotones, BorderLayout.SOUTH);   
     }
-    
-    
- 
 }

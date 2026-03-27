@@ -1,6 +1,7 @@
 package Utilerias;
-import Controles.ControlPantallas;
+import Coordinadores.CoordinadorPantallas;
 import java.awt.BasicStroke;
+import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Font;
 import java.awt.Graphics;
@@ -9,6 +10,7 @@ import java.awt.RenderingHints;
 import java.util.function.Supplier;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
+import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
@@ -117,6 +119,7 @@ public class UtilBoton {
     /**
      * Fábrica de un botón para navegar entre pantallas
      * 
+     * @param texto del botón
      * @param ventanaActual
      * @param ventanaSiguiente
      * @return el botón funcional
@@ -124,7 +127,24 @@ public class UtilBoton {
     public static JButton crearBotonNavegar(String texto, JFrame ventanaActual, Supplier<JFrame> ventanaSiguiente) {
         JButton boton = crearBoton(texto);
         boton.addActionListener(e -> {
-            ControlPantallas.navegar(ventanaActual, ventanaSiguiente);
+            CoordinadorPantallas.getInstance().navegar(ventanaActual, ventanaSiguiente);
+        });
+        return boton;
+    }
+    
+    
+    
+    /**
+     * Fábrica de un botón que abre un formulario
+     * 
+     * @param texto del botón
+     * @param formulario
+     * @return el botón funcional
+     */
+    public static JButton crearBotonDialogo(String texto, Supplier<JDialog> formulario) {
+        JButton boton = crearBoton(texto);
+        boton.addActionListener(e -> {
+            CoordinadorPantallas.getInstance().abrirFormulario(formulario);
         });
         return boton;
     }

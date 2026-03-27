@@ -21,6 +21,7 @@ public class ConexionBD {
     private ConexionBD(){
         
     }
+    
     /**
      * Metodo que genera y devuelve el entityManager.
      * @return 
@@ -28,6 +29,4 @@ public class ConexionBD {
     public static EntityManager crearConexion(){
         return entityManagerFactory.createEntityManager();
     }
-
-
 }

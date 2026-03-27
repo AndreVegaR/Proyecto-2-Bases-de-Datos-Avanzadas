@@ -1,6 +1,7 @@
 package mappers;
 import DTOs.ClienteFrecuenteDTO;
 import Entidades.ClienteFrecuente;
+import java.time.LocalDateTime;
 
 /**
  * Clase que mapea de DTO a entidad y viceversa a ClienteFrecuente
