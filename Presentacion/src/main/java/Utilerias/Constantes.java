@@ -17,6 +17,6 @@ public class Constantes {
     
     //Fuente
     public static final Font FUENTE = new Font(Font.SANS_SERIF, Font.PLAIN, 14);
-    public static final Font FUENTE_TITULO = FUENTE;
+    public static final Font FUENTE_TITULO = new Font(Font.SANS_SERIF, Font.BOLD, 28);
     public static final Font FUENTE_BUSCADOR = FUENTE;
 }

@@ -28,7 +28,7 @@ public class MenuEmpleados extends JFrame {
 
         //Título
         JLabel titulo = new JLabel("Menú de empleados", SwingConstants.CENTER);
-        titulo.setFont(Constantes.FUENTE);
+        titulo.setFont(Constantes.FUENTE_TITULO);
         titulo.setForeground(new Color(44, 62, 80));
         panelTitulo.add(titulo, BorderLayout.CENTER);
 
@@ -79,6 +79,10 @@ public class MenuEmpleados extends JFrame {
 
         //Lógica del botón para acceder como mesero
         botonMesero.addActionListener(e -> {
+            //temporal
+            String pin = JOptionPane.showInputDialog(this,"Ingresa tu Pin de Mesero", "Acceso",
+                    JOptionPane.QUESTION_MESSAGE);
+            
             ControlPantallas.navegar(this, MenuPrincipal::new);
         });
     }

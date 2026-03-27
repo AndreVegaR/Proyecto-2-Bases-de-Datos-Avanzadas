@@ -1,7 +1,6 @@
 package mappers;
 import DTOs.ClienteFrecuenteDTO;
 import Entidades.ClienteFrecuente;
-import java.time.LocalDateTime;
 
 /**
  * Clase que mapea de DTO a entidad y viceversa a ClienteFrecuente
@@ -26,6 +25,7 @@ public class ClienteMapper {
         entidad.setApellidoPaterno(dto.getApellidoPaterno());
         entidad.setApellidoMaterno(dto.getApellidoMaterno());
         entidad.setTelefono(dto.getTelefono());
+        entidad.setFechaRegistro(dto.getFechaRegistro());
         
         //Correo opcional
         String correo = dto.getCorreo();
@@ -49,11 +49,12 @@ public class ClienteMapper {
         ClienteFrecuenteDTO dto = new ClienteFrecuenteDTO();
         
         //Atributos comunes
-        dto.setId(dto.getId());
+        dto.setId(entidad.getId());
         dto.setNombres(entidad.getNombres());
         dto.setApellidoPaterno(entidad.getApellidoPaterno());
         dto.setApellidoMaterno(entidad.getApellidoMaterno());
         dto.setTelefono(entidad.getTelefono());
+        dto.setFechaRegistro(entidad.getFechaRegistro());
 
         //Correo opcional
         String correo = entidad.getCorreo();
