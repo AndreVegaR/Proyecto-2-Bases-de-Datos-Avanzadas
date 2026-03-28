@@ -13,17 +13,19 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
-
- //####IGNORAR POR AHORA#####
+import observadores.IObservador;
 
 /**
  * JDialog para actualizar un cliente
  * @author Andre
  */
 public class ActualizarCliente extends JDialog {
-    public ActualizarCliente(JFrame padre) {
+    private IObservador observador;
+    
+    public ActualizarCliente(JFrame padre, IObservador observador) {
         //Bloquea la ventana de atrás
         super(padre, "Actualizar Cliente", true);
+        this.observador = observador;
         
         //Configuración
         setLayout(new BorderLayout());
@@ -54,31 +56,6 @@ public class ActualizarCliente extends JDialog {
         botonAceptar.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                //Extre valores
-                String nombre = tFNombre.getText().trim();
-                String apellidoP = tFApellidoP.getText().trim();
-                String apellidoM = tFApellidoM.getText().trim();
-                String telefono = tFTelefono.getText().trim();
-                String correo = tFCorreo.getText().trim();
-
-                //Validaciones
-                if (nombre.isEmpty() || apellidoP.isEmpty() || apellidoM.isEmpty() || telefono.isEmpty()) {
-                    JOptionPane.showMessageDialog(ActualizarCliente.this, 
-                        "Todos los campos son obligatorios (excepto el correo)", 
-                        "Campos vacíos", JOptionPane.WARNING_MESSAGE);
-                    return;
-                }
-
-                //Esto va pa negocio creo
-                /**
-                 * if (!telefono.matches("\\d{10}")) {
-                    JOptionPane.showMessageDialog(RegistrarCliente.this, 
-                        "El teléfono debe tener exactamente 10 dígitos", 
-                        "Formato incorrecto", JOptionPane.WARNING_MESSAGE);
-                    return;
-                }
-                 */
-
                 //Confirmación
                 int opcion = JOptionPane.showConfirmDialog(
                         ActualizarCliente.this,
@@ -88,17 +65,38 @@ public class ActualizarCliente extends JDialog {
                 );
 
                 if (opcion == JOptionPane.YES_OPTION) {
-                    //Crea el DTO
-                    ClienteFrecuenteDTO dto = new ClienteFrecuenteDTO();
-                    dto.setNombres(nombre);
-                    dto.setApellidoPaterno(apellidoP);
-                    dto.setApellidoMaterno(apellidoM);
-                    dto.setTelefono(telefono);
-                    dto.setCorreo(correo); 
 
-                    //Agrega
-                    CoordinadorNegocio.getInstance().actualizarCliente(dto);
-                    JOptionPane.showMessageDialog(ActualizarCliente.this, "Cliente actualizado correctamente");
+                    // 1. Obtener los datos del cliente que seleccionaste (EL QUE TIENE EL ID REAL)
+                    ClienteFrecuenteDTO clienteOriginal = CoordinadorNegocio.getInstance().getClienteFrecuente();
+
+                    // 2. Crear el objeto actualizado
+                    ClienteFrecuenteDTO clienteActualizado = new ClienteFrecuenteDTO();
+
+                    //Extre valores
+                    String nombre = tFNombre.getText().trim();
+                    String apellidoP = tFApellidoP.getText().trim();
+                    String apellidoM = tFApellidoM.getText().trim();
+                    String telefono = tFTelefono.getText().trim();
+                    String correo = tFCorreo.getText().trim();
+
+                    
+                    //Pasa los atributos del cliente seleccionado, pero actualiza si reconoce si hubo cambios en el formulario
+                    clienteActualizado.setId(clienteOriginal.getId()); 
+                    clienteActualizado.setNombres(nombre.isBlank() ? clienteOriginal.getNombres() : nombre);
+                    clienteActualizado.setApellidoPaterno(apellidoP.isBlank() ? clienteOriginal.getApellidoPaterno() : apellidoP);
+                    clienteActualizado.setApellidoMaterno(apellidoM.isBlank() ? clienteOriginal.getApellidoMaterno() : apellidoM);
+                    clienteActualizado.setTelefono(telefono.isBlank() ? clienteOriginal.getTelefono() : telefono);
+                    clienteActualizado.setCorreo(correo.isBlank() ? clienteOriginal.getCorreo() : correo);
+
+                    //Mandar a actualizar
+                    CoordinadorNegocio.getInstance().actualizarCliente(clienteActualizado);
+
+                    //Observador
+                    if (ActualizarCliente.this.observador != null) {
+                        ActualizarCliente.this.observador.notificarCambio();
+                    }
+                    
+       
                 }
             }
         });

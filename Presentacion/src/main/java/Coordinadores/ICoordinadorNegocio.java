@@ -18,4 +18,8 @@ public interface ICoordinadorNegocio {
     public List<ClienteFrecuenteDTO> consultarClientesFrecuentes();
     
     public ClienteFrecuenteDTO actualizarCliente(ClienteFrecuenteDTO clienteFrecuente);
+    
+    void eliminarClienteFrecuente(ClienteFrecuenteDTO clienteFrecuente);
+    
+    ClienteFrecuenteDTO consultarCliente(Long id);
 }

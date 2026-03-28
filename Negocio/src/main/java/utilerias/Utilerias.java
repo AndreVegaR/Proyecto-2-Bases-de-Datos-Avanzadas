@@ -58,4 +58,17 @@ public class Utilerias {
     public static void esFechaValida(LocalDateTime fecha, String nombreCampo){
         esNulo(fecha);
     }
+    
+    
+    /**
+     * Valida si el teléfono son 10 dígitos
+     * @param telefono 
+     */
+    /**
+     * public static void validarTelefono(String telefono) {
+        if (!telefono.matches("\\d{10}")) {
+             throw new NegocioException("Teléfono en formato inválido");
+        }
+    }
+     */
 }

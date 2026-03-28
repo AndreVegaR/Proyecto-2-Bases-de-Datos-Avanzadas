@@ -77,4 +77,24 @@ public class CoordinadorNegocio implements ICoordinadorNegocio {
     public ClienteFrecuenteDTO actualizarCliente(ClienteFrecuenteDTO clienteFrecuente) {
         return ClienteFrecuenteBO.getInstance().modificarCliente(clienteFrecuente);
     }
+    
+    
+    /**
+     * Elimina un cliente
+     * 
+     * @param clienteFrecuente
+     * @return 
+     */
+    @Override
+    public void eliminarClienteFrecuente(ClienteFrecuenteDTO clienteFrecuente) {
+        ClienteFrecuenteBO.getInstance().eliminarCliente(clienteFrecuente.getId());
+    }
+    
+    
+    
+    @Override
+    public ClienteFrecuenteDTO consultarCliente(Long id) {
+        //return ClienteFrecuenteBO.getInstance().consultarCliente(id);
+        return null;
+    }
 }

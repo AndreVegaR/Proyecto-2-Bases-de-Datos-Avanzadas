@@ -51,6 +51,7 @@ public class ClienteFrecuenteBO {
         Utilerias.esCadenadaVacia(clienteDTO.getApellidoPaterno(), "Apellido Paterno");
         Utilerias.esCadenadaVacia(clienteDTO.getApellidoMaterno(), "Apellido Materno");
         Utilerias.esCadenadaVacia(clienteDTO.getTelefono(),"Teléfono");
+        //Utilerias.validarTelefono(clienteDTO.getTelefono());
         
         //Crea la fecha del registro al persistirse
         if(clienteDTO.getFechaRegistro() == null){
@@ -97,38 +98,35 @@ public class ClienteFrecuenteBO {
      * @param dto datos modificados del cliente frecuente
      * @return ClienteFrecuenteDTO con la informacion actualizada
      */
-    public ClienteFrecuenteDTO modificarCliente(ClienteFrecuenteDTO dto){
-        //Validaciones
+    public ClienteFrecuenteDTO modificarCliente(ClienteFrecuenteDTO dto) {
+
         Utilerias.esNulo(dto);
-        Utilerias.esNulo(dto.getId());
-        Utilerias.esCadenadaVacia(dto.getNombres(), "Nombres");
-        Utilerias.esCadenadaVacia(dto.getApellidoPaterno(), "Apellido Paterno");
-        Utilerias.esCadenadaVacia(dto.getApellidoMaterno(), "Apellido Materno");
-        Utilerias.esCadenadaVacia(dto.getTelefono(),"Teléfono");
-        if(dto.getFechaRegistro() == null){
-            dto.setFechaRegistro(LocalDateTime.now());
-        }
-        
-        //Mapea
-        ClienteFrecuente cliente = ClienteMapper.mapearDTOEntidad(dto);
-        
-        //Encriptar antes de actualizar
-        String telefono = cliente.getTelefono();
-        String telefonoEncriptado = EncriptarTelefono.encriptar(telefono);
-        cliente.setTelefono(telefonoEncriptado);
-        
-        //Modifica
-        cliente = ClienteFrecuenteDAO.getInstance().modificarCliente(cliente);
-        
-        //Mapear
-        ClienteFrecuenteDTO resultado = ClienteMapper.mapearEntidadDTO(cliente);
-        
-        //desencriptar para volverlo legible 
-        String telefonoDesencriptado = EncriptarTelefono.desencriptar(resultado.getTelefono());
-        resultado.setTelefono(telefonoDesencriptado);
+        if (dto.getId() == null) throw new IllegalArgumentException("El ID es obligatorio para actualizar");
+
+        // 2. BUSCAR EL REGISTRO ORIGINAL (Para no perder datos como puntos o fecha)
+        ClienteFrecuenteDAO dao = ClienteFrecuenteDAO.getInstance();
+        ClienteFrecuente clienteExistente = ClienteFrecuenteDAO.getInstance().buscarPorId(dto.getId()); 
+
+        if (clienteExistente == null) throw new RuntimeException("Cliente no encontrado");
+
+        clienteExistente.setNombres(dto.getNombres());
+        clienteExistente.setApellidoPaterno(dto.getApellidoPaterno());
+        clienteExistente.setApellidoMaterno(dto.getApellidoMaterno());
+        clienteExistente.setCorreo(dto.getCorreo());
+
+        String telefonoLimpio = dto.getTelefono();
+        String telefonoEncriptado = EncriptarTelefono.encriptar(telefonoLimpio);
+        clienteExistente.setTelefono(telefonoEncriptado);
+
+        ClienteFrecuente clienteActualizado = dao.modificarCliente(clienteExistente);
+
+        ClienteFrecuenteDTO resultado = ClienteMapper.mapearEntidadDTO(clienteActualizado);
+
+        resultado.setTelefono(EncriptarTelefono.desencriptar(resultado.getTelefono()));
+
         return resultado;
     }
-    
+
     
     
     /**
@@ -149,5 +147,12 @@ public class ClienteFrecuenteBO {
         });
         
         return listaDtos;
+    }
+    
+    
+    
+    public ClienteFrecuenteDTO consultarCliente(Long id) {
+        ClienteFrecuente cliente = ClienteFrecuenteDAO.getInstance().buscarPorId(id);
+        return ClienteMapper.mapearEntidadDTO(cliente);
     }
 }

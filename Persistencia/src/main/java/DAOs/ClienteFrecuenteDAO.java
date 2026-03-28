@@ -46,23 +46,28 @@ public class ClienteFrecuenteDAO {
         }
     }
 
-    /**
-     * Modifica un cliente frecuente existente
-     *
-     * @param cliente con los cambios
-     * @return entidad actualizada
-     */
-    public ClienteFrecuente modificarCliente(ClienteFrecuente cliente) {
+    public ClienteFrecuente modificarCliente(ClienteFrecuente clienteModificado) {
         EntityManager em = ConexionBD.crearConexion();
         try {
             em.getTransaction().begin();
-            ClienteFrecuente actualizado = em.merge(cliente);
-            em.getTransaction().commit();
-            return actualizado;
-        } catch (Exception e) {
-            if (em.getTransaction().isActive()) {
-                em.getTransaction().rollback();
+
+            ClienteFrecuente persistente = em.find(ClienteFrecuente.class, clienteModificado.getId());
+
+            if (persistente != null) {
+
+                persistente.setNombres(clienteModificado.getNombres());
+                persistente.setApellidoPaterno(clienteModificado.getApellidoPaterno());
+                persistente.setApellidoMaterno(clienteModificado.getApellidoMaterno());
+                persistente.setTelefono(clienteModificado.getTelefono());
+                persistente.setCorreo(clienteModificado.getCorreo());
+
+                em.getTransaction().commit();
+                return persistente;
+            } else {
+                throw new RuntimeException("No se encontró el cliente con ID: " + clienteModificado.getId());
             }
+        } catch (Exception e) {
+            if (em.getTransaction().isActive()) em.getTransaction().rollback();
             throw e;
         } finally {
             em.close();
