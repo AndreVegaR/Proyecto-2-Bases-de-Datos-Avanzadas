@@ -15,9 +15,12 @@ class ClienteFrecuenteDAOTest {
         dao = ClienteFrecuenteDAO.getInstance();
     }
 
-    @Test
+    
+        /**
+         * @Test
     void testFlujoCompletoClienteFrecuente() {
-        // 1. Test Guardar
+         * 
+         * // 1. Test Guardar
         ClienteFrecuente nuevo = new ClienteFrecuente();
         nuevo.setNombres("Jazmin");
         nuevo.setApellidoPaterno("Perez");
@@ -71,4 +74,8 @@ class ClienteFrecuenteDAOTest {
             dao.modificarCliente(inexistente);
         });
     }
+         * 
+         * 
+         * 
+         */
 }

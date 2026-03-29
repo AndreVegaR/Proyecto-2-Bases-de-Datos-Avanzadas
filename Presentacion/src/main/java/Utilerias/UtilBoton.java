@@ -1,23 +1,27 @@
 package Utilerias;
 import Coordinadores.CoordinadorPantallas;
+import Principal.MenuPrincipal;
 import java.awt.Cursor;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.function.Supplier;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 
 /**
  * Utilerías para la lógica relacionada a los botones
  */
 public class UtilBoton {
     //Clase anidada de un botón redondeado
-    private static class BotonRedondeado extends JButton {
-        public BotonRedondeado(String label) {
+    private static class BotonPersonalizado extends JButton {
+        public BotonPersonalizado(String label) {
             super(label);
             //Esta configuración permite que el botón no llene todo su campo y se pueda hacer el efecto de borde redondeado
             setContentAreaFilled(false); 
@@ -50,7 +54,7 @@ public class UtilBoton {
      * @return un botón ya estilizado
      */
     public static JButton crearBoton(String texto) {
-        JButton boton = new BotonRedondeado(texto);
+        JButton boton = new BotonPersonalizado(texto);
         
         //Configura la fuente del botón
         boton.setFont(Constantes.FUENTE);
@@ -149,4 +153,64 @@ public class UtilBoton {
         });
         return boton;
     }
+    
+    
+    
+    /**
+     * Crea un mapa (diccionario) de tipo String, BotonRedondeado
+     * Así se rescatan los botones para ser usados después
+     * 
+     * @param frame
+     * @param panel
+     * @param nombreObjeto para crear los botones
+     * @return el mapa con los textos de los botones y el botón en sí
+     */
+    public Map<String, BotonPersonalizado> dibujarBotonesCRUD(JFrame frame, JPanel panel, String nombreObjeto) {
+        Map<String, BotonPersonalizado> mapaBotones = new HashMap<>();
+        
+        //Arreglo con las opciones fijas de los botones
+        String[] opciones = {"Refrescar", "Registrar", "Actualizar", "Eliminar"};
+        
+        //Crea un par llave, valor en el mapa según el texto del boton
+        for (String opcion: opciones) {
+            BotonPersonalizado boton = (BotonPersonalizado) crearBoton(opcion + " " + nombreObjeto);
+            panel.add(boton);
+            mapaBotones.put(opcion.toLowerCase(), boton);
+        }
+        
+        //Botón de regreso, no incluido en el mapa
+        JButton botonRegresar = crearBotonNavegar("Regresar", frame, MenuPrincipal::new);
+        panel.add(botonRegresar);
+          
+        return mapaBotones;
+    }
+    
+    
+    
+    /**
+     * PENDIENTE
+     * 
+     * @param mapaBotones
+     * @param registrar
+     * @param actualizar
+     * @param eliminar 
+     */
+    public void logicaCRUD(Map<String, BotonPersonalizado> mapaBotones, 
+                            Supplier<JDialog> registrar, 
+                            Supplier<JDialog> actualizar,
+                            Supplier<JDialog> eliminar) {
+        
+        /**
+         * Supplier<JDialog>[] dialogos = {registrar, actualizar, eliminar};
+        
+        for (int i = 0; i < dialogos.length; i++) {
+            mapaBotones.get("registrar")
+            
+        }
+         * 
+         */
+        
+    }
+    
+    
 }

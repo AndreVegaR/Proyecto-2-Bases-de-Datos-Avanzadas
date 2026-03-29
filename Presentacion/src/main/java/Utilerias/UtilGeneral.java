@@ -119,6 +119,8 @@ public class UtilGeneral {
         return new CampoTextoRedondeado(tamanio);
     }
 
+    
+    
     /**
      * Crea un campo de texto ya configurado
      *
@@ -143,9 +145,11 @@ public class UtilGeneral {
         return campo;
     }
 
+    
+    
     /**
-     * Método que añade un registro a la tabla Utiliza el último guardado por el
-     * coordinador
+     * Método que añade un registro a la tabla 
+     * Utiliza el último guardado por el coordinador
      *
      * @param <T> puede ser cualquier DTO
      * @param tabla
@@ -157,17 +161,24 @@ public class UtilGeneral {
         DefaultTableModel modelo = (DefaultTableModel) tabla.getModel();
 
         //Si la lista tiene más de un elemento, entonces es para cargar toda la tabla con registros ya existentes
-        //Si solo tiene uno, es porque se va a ejecutar al registrar individualmente uno y no se deben limpiar los ya existentes
         modelo.setRowCount(0);
-
-        //Itera para mapear
         if (lista != null) {
-            for (T elemento : lista) {
+            for (T elemento: lista) {
                 modelo.addRow(mapeador.apply(elemento));
             }
         }
     }
 
+    
+    
+        public static void dialogoAviso(JFrame frame, String mensaje) {
+            JOptionPane.showMessageDialog(frame, mensaje, "Aviso", JOptionPane.WARNING_MESSAGE);
+        }
+    
+    
+    
+    
+    
     //####Esto por ahora ni se usa xd pero seguramente será usado#####
     //Guarda el tipo de empleado con sesión activa
     public static TipoEmpleado tipoEmpleado;
