@@ -143,7 +143,7 @@ public class ClienteFrecuenteBO {
         listaDtos.forEach(dto -> {
             String telEncriptado = dto.getTelefono();
             String telDesencriptado = EncriptarTelefono.desencriptar(telEncriptado);
-            dto.setTelefono(telEncriptado);
+            dto.setTelefono(telDesencriptado);
         });
         
         return listaDtos;

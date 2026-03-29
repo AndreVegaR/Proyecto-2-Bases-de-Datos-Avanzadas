@@ -15,6 +15,8 @@ public interface ICoordinadorNegocio {
     //Métodos de clientes
     void registrarClienteFrecuente(ClienteFrecuenteDTO clienteFrecuente);
     
+    public void eliminarClienteFrecuente(ClienteFrecuenteDTO cliente);
+    
     public List<ClienteFrecuenteDTO> consultarClientesFrecuentes();
     
     public ClienteFrecuenteDTO actualizarCliente(ClienteFrecuenteDTO clienteFrecuente);

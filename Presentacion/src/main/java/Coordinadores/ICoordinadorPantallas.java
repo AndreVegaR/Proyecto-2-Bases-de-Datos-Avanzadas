@@ -1,4 +1,5 @@
 package Coordinadores;
+import DTOs.ClienteFrecuenteDTO;
 import java.util.function.Supplier;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
