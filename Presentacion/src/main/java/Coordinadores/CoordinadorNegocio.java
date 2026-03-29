@@ -79,6 +79,7 @@ public class CoordinadorNegocio implements ICoordinadorNegocio {
     }
     
     
+    
     /**
      * Elimina un cliente
      * 

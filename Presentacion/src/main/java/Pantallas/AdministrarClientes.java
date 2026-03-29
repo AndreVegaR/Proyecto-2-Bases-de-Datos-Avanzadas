@@ -1,5 +1,4 @@
 package pantallas;
-
 import Coordinadores.CoordinadorNegocio;
 import DTOs.ClienteFrecuenteDTO;
 import Principal.MenuPrincipal;
@@ -21,12 +20,13 @@ import observadores.IObservador;
  */
 public class AdministrarClientes extends JFrame implements IObservador {
     private JTable tabla;
+
     
     private JTextField textoBuscar;
     private java.util.Set<String> criteriosActivos = new java.util.HashSet<>();
     private JButton btnNombre, btnTelefono, btnCorreo;
     
-    
+
     private ClienteFrecuenteDTO clienteSeleccionado;
 
     public AdministrarClientes() {
@@ -43,8 +43,9 @@ public class AdministrarClientes extends JFrame implements IObservador {
         textoBuscar.setToolTipText("Ingrese el término a buscar...");
         panelBusqueda.add(textoBuscar);
 
+
         criteriosActivos.add("Nombre");
-        
+
         //Botones para cambiar el criterio de búsqueda
         btnNombre = UtilBoton.crearBoton("Nombre");
         btnTelefono = UtilBoton.crearBoton("Teléfono");
@@ -71,13 +72,14 @@ public class AdministrarClientes extends JFrame implements IObservador {
         });
 
         
-        
-        
-        
-        
-        
-        
-        
+
+        JButton botonBuscarNombre = UtilBoton.crearBoton("Nombre");
+        JButton botonBuscarTelefono = UtilBoton.crearBoton("Teléfono");
+        JButton botonBuscarCorreo = UtilBoton.crearBoton("Correo");
+        panelBusqueda.add(botonBuscarNombre);
+        panelBusqueda.add(botonBuscarTelefono);
+        panelBusqueda.add(botonBuscarCorreo);
+
         
         //Crea la tabla
         String[] columnas = {"ID", "Nombre", "Apellido Paterno", "Apellido Materno", "Teléfono", "Correo", "Fecha de registro", "Gasto total", "Puntos de fidelidad", "Visitas"};
@@ -87,13 +89,16 @@ public class AdministrarClientes extends JFrame implements IObservador {
         JScrollPane scrollPane = new JScrollPane(tabla);
 
        tabla.addMouseListener(new java.awt.event.MouseAdapter() {
+            @Override
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 int fila = tabla.getSelectedRow();
                 if (fila != -1) {
                     // Asignamos clienteSeleccionado según la fila actual
                     List<ClienteFrecuenteDTO> lista = CoordinadorNegocio.getInstance().consultarClientesFrecuentes();
                     clienteSeleccionado = lista.get(fila);
+
                     CoordinadorNegocio.getInstance().setClienteFrecuente(clienteSeleccionado);
+
                     // doble click para eliminar
                     if (evt.getClickCount() == 2) {
                         new EliminarCliente(AdministrarClientes.this, AdministrarClientes.this, clienteSeleccionado);
@@ -107,7 +112,9 @@ public class AdministrarClientes extends JFrame implements IObservador {
 
         //Crea los botones
         JButton botonAgregar = UtilBoton.crearBotonDialogo("Nuevo Cliente", () -> new RegistrarCliente(this, this));
+
         JButton botonEditar = UtilBoton.crearBotonDialogo("Editar cliente", () -> new ActualizarCliente(this, this));
+
         JButton botonEliminar = UtilBoton.crearBotonDialogo("Eliminar cliente", () -> {
            int fila = tabla.getSelectedRow();
             if (fila == -1) {
@@ -151,7 +158,21 @@ public class AdministrarClientes extends JFrame implements IObservador {
      */
     public void llenarTabla() {
         List<ClienteFrecuenteDTO> lista = CoordinadorNegocio.getInstance().consultarClientesFrecuentes();
+
         dibujarTabla(lista);
+
+        UtilGeneral.registrarTabla(tabla, lista, (ClienteFrecuenteDTO c) -> new Object[]{
+            c.getId(),
+            c.getNombres(),
+            c.getApellidoPaterno(),
+            c.getApellidoMaterno(),
+            c.getTelefono(),
+            (c.getCorreo() != null && !c.getCorreo().isEmpty()) ? c.getCorreo() : "No tiene",
+            c.getFechaRegistro(),
+            c.getVisitas(),
+            "$ " + String.format("%.2f", c.getGastoTotal() != null ? c.getGastoTotal() : 0.0),
+            c.getPuntosFidelidad()
+        });
     }
     
     
