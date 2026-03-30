@@ -2,6 +2,7 @@ package Utilerias;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Font;
+import java.util.Arrays;
 
 /**
  * Clase con decisiones centralizadas (fuente, colores)
@@ -20,4 +21,12 @@ public class Constantes {
     public static final Font FUENTE = new Font(Font.SANS_SERIF, Font.PLAIN, 14);
     public static final Font FUENTE_TITULO = new Font(Font.SANS_SERIF, Font.BOLD, 28);
     public static final Font FUENTE_BUSCADOR = FUENTE;
+    
+    //Arreglo con las opciones debajo de la tabla ya delimitadas
+    public static final String[] OPCIONES_CRUD = {"Refrescar", "Registrar", "Actualizar", "Eliminar"};
+    
+    //Arreglo en minúsculas para manipular el mapa de los botones CRUD, siempre dependiendo de dichas opciones
+    public static final String[] OPCIONES_CRUD_MINUS = Arrays.stream(OPCIONES_CRUD)
+                                                                .map(String::toLowerCase)
+                                                                .toArray(String[]::new);
 }

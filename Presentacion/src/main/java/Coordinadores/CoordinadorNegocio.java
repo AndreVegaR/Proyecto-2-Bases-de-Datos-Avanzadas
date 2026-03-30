@@ -1,7 +1,6 @@
 package Coordinadores;
 import BO.ClienteFrecuenteBO;
 import DTOs.ClienteFrecuenteDTO;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -10,6 +9,8 @@ import java.util.List;
  * Utiliza un singleton
  */
 public class CoordinadorNegocio implements ICoordinadorNegocio {
+    
+    //Atributo clienteFrecuente seleccionado
     private ClienteFrecuenteDTO clienteFrecuente = new ClienteFrecuenteDTO();
     public void setClienteFrecuente(ClienteFrecuenteDTO clienteFrecuente) {
         this.clienteFrecuente = clienteFrecuente;
@@ -84,7 +85,6 @@ public class CoordinadorNegocio implements ICoordinadorNegocio {
      * Elimina un cliente
      * 
      * @param clienteFrecuente
-     * @return 
      */
     @Override
     public void eliminarClienteFrecuente(ClienteFrecuenteDTO clienteFrecuente) {

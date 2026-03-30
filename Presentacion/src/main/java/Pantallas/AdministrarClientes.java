@@ -1,15 +1,20 @@
 package pantallas;
 import Coordinadores.CoordinadorNegocio;
+import Coordinadores.CoordinadorPantallas;
 import DTOs.ClienteFrecuenteDTO;
 import Principal.MenuPrincipal;
+import Utilerias.Constantes;
 import formularios.RegistrarCliente;
 import Utilerias.UtilBoton;
 import Utilerias.UtilGeneral;
 import formularios.ActualizarCliente;
 import formularios.EliminarCliente;
 import java.awt.*;
+import java.util.ArrayList;
 import javax.swing.*;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Supplier;
 import observadores.IObservador;
 
 /**
@@ -22,7 +27,6 @@ public class AdministrarClientes extends JFrame implements IObservador {
     
     //Se declaran como atributos para acceder a ellos en diferentes momentos<s
     private JTable tabla;
-    private ClienteFrecuenteDTO clienteSeleccionado;
 
     public AdministrarClientes() {
         UtilGeneral.configurarFrame("Administrar clientes", this);
@@ -62,7 +66,7 @@ public class AdministrarClientes extends JFrame implements IObservador {
                     List<ClienteFrecuenteDTO> lista = CoordinadorNegocio.getInstance().consultarClientesFrecuentes();
 
                     //El cliente seleccionado es el mismo del índice seleccionado de las filas
-                    clienteSeleccionado = lista.get(fila);
+                    ClienteFrecuenteDTO clienteSeleccionado = lista.get(fila);
 
                     //El coordinador reconoce al cliente seleccionado para operaciones futuras
                     CoordinadorNegocio.getInstance().setClienteFrecuente(clienteSeleccionado);
@@ -73,54 +77,34 @@ public class AdministrarClientes extends JFrame implements IObservador {
         //Crea panel de botones de abajo
         JPanel panelBotones = new JPanel(new FlowLayout(FlowLayout.RIGHT, 15, 15));
 
-        //Crea los botones
-        JButton botonAgregar = UtilBoton.crearBotonDialogo("Nuevo Cliente", () -> new RegistrarCliente(this, this));
-        JButton botonEditar = UtilBoton.crearBotonDialogo("Editar cliente", () -> new ActualizarCliente(this, this));
-
-        //Si selecciona un cliente llama al formulario de eliminar
-        JButton botonEliminar = UtilBoton.crearBotonDialogo("Eliminar cliente", () -> {
-            if (tabla.getSelectedRow() == -1) {
-                UtilGeneral.dialogoAviso(this, "Elija un cliente primero");
-                return null;
-            }
-            return new EliminarCliente(this, this, clienteSeleccionado);
-        });
-        JButton botonRegresar = UtilBoton.crearBotonNavegar("Regresar", this, MenuPrincipal::new);
-
-        //Botón que refresca a voluntad los registros
-        JButton botonRefrescar = UtilBoton.crearBoton("Refrescar");
+        //ArrayList de suppliers que guarda los diálogos que se quieren abrir del CRUD
+        //La lógica es la misma siempre, solo se cambian las clases que extienden de JDialog
+        ArrayList<Supplier<? extends JDialog>> dialogos = new ArrayList<>();
+        dialogos.add(() -> new RegistrarCliente(this, this)); 
+        dialogos.add(() -> new ActualizarCliente(this, this));
+        dialogos.add(() -> new EliminarCliente(this, this));
+        
+        //Crea un mapa con el esqueleto de un CRUD dibujado
+        Map<String, JButton> mapaBotones = UtilBoton.dibujarBotonesCRUD(this, panelBotones);
+        
+        //Inyecta la lógica a los botones CRUD
+        UtilBoton.inyectarLogicaCRUD(panelBotones, mapaBotones, dialogos);
+        
+        //Inyecta la lógica de refrescar la tabla al botón Refrescar
+        JButton botonRefrescar = mapaBotones.get(Constantes.OPCIONES_CRUD_MINUS[0]);
         botonRefrescar.addActionListener(e -> {
             llenarTabla();
         });
         
-        //Agrega los botones
-        panelBotones.add(botonRefrescar);
-        panelBotones.add(botonAgregar);
-        panelBotones.add(botonEditar);
-        panelBotones.add(botonEliminar);
-        panelBotones.add(botonRegresar);
-
         //Agrega todo al frame
         add(panelBusqueda, BorderLayout.NORTH);
         add(scrollPane, BorderLayout.CENTER);
         add(panelBotones, BorderLayout.SOUTH);
-
+        
         //Llena la tabla cada vez que se entre a la pantalla
         //llenarTabla();
     }
-
     
-    
-    /**
-     * Escucha el llamado el formulario y activa la lógica de registrar al
-     * cliente en la tabla Hace una lista con el único elemento, esto para poder
-     * trabajar bien con el método
-     */
-    @Override
-    public void notificarCambio() {
-        llenarTabla();
-    }
-
     
     
     /**
@@ -148,4 +132,17 @@ public class AdministrarClientes extends JFrame implements IObservador {
            "Frecuente"
        });
    }
+   
+   
+   
+   /**
+     * Método de la interfaz observador
+     * Escucha el llamado el formulario y activa la lógica de registrar al
+     * cliente en la tabla Hace una lista con el único elemento, esto para poder
+     * trabajar bien con el método
+     */
+    @Override
+    public void notificarCambio() {
+        llenarTabla();
+    }
 }

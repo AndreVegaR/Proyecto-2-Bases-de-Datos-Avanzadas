@@ -10,11 +10,17 @@ import javax.swing.JFrame;
  */
 public class CoordinadorPantallas implements ICoordinadorPantallas {
     
+    //Enumerador anidado que guarda el tipo de usuario, esto para adaptar el programa según sus funciones
+    public enum RolUsuario {
+        ADMINISTRADOR,
+        MESERO
+    }
+    
+    //Enumerador con el rol del usiario con la sesión actual
+    private RolUsuario rolUsuario = RolUsuario.MESERO;
+    
     //Única instancia
     private static CoordinadorPantallas instancia;
-    
-    //Temporal para saber si el usuario es administrador o mesero
-    private static boolean admin = false;
     
     //Constructor privado
     private CoordinadorPantallas() {}
@@ -53,28 +59,20 @@ public class CoordinadorPantallas implements ICoordinadorPantallas {
      * @param formulario
      */
     @Override
-    public void abrirFormulario(Supplier<JDialog> formulario) {
+    public void abrirDialogo(Supplier<? extends JDialog> formulario) {
         JDialog dialogo = formulario.get();
         dialogo.setVisible(true);
     }
     
-    /**
-     * Regresa el valor del atributo
-     * 
-     * @return true si es admin, false si no
-     */
-    @Override
-    public boolean esAdmin() {
-        return admin;
-    }
+    
     
     /**
-     * Reconfigura el booleano
+     * Regresa el rol del usuario con la sesión actual
      * 
-     * @param valor 
+     * @return el valor del enumerador RolUsuario
      */
     @Override
-    public void setAdmin(boolean valor) {
-        admin = valor;
+    public RolUsuario getRolUsuario() {
+        return rolUsuario;
     }
 }

@@ -28,7 +28,7 @@ public class EliminarCliente extends JDialog {
 
     private IObservador observador;
 
-    public EliminarCliente(JFrame padre, IObservador observador, ClienteFrecuenteDTO cliente) {
+    public EliminarCliente(JFrame padre, IObservador observador) {
         super(padre, "Eliminar Cliente", true);
         this.observador = observador;
 
@@ -46,6 +46,9 @@ public class EliminarCliente extends JDialog {
         JTextField tFTelefono = UtilGeneral.crearCampoFormulario(panel, "Teléfono", tamanio);
         JTextField tFCorreo = UtilGeneral.crearCampoFormulario(panel, "Correo", tamanio);
 
+        //Recupera el cliente desde el coordinador
+        ClienteFrecuenteDTO cliente = CoordinadorNegocio.getInstance().getClienteFrecuente();
+        
         // Precarga los datos del cliente
         tFNombre.setText(cliente.getNombres());
         tFApellidoP.setText(cliente.getApellidoPaterno());

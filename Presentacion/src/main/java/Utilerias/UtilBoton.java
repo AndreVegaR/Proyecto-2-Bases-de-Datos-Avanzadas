@@ -5,7 +5,9 @@ import java.awt.Cursor;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Supplier;
 import javax.swing.BorderFactory;
@@ -146,10 +148,10 @@ public class UtilBoton {
      * @param formulario
      * @return el botón funcional
      */
-    public static JButton crearBotonDialogo(String texto, Supplier<JDialog> formulario) {
+    public static JButton crearBotonDialogo(String texto, Supplier<? extends JDialog> formulario) {
         JButton boton = crearBoton(texto);
         boton.addActionListener(e -> {
-            CoordinadorPantallas.getInstance().abrirFormulario(formulario);
+            CoordinadorPantallas.getInstance().abrirDialogo(formulario);
         });
         return boton;
     }
@@ -157,60 +159,87 @@ public class UtilBoton {
     
     
     /**
-     * Crea un mapa (diccionario) de tipo String, BotonRedondeado
+     * Crea un mapa (diccionario) de tipo String, BotonPersonalizado
      * Así se rescatan los botones para ser usados después
+     * Básicamente hace el esqueleto de botones para un CRUD
      * 
      * @param frame
      * @param panel
-     * @param nombreObjeto para crear los botones
      * @return el mapa con los textos de los botones y el botón en sí
      */
-    public Map<String, BotonPersonalizado> dibujarBotonesCRUD(JFrame frame, JPanel panel, String nombreObjeto) {
-        Map<String, BotonPersonalizado> mapaBotones = new HashMap<>();
-        
-        //Arreglo con las opciones fijas de los botones
-        String[] opciones = {"Refrescar", "Registrar", "Actualizar", "Eliminar"};
+    public static Map<String, JButton> dibujarBotonesCRUD(JFrame frame, JPanel panel) {
+        Map<String, JButton> mapaBotones = new HashMap<>();
         
         //Crea un par llave, valor en el mapa según el texto del boton
-        for (String opcion: opciones) {
-            BotonPersonalizado boton = (BotonPersonalizado) crearBoton(opcion + " " + nombreObjeto);
-            panel.add(boton);
+        //Itera sobre un arreglo constante de las opciones que debe tener
+        for (String opcion: Constantes.OPCIONES_CRUD) {
+            BotonPersonalizado boton = (BotonPersonalizado) crearBoton(opcion);
             mapaBotones.put(opcion.toLowerCase(), boton);
+            panel.add(boton);
         }
         
-        //Botón de regreso, no incluido en el mapa
+        //Botón para navegar
         JButton botonRegresar = crearBotonNavegar("Regresar", frame, MenuPrincipal::new);
         panel.add(botonRegresar);
-          
+        
         return mapaBotones;
     }
     
     
     
     /**
-     * PENDIENTE
+     * Se encarga de inyectar lógica en todo los botones CRUD
+     * Itera sobre el tamaño de OPCIONES_CRUD_MINUS, obtiene lo necesario y lo pone en el mapa
+     * Modifica el mapa del parámetro, por lo que la lista va a quedar con botones funcionales
      * 
-     * @param mapaBotones
-     * @param registrar
-     * @param actualizar
-     * @param eliminar 
+     * @param panel
+     * @param botones El mapa String, BotonPersonalizado que crea el método dibujarBotonesCRUD
+     * @param dialogos Un arrayList de suppliers de JDialog en este orden: Registrar, Actualizar, Eliminar
      */
-    public void logicaCRUD(Map<String, BotonPersonalizado> mapaBotones, 
-                            Supplier<JDialog> registrar, 
-                            Supplier<JDialog> actualizar,
-                            Supplier<JDialog> eliminar) {
+    public static void inyectarLogicaCRUD(JPanel panel, Map<String, JButton> botones, ArrayList<Supplier<? extends JDialog>> dialogos) {
         
-        /**
-         * Supplier<JDialog>[] dialogos = {registrar, actualizar, eliminar};
+        //Mapa actualizado de botones con lógica
+        Map<String, JButton> botonesNuevos = new HashMap<>();
         
-        for (int i = 0; i < dialogos.length; i++) {
-            mapaBotones.get("registrar")
+        //Rescata en una variable el arreglo de opciones para manejarlo fácilmente
+        String[] opciones = Constantes.OPCIONES_CRUD_MINUS;
+        
+        //Itera sobre el arreglo de opciones. O sea, trabaja sobre los botones definidos
+        for (int i = 0; i < opciones.length; i++) {
             
+            //Crea un botón ya con lógica de abrir el formulario
+            //Si es 0, se trata de refrescar y no debe tener esa lógica
+            String opcion = opciones[i];
+            if (i > 0){
+   
+                //El arreglo de suppliers solo tiene tres elementos, debe ser ajustado
+                int indiceAjustado = i-1;
+                
+                //Guarda el botón actual del mapa de botones
+                //Como opciones no tiene "Refresca", se ajusta el índice por desfase
+                JButton boton = botones.get(opciones[indiceAjustado]);
+                
+                //Guarda el supplier actual
+                Supplier<? extends JDialog> dialogo = dialogos.get(indiceAjustado);
+                
+                //Inyecta logica al botón
+                boton.addActionListener(e -> {
+                    CoordinadorPantallas.getInstance().abrirDialogo(dialogo);
+                });
+            }
         }
-         * 
-         */
-        
     }
     
+    
+    
+    public void inyectarLogicaAdministrar(Map<String, JButton> botones) {
+        
+        
+        //Rescata en una variable el arreglo de opciones para manejarlo fácilmente
+        String[] opciones = Constantes.OPCIONES_CRUD_MINUS;
+        
+        
+        
+    }
     
 }

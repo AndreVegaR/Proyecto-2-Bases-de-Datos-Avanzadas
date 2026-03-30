@@ -8,10 +8,7 @@ import java.util.List;
  */
 public interface ICoordinadorNegocio {
     
-    //Getter y setter de clienteFrecuente
-    void setClienteFrecuente(ClienteFrecuenteDTO clienteFrecuente);
-    ClienteFrecuenteDTO getClienteFrecuente();
-    
+
     //Métodos de clientes
     void registrarClienteFrecuente(ClienteFrecuenteDTO clienteFrecuente);
     

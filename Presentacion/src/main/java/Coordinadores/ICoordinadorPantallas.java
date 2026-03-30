@@ -1,4 +1,5 @@
 package Coordinadores;
+import Coordinadores.CoordinadorPantallas.RolUsuario;
 import DTOs.ClienteFrecuenteDTO;
 import java.util.function.Supplier;
 import javax.swing.JDialog;
@@ -23,19 +24,12 @@ public interface ICoordinadorPantallas {
      * 
      * @param formulario a abrir
      */
-    void abrirFormulario(Supplier<JDialog> formulario);
+    void abrirDialogo(Supplier<? extends JDialog> formulario);
     
     /**
-     * Determina si el usuario actual es administrador
+     * Regresa el rol del usuario con la sesión actual
      * 
-     * @return true si es, false si no
+     * @return el valor del enumerador RolUsuario
      */
-    boolean esAdmin();
-    
-    /**
-     * Configura si es admin o no el usuario que ingresó
-     * 
-     * @param estado true si será empleado, false si será mesero
-     */
-    void setAdmin(boolean estado); 
+    RolUsuario getRolUsuario();
 }
