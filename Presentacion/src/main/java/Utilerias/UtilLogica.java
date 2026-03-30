@@ -82,8 +82,8 @@ public class UtilLogica {
                                             TableRowSorter<DefaultTableModel> sorter,
                                             int[] columnaActiva) {
         
-        //Es la condición base del Regex. Indica que lo filtrado será buscado al inicio de los registros
-        String regexBase = "(?i)^";
+        //Es la condición base del Regex, que filtra cualquier cosa que coincida
+        String regexBase = "(?i)";
         
         //Bucle que creará un botón con lógica según los necesarios (filtrar Lógica)
         //Entonces todo lo que pasa dentro es por cada iteración
@@ -106,10 +106,10 @@ public class UtilLogica {
                     int columnaFiltrada = Arrays.asList(columnasTabla).indexOf(filtro);
                     
                     //Guarda el índice a filtrar en el arreglo para que se pueda usar
-                    columnaActiva[0] = columnaFiltrada;
+                    columnaActiva[0] = columnaFiltrada; 
                     
                     //Llama al método auxiliar para aplicar los filtros de regex
-                    aplicarFiltro(columnaFiltrada, regexBase, campoBuscar, sorter);
+                    aplicarFiltro(columnaActiva[0], regexBase, campoBuscar, sorter);
                 });
             }
         }
@@ -148,7 +148,7 @@ public class UtilLogica {
      * @param campoBuscar
      * @param sorter Mecanismo que filtra los datos de tableModel sin modificarlos
      */
-    private static void aplicarFiltro(int columnaFiltrada, 
+    private static void aplicarFiltro(int columnaActiva, 
                                          String regexBase, 
                                          JTextField campoBuscar,
                                          TableRowSorter<DefaultTableModel> sorter) {
@@ -157,6 +157,6 @@ public class UtilLogica {
          String regex = regexBase +  campoBuscar.getText();
 
          //Filtra dinámicamnente los elementos de la tabla
-         sorter.setRowFilter(RowFilter.regexFilter(regex, columnaFiltrada));
+         sorter.setRowFilter(RowFilter.regexFilter(regex, columnaActiva));
     } 
 }

@@ -17,8 +17,6 @@ import javax.swing.*;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Supplier;
-import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableRowSorter;
 import observadores.IObservador;
 
 /**
@@ -160,6 +158,14 @@ public class AdministrarClientes extends JFrame implements IObservador {
             cliente.setCorreo(nombre + "@gmail.com");
             listaFalsa.add(cliente);
         }
+        
+        ClienteFrecuenteDTO cliente = new ClienteFrecuenteDTO();
+        cliente.setNombres("menchaca");
+        cliente.setApellidoPaterno("");
+        cliente.setApellidoMaterno("");
+        cliente.setTelefono("999999");
+        cliente.setCorreo("correoinsano@hotmail.com");
+        listaFalsa.add(cliente);
         
         mapearTabla(listaFalsa);
         

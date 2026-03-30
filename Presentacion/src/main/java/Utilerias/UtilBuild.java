@@ -131,6 +131,11 @@ public class UtilBuild {
         TableRowSorter<DefaultTableModel> sorter = new TableRowSorter<>(modelo);
         tabla.setRowSorter(sorter);
         
+        //Si no ha presionado un botón, filtra por el primero siempre
+        if (columnaActiva[0] == -1) {
+            columnaActiva[0] = 1; 
+        }
+        
         //Inyecta la lógica al campo de búsqueda
         UtilLogica.inyectarLogicaBusqueda(campoBusqueda, filtros, columnasTabla, botonesFiltros, sorter, columnaActiva);
         
