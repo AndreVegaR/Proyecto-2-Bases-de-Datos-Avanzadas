@@ -14,7 +14,8 @@ import javax.swing.table.JTableHeader;
 public class UtilGeneral {
 
     public static boolean admin = false;
-
+    
+    
     //Clase anidada de un campo de texto redondeado
     private static class CampoTextoRedondeado extends JTextField {
 
@@ -54,6 +55,8 @@ public class UtilGeneral {
         }
     }
 
+    
+    
     /**
      * Fábrica de una tabla ya estilizada
      *
@@ -93,6 +96,8 @@ public class UtilGeneral {
         return tabla;
     }
 
+    
+    
     /**
      * Configura el frame de donde se llame
      *
@@ -168,52 +173,10 @@ public class UtilGeneral {
             }
         }
     }
-
     
-    
-        public static void dialogoAviso(JFrame frame, String mensaje) {
-            JOptionPane.showMessageDialog(frame, mensaje, "Aviso", JOptionPane.WARNING_MESSAGE);
-        }
-    
-    
-    
-    
-    
-    //####Esto por ahora ni se usa xd pero seguramente será usado#####
-    //Guarda el tipo de empleado con sesión activa
-    public static TipoEmpleado tipoEmpleado;
-
-    /**
-     * Enumerador anidado que guardan los tipos de empleados
-     */
-    public static enum TipoEmpleado {
-        ADMINISTRADOR,
-        MESERO
+    public static void dialogoAviso(JFrame frame, String mensaje) {
+        JOptionPane.showMessageDialog(frame, mensaje, "Aviso", JOptionPane.WARNING_MESSAGE);
     }
-
-    /**
-     * Asigna la sesión actual a un tipo de empleado
-     *
-     * @param tipo del empleado
-     */
-    public static void iniciarSesion(TipoEmpleado tipo) {
-        tipoEmpleado = tipo;
-    }
-
-    /**
-     * Cierra la sesión
-     */
-    public static void cerrarSesion() {
-        tipoEmpleado = null;
-    }
-
-    /**
-     * Determina si la sesión actual pertenece a un tipo de empleado
-     *
-     * @param tipo de empleado a determinar
-     * @return si la sesión es de ese tipo
-     */
-    public static boolean es(TipoEmpleado tipo) {
-        return tipoEmpleado == tipo;
-    }
+    
+    
 }

@@ -173,7 +173,7 @@ public class UtilBoton {
         //Crea un par llave, valor en el mapa según el texto del boton
         //Itera sobre un arreglo constante de las opciones que debe tener
         for (String opcion: Constantes.OPCIONES_CRUD) {
-            BotonPersonalizado boton = (BotonPersonalizado) crearBoton(opcion);
+            JButton boton = crearBoton(opcion);
             mapaBotones.put(opcion.toLowerCase(), boton);
             panel.add(boton);
         }
@@ -229,17 +229,4 @@ public class UtilBoton {
             }
         }
     }
-    
-    
-    
-    public void inyectarLogicaAdministrar(Map<String, JButton> botones) {
-        
-        
-        //Rescata en una variable el arreglo de opciones para manejarlo fácilmente
-        String[] opciones = Constantes.OPCIONES_CRUD_MINUS;
-        
-        
-        
-    }
-    
 }

@@ -6,11 +6,13 @@ import Principal.MenuPrincipal;
 import Utilerias.Constantes;
 import formularios.RegistrarCliente;
 import Utilerias.UtilBoton;
+import Utilerias.UtilBuild;
 import Utilerias.UtilGeneral;
 import formularios.ActualizarCliente;
 import formularios.EliminarCliente;
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 import javax.swing.*;
 import java.util.List;
 import java.util.Map;
@@ -25,11 +27,10 @@ import observadores.IObservador;
  */
 public class AdministrarClientes extends JFrame implements IObservador {
     
-    //Se declaran como atributos para acceder a ellos en diferentes momentos<s
+    //Se declaran como atributos para acceder a ellos en diferentes momentoss
     private JTable tabla;
 
     public AdministrarClientes() {
-        UtilGeneral.configurarFrame("Administrar clientes", this);
 
         //Crea el panel de búsqueda
         JPanel panelBusqueda = new JPanel(new FlowLayout(FlowLayout.LEFT, 20, 10));
@@ -42,6 +43,7 @@ public class AdministrarClientes extends JFrame implements IObservador {
         textoBuscar.setToolTipText("Ingrese el término a buscar...");
         panelBusqueda.add(textoBuscar);
 
+        
         JButton botonBuscarNombre = UtilBoton.crearBoton("Nombre");
         JButton botonBuscarTelefono = UtilBoton.crearBoton("Teléfono");
         JButton botonBuscarCorreo = UtilBoton.crearBoton("Correo");
@@ -49,13 +51,47 @@ public class AdministrarClientes extends JFrame implements IObservador {
         panelBusqueda.add(botonBuscarTelefono);
         panelBusqueda.add(botonBuscarCorreo);
         
-        //Crea la tabla
+        
+        
+        
+        
+        //Crea paneles
+        JPanel panelBotones = new JPanel(new FlowLayout(FlowLayout.RIGHT, 15, 15));
+        JPanel panelTabla = new JPanel(new BorderLayout());
+
+        //String con los campos de la tabla
         String[] columnas = {"ID", "Nombre", "Teléfono", "Correo", "Fecha de registro", "Tipo"};
-        tabla = UtilGeneral.crearTabla(columnas);
-
-        //Agrega para scrollear
-        JScrollPane scrollPane = new JScrollPane(tabla);
-
+        
+        //Mapa para guardar los botones inferiores
+        Map<String, JButton> mapaBotones = new HashMap<>();
+        
+        //ArrayList de suppliers que guarda los diálogos que se quieren abrir del CRUD
+        //La lógica es la misma siempre, solo se cambian las clases que extienden de JDialog
+        ArrayList<Supplier<? extends JDialog>> dialogos = new ArrayList<>();
+        dialogos.add(() -> new RegistrarCliente(this, this)); 
+        dialogos.add(() -> new ActualizarCliente(this, this));
+        dialogos.add(() -> new EliminarCliente(this, this));
+        
+        
+        
+        
+        /**
+         * Este método crea y configura toda la pantalla de administrar x cosa
+         * Llama a un método de UtilBuild al cual le pasas los datos previamente configurados
+         * Regresa una pantalla poblada, funcional y fácilmente escalable
+         * Sirve para el molde base: pantalla, CRUD, búsqueda
+         * Regresa la tabla ya configurada donde van a aparecer los registros
+         * Puedes acceder a los botones creados usando el mapa que fue llenado
+         * Se le pueden agregar otros botones de forma fácil
+         */
+        tabla = UtilBuild.ensamblarPantallaAdministrar("Administrar clientes", //Título de la ventana
+                                                              this, //Frame actual
+                                                              panelBotones, //Panel de botones
+                                                              panelTabla, //Panel de la tabla
+                                                              columnas, //Campos que tendrá la tabla
+                                                              mapaBotones, //Mapa con los botones
+                                                              dialogos); //Lista con los diálogos a abrir
+        
         //Evento que se activa cuando seleccionas una fila de la columna
         tabla.addMouseListener(new java.awt.event.MouseAdapter() {
             @Override
@@ -74,21 +110,7 @@ public class AdministrarClientes extends JFrame implements IObservador {
            }
          });
         
-        //Crea panel de botones de abajo
-        JPanel panelBotones = new JPanel(new FlowLayout(FlowLayout.RIGHT, 15, 15));
-
-        //ArrayList de suppliers que guarda los diálogos que se quieren abrir del CRUD
-        //La lógica es la misma siempre, solo se cambian las clases que extienden de JDialog
-        ArrayList<Supplier<? extends JDialog>> dialogos = new ArrayList<>();
-        dialogos.add(() -> new RegistrarCliente(this, this)); 
-        dialogos.add(() -> new ActualizarCliente(this, this));
-        dialogos.add(() -> new EliminarCliente(this, this));
         
-        //Crea un mapa con el esqueleto de un CRUD dibujado
-        Map<String, JButton> mapaBotones = UtilBoton.dibujarBotonesCRUD(this, panelBotones);
-        
-        //Inyecta la lógica a los botones CRUD
-        UtilBoton.inyectarLogicaCRUD(panelBotones, mapaBotones, dialogos);
         
         //Inyecta la lógica de refrescar la tabla al botón Refrescar
         JButton botonRefrescar = mapaBotones.get(Constantes.OPCIONES_CRUD_MINUS[0]);
@@ -98,8 +120,9 @@ public class AdministrarClientes extends JFrame implements IObservador {
         
         //Agrega todo al frame
         add(panelBusqueda, BorderLayout.NORTH);
-        add(scrollPane, BorderLayout.CENTER);
         add(panelBotones, BorderLayout.SOUTH);
+        add(panelTabla, BorderLayout.CENTER);
+        
         
         //Llena la tabla cada vez que se entre a la pantalla
         //llenarTabla();
