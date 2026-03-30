@@ -114,6 +114,8 @@ public class UtilGeneral {
         frame.setLayout(new BorderLayout(15, 15));
     }
 
+    
+    
     /**
      * Fábrica de un campo de texto redondeado
      *
@@ -159,8 +161,7 @@ public class UtilGeneral {
      * @param <T> puede ser cualquier DTO
      * @param tabla
      * @param lista
-     * @param mapeador el método lambda para que sea flexible con cualquier
-     * clase
+     * @param mapeador el método lambda para que sea flexible con cualquier clase
      */
     public static <T> void registrarTabla(JTable tabla, List<T> lista, Function<T, Object[]> mapeador) {
         DefaultTableModel modelo = (DefaultTableModel) tabla.getModel();
@@ -176,6 +177,10 @@ public class UtilGeneral {
     
     public static void dialogoAviso(JFrame frame, String mensaje) {
         JOptionPane.showMessageDialog(frame, mensaje, "Aviso", JOptionPane.WARNING_MESSAGE);
+    }
+    
+    public static void dialogoSiNo(JFrame frame, String mensaje) {
+        JOptionPane.showMessageDialog(frame, mensaje, "Aviso", JOptionPane.YES_OPTION);
     }
     
     

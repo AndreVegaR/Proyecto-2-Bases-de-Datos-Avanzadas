@@ -17,39 +17,58 @@ import javax.swing.*;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Supplier;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableRowSorter;
 import observadores.IObservador;
 
 /**
- * Pantalla que muestra la tabla de clientes Observa al formulario de registro
- * de cliente
+ * Pantalla que muestra la tabla de clientes 
+ * Observa los formularios mediante IObservador
  *
  * @author Andre
  */
 public class AdministrarClientes extends JFrame implements IObservador {
     
-    //Se declaran como atributos para acceder a ellos en diferentes momentoss
+    //Se instancia como atributo para usarlo en métodos fuera del constructor
     private JTable tabla;
 
     public AdministrarClientes() {
 
         //Crea el panel de búsqueda
         JPanel panelBusqueda = new JPanel(new FlowLayout(FlowLayout.LEFT, 20, 10));
-
-        //Búsqueda por nombre
-        panelBusqueda.add(new JLabel("Buscar"));
-        JTextField textoBuscar = UtilGeneral.crearCampoTexto(20);
-        textoBuscar.setFont(new Font("SansSerif", Font.PLAIN, 14));
-        textoBuscar.setPreferredSize(new Dimension(250, 35));
-        textoBuscar.setToolTipText("Ingrese el término a buscar...");
+        
+        JTextField textoBuscar = UtilGeneral.crearCampoFormulario(panelBusqueda, "Buscar", 20);
+        //textoBuscar.setFont(new Font("SansSerif", Font.PLAIN, 14));
+        //textoBuscar.setPreferredSize(new Dimension(250, 35));
+        textoBuscar.setToolTipText("Ingrese el término a buscar");
         panelBusqueda.add(textoBuscar);
-
         
         JButton botonBuscarNombre = UtilBoton.crearBoton("Nombre");
         JButton botonBuscarTelefono = UtilBoton.crearBoton("Teléfono");
         JButton botonBuscarCorreo = UtilBoton.crearBoton("Correo");
+        
+        panelBusqueda.add(textoBuscar);
         panelBusqueda.add(botonBuscarNombre);
         panelBusqueda.add(botonBuscarTelefono);
         panelBusqueda.add(botonBuscarCorreo);
+        
+        // Evento para el botón Nombre (Columna 1)
+        botonBuscarNombre.addActionListener(e -> {
+            //String texto = textoBuscar.getText();
+            //sorter.setRowFilter(RowFilter.regexFilter("(?i)" + texto, 1)); 
+        });
+
+        // Evento para el botón Teléfono (Columna 2)
+        botonBuscarTelefono.addActionListener(e -> {
+            UtilGeneral.dialogoSiNo(this, "Buscar por teléfono");
+        });
+        
+        // Evento para el botón Teléfono (Columna 2)
+        botonBuscarCorreo.addActionListener(e -> {
+            UtilGeneral.dialogoSiNo(this, "Buscar por correo");
+        });
+        
+        
         
         
         
@@ -57,12 +76,25 @@ public class AdministrarClientes extends JFrame implements IObservador {
         
         //Crea paneles
         JPanel panelBotones = new JPanel(new FlowLayout(FlowLayout.RIGHT, 15, 15));
+        panelBotones.add(new JLabel("Doble clic para desplegar información específica"));
+        
+        
         JPanel panelTabla = new JPanel(new BorderLayout());
-
-        //String con los campos de la tabla
+        
+        /**
+         * Arreglo de Strings con los campos de la tabla
+         * Será pasado a un próximo método para automatizar la creación de la tabla
+         * Importante: debe coincidir con el orden del método mapearTabla
+         */
         String[] columnas = {"ID", "Nombre", "Teléfono", "Correo", "Fecha de registro", "Tipo"};
         
-        //Mapa para guardar los botones inferiores
+        /**
+         * Mapa para guardar los botones interiores
+         * Es básicamente un diccionario de Python pero en Java
+         * Este en específico tiene esta estructura llave-valor: el mensaje del botón y el botón
+         * Se crea vacío para ser pasado a un próximo método que loe va a llenar
+         * Una vez lleno, serán fácilmente accesibles
+         */
         Map<String, JButton> mapaBotones = new HashMap<>();
         
         //ArrayList de suppliers que guarda los diálogos que se quieren abrir del CRUD
@@ -72,25 +104,23 @@ public class AdministrarClientes extends JFrame implements IObservador {
         dialogos.add(() -> new ActualizarCliente(this, this));
         dialogos.add(() -> new EliminarCliente(this, this));
         
-        
-        
-        
         /**
          * Este método crea y configura toda la pantalla de administrar x cosa
          * Llama a un método de UtilBuild al cual le pasas los datos previamente configurados
          * Regresa una pantalla poblada, funcional y fácilmente escalable
          * Sirve para el molde base: pantalla, CRUD, búsqueda
-         * Regresa la tabla ya configurada donde van a aparecer los registros
+         * Regresa la tabla para inyectarle la lógica de mouseClicked
          * Puedes acceder a los botones creados usando el mapa que fue llenado
          * Se le pueden agregar otros botones de forma fácil
          */
         tabla = UtilBuild.ensamblarPantallaAdministrar("Administrar clientes", //Título de la ventana
                                                               this, //Frame actual
+                                                              panelBusqueda, //Panel de opciones de búsqueda
                                                               panelBotones, //Panel de botones
                                                               panelTabla, //Panel de la tabla
                                                               columnas, //Campos que tendrá la tabla
                                                               mapaBotones, //Mapa con los botones
-                                                              dialogos); //Lista con los diálogos a abrir
+                                                              dialogos); //Lista con los JDialog a abrir
         
         //Evento que se activa cuando seleccionas una fila de la columna
         tabla.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -98,34 +128,53 @@ public class AdministrarClientes extends JFrame implements IObservador {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 int fila = tabla.getSelectedRow();
                 if (fila != -1) {
-                    //Obtiene la lista de todos los clientes
-                    List<ClienteFrecuenteDTO> lista = CoordinadorNegocio.getInstance().consultarClientesFrecuentes();
+                        /**
+                         * //Obtiene la lista de todos los clientes
+                        List<ClienteFrecuenteDTO> lista = CoordinadorNegocio.getInstance().consultarClientesFrecuentes();
 
-                    //El cliente seleccionado es el mismo del índice seleccionado de las filas
-                    ClienteFrecuenteDTO clienteSeleccionado = lista.get(fila);
+                        //El cliente seleccionado es el mismo del índice seleccionado de las filas
+                        ClienteFrecuenteDTO clienteSeleccionado = lista.get(fila);
 
-                    //El coordinador reconoce al cliente seleccionado para operaciones futuras
-                    CoordinadorNegocio.getInstance().setClienteFrecuente(clienteSeleccionado);
+                        //El coordinador reconoce al cliente seleccionado para operaciones futuras
+                        CoordinadorNegocio.getInstance().setClienteFrecuente(clienteSeleccionado);
+                         * 
+                         * 
+                         */
+                    }
+                if (evt.getClickCount() >= 2) {
+                    List<ClienteFrecuenteDTO> l = llenarTablaFalsa();
+                    ClienteFrecuenteDTO cliente = l.get(fila);
+                    mostrarInfoEspecifica(cliente);
                 }
            }
          });
         
-        
-        
         //Inyecta la lógica de refrescar la tabla al botón Refrescar
         JButton botonRefrescar = mapaBotones.get(Constantes.OPCIONES_CRUD_MINUS[0]);
         botonRefrescar.addActionListener(e -> {
-            llenarTabla();
+            llenarTablaFalsa();
         });
-        
-        //Agrega todo al frame
-        add(panelBusqueda, BorderLayout.NORTH);
-        add(panelBotones, BorderLayout.SOUTH);
-        add(panelTabla, BorderLayout.CENTER);
-        
-        
+
         //Llena la tabla cada vez que se entre a la pantalla
-        //llenarTabla();
+        llenarTablaFalsa();
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        DefaultTableModel modelo = (DefaultTableModel) tabla.getModel();
+        
+        TableRowSorter<DefaultTableModel> sorter = new TableRowSorter<>(modelo);
+        
+        tabla.setRowSorter(sorter);
+        
+        
     }
     
     
@@ -136,15 +185,33 @@ public class AdministrarClientes extends JFrame implements IObservador {
      * aplicar getters
      */
     public void llenarTabla() {
-        List<ClienteFrecuenteDTO> lista = CoordinadorNegocio.getInstance().consultarClientesFrecuentes();
-        mapearTabla(lista);
+        //List<ClienteFrecuenteDTO> lista = CoordinadorNegocio.getInstance().consultarClientesFrecuentes();
+        //mapearTabla(lista);
+        
     }
+    
+    
+    public List<ClienteFrecuenteDTO> llenarTablaFalsa() {
+        List<ClienteFrecuenteDTO> listaFalsa = new ArrayList<>();
+        
+        String[] nombres = {"Andre", "Angel", "Jazmin", "Maye", "Quiñones", "Domitsu"};
+        
+        for (String nombre: nombres) {
+            ClienteFrecuenteDTO cliente = new ClienteFrecuenteDTO();
+            cliente.setNombres(nombre);
+            listaFalsa.add(cliente);
+            
+        }
+        
+        mapearTabla(listaFalsa);
+        
+        return listaFalsa;
+    }
+    
 
     
    
-   /**
-    * Método centralizado de una expresión lambda que llena n columnas
-    */
+   
    private void mapearTabla(List<ClienteFrecuenteDTO> lista) {
        UtilGeneral.registrarTabla(tabla, lista, c -> new Object[]{
            c.getId(),
@@ -158,8 +225,20 @@ public class AdministrarClientes extends JFrame implements IObservador {
    
    
    
+   private void mostrarInfoEspecifica(ClienteFrecuenteDTO dto) {
+       
+       String info = "Información adicional del cliente " + dto.getId() + ": \n"
+                      + "Puntos de fidelidad: " + dto.getPuntosFidelidad() +  "\n"
+                      + "Número de visitas: " + dto.getVisitas() + "\n"
+                      + "Gasto total. " + dto.getGastoTotal() + "\n";
+       
+       UtilGeneral.dialogoAviso(this, info);
+   }
+   
+   
+   
    /**
-     * Método de la interfaz observador
+     * Método de la IObservador
      * Escucha el llamado el formulario y activa la lógica de registrar al
      * cliente en la tabla Hace una lista con el único elemento, esto para poder
      * trabajar bien con el método
@@ -167,5 +246,11 @@ public class AdministrarClientes extends JFrame implements IObservador {
     @Override
     public void notificarCambio() {
         llenarTabla();
+    }
+    
+    
+    
+    public void ejecutarAccion(int i) {
+        UtilGeneral.dialogoSiNo(this, "Prueba: ¡Yo soy el índice " + i + "!");
     }
 }

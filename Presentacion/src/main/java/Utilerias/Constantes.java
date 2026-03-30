@@ -25,7 +25,7 @@ public class Constantes {
     //Arreglo con las opciones debajo de la tabla ya delimitadas
     public static final String[] OPCIONES_CRUD = {"Refrescar", "Registrar", "Actualizar", "Eliminar"};
     
-    //Arreglo en minúsculas para manipular el mapa de los botones CRUD, siempre dependiendo de dichas opciones
+    //Arreglo en minúsculas para manipular el mapa de los botones CRUD, siempre idéntico que OPCINES_CRUD
     public static final String[] OPCIONES_CRUD_MINUS = Arrays.stream(OPCIONES_CRUD)
                                                                 .map(String::toLowerCase)
                                                                 .toArray(String[]::new);

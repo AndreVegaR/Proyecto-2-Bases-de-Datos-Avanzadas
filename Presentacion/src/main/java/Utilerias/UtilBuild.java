@@ -16,7 +16,7 @@ import javax.swing.JTable;
 /**
  * Utilerías que implementa el patrón Builder:
  * Una clase con métodos que construyen parts del programa y evitar repetir código
- * Es como una linea de ensamblaje
+ * Es como una linea de ensamblaje con un plano que solo debe replicarr
  * @author Andre
  */
 public class UtilBuild {
@@ -76,14 +76,14 @@ public class UtilBuild {
             if (i > 0){
    
                 //El arreglo de suppliers solo tiene tres elementos, debe ser ajustado
-                int indiceAjustado = i-1;
+                int indiceDialogo = i-1;
                 
                 //Guarda el botón actual del mapa de botones
                 //Como opciones no tiene "Refresca", se ajusta el índice por desfase
-                JButton boton = botones.get(opciones[indiceAjustado]);
+                JButton boton = botones.get(opciones[i]);
                 
                 //Guarda el supplier actual
-                Supplier<? extends JDialog> dialogo = dialogos.get(indiceAjustado);
+                Supplier<? extends JDialog> dialogo = dialogos.get(indiceDialogo);
                 
                 //Inyecta logica al botón
                 boton.addActionListener(e -> {
@@ -94,39 +94,55 @@ public class UtilBuild {
     }
     
     
+    
     /**
+     * Método que se encarga de ensamblar toda una pantalla para administrar cierto objeto
+     * Configura el frame, crea botones, configura paneles, crea la tabla
+     * Recibe diferentes parámetros necesarios para esto
+     * También llama a diferentes métodos menores, orquestándolos en una gran línea de ensamblaje
+     * No crea los paneles porque podrías querer volverlos a usar
      * 
      * @param tituloVentana
-     * @param frame
+     * @param frame donde se va a mostrar
+     * @param panelBusqueda
      * @param panelBotones
      * @param panelTabla
-     * @param columnasTabla
-     * @param botones
-     * @param dialogos
-     * @return 
+     * @param columnasTabla los campos de la tabla
+     * @param botones el mapa con el juego texto del botón y el botón en sí mismo
+     * @param dialogos una lista tipo Suplier con los diálogos que van a abrir
+     * @return la tabla creada para inyectarle un mouseClicked por ejemplo
      */
     public static JTable ensamblarPantallaAdministrar(String tituloVentana,
-                                             JFrame frame, 
-                                             JPanel panelBotones,
-                                             JPanel panelTabla,
-                                             String[] columnasTabla,
-                                             Map<String, JButton> botones,
-                                             ArrayList<Supplier<? extends JDialog>> dialogos) {
+                                                        JFrame frame, 
+                                                        JPanel panelBusqueda,
+                                                        JPanel panelBotones,
+                                                        JPanel panelTabla,
+                                                        String[] columnasTabla,
+                                                        Map<String, JButton> botones,
+                                                        ArrayList<Supplier<? extends JDialog>> dialogos) {
         
+        //Configuración básica del frame
         UtilGeneral.configurarFrame(tituloVentana, frame);
         
+        //Crea y configura la tabla
         JTable tabla = UtilGeneral.crearTabla(columnasTabla);
-        
         JScrollPane scroll = new JScrollPane(tabla);
         panelTabla.add(scroll, BorderLayout.CENTER);
         
+        //Redibuja la tabla
         panelTabla.revalidate();
         panelTabla.repaint();
         
+        //Crea el campo para CRUD
         botones.putAll(dibujarBotonesCRUD(frame, panelBotones));
-        
         inyectarLogicaCRUD(panelBotones, botones, dialogos);
         
+        //Agrega los paneles al frame
+        frame.add(panelBusqueda, BorderLayout.NORTH);
+        frame.add(panelTabla, BorderLayout.CENTER);
+        frame.add(panelBotones, BorderLayout.SOUTH);
+        
+        //Regresa la tabla para trabajar después con ella
         return tabla;
     }
 }
