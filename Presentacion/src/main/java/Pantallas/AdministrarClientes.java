@@ -4,12 +4,12 @@ import Coordinadores.CoordinadorPantallas;
 import DTOs.ClienteFrecuenteDTO;
 import Principal.MenuPrincipal;
 import Utilerias.Constantes;
-import formularios.RegistrarCliente;
+import dialogos.RegistrarCliente;
 import Utilerias.UtilBoton;
 import Utilerias.UtilBuild;
 import Utilerias.UtilGeneral;
-import formularios.ActualizarCliente;
-import formularios.EliminarCliente;
+import dialogos.ActualizarCliente;
+import dialogos.EliminarCliente;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -31,54 +31,23 @@ public class AdministrarClientes extends JFrame implements IObservador {
     
     //Se instancia como atributo para usarlo en métodos fuera del constructor
     private JTable tabla;
+    
+    final int[] columnaActiva = {-1}; // -1 significa "todas las columnas"
 
     public AdministrarClientes() {
 
         //Crea el panel de búsqueda
         JPanel panelBusqueda = new JPanel(new FlowLayout(FlowLayout.LEFT, 20, 10));
         
-        JTextField textoBuscar = UtilGeneral.crearCampoFormulario(panelBusqueda, "Buscar", 20);
-        //textoBuscar.setFont(new Font("SansSerif", Font.PLAIN, 14));
-        //textoBuscar.setPreferredSize(new Dimension(250, 35));
-        textoBuscar.setToolTipText("Ingrese el término a buscar");
-        panelBusqueda.add(textoBuscar);
+        //Arreglo con los textos de los diferentes botones
+        String[] filtros = {"Nombre", "Teléfono", "Correo"};
         
-        JButton botonBuscarNombre = UtilBoton.crearBoton("Nombre");
-        JButton botonBuscarTelefono = UtilBoton.crearBoton("Teléfono");
-        JButton botonBuscarCorreo = UtilBoton.crearBoton("Correo");
-        
-        panelBusqueda.add(textoBuscar);
-        panelBusqueda.add(botonBuscarNombre);
-        panelBusqueda.add(botonBuscarTelefono);
-        panelBusqueda.add(botonBuscarCorreo);
-        
-        // Evento para el botón Nombre (Columna 1)
-        botonBuscarNombre.addActionListener(e -> {
-            //String texto = textoBuscar.getText();
-            //sorter.setRowFilter(RowFilter.regexFilter("(?i)" + texto, 1)); 
-        });
-
-        // Evento para el botón Teléfono (Columna 2)
-        botonBuscarTelefono.addActionListener(e -> {
-            UtilGeneral.dialogoSiNo(this, "Buscar por teléfono");
-        });
-        
-        // Evento para el botón Teléfono (Columna 2)
-        botonBuscarCorreo.addActionListener(e -> {
-            UtilGeneral.dialogoSiNo(this, "Buscar por correo");
-        });
-        
-        
-        
-        
-        
-        
+        //Mapa vacío que será poblado con botones de filtrad opor un método posterior
+        Map<String, JButton> botonesFiltros = new HashMap<>();
         
         //Crea paneles
         JPanel panelBotones = new JPanel(new FlowLayout(FlowLayout.RIGHT, 15, 15));
         panelBotones.add(new JLabel("Doble clic para desplegar información específica"));
-        
-        
         JPanel panelTabla = new JPanel(new BorderLayout());
         
         /**
@@ -117,10 +86,14 @@ public class AdministrarClientes extends JFrame implements IObservador {
                                                               this, //Frame actual
                                                               panelBusqueda, //Panel de opciones de búsqueda
                                                               panelBotones, //Panel de botones
-                                                              panelTabla, //Panel de la tabla
+                                                              panelTabla,//Panel de la tabla
+                                                              filtros, //Arreglo con filtros
+                                                              botonesFiltros, //Mapa de botones que indican los filtros
                                                               columnas, //Campos que tendrá la tabla
                                                               mapaBotones, //Mapa con los botones
-                                                              dialogos); //Lista con los JDialog a abrir
+                                                              dialogos, //Lista con los JDialog a abrir
+                                                              columnaActiva); //Arreglo que contiene el índice para filtrar
+                                                              
         
         //Evento que se activa cuando seleccionas una fila de la columna
         tabla.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -157,24 +130,6 @@ public class AdministrarClientes extends JFrame implements IObservador {
 
         //Llena la tabla cada vez que se entre a la pantalla
         llenarTablaFalsa();
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        DefaultTableModel modelo = (DefaultTableModel) tabla.getModel();
-        
-        TableRowSorter<DefaultTableModel> sorter = new TableRowSorter<>(modelo);
-        
-        tabla.setRowSorter(sorter);
-        
-        
     }
     
     
@@ -199,8 +154,11 @@ public class AdministrarClientes extends JFrame implements IObservador {
         for (String nombre: nombres) {
             ClienteFrecuenteDTO cliente = new ClienteFrecuenteDTO();
             cliente.setNombres(nombre);
+            cliente.setApellidoPaterno("");
+            cliente.setApellidoMaterno("");
+            cliente.setTelefono("1234566");
+            cliente.setCorreo(nombre + "@gmail.com");
             listaFalsa.add(cliente);
-            
         }
         
         mapearTabla(listaFalsa);

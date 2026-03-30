@@ -29,4 +29,8 @@ public class Constantes {
     public static final String[] OPCIONES_CRUD_MINUS = Arrays.stream(OPCIONES_CRUD)
                                                                 .map(String::toLowerCase)
                                                                 .toArray(String[]::new);
+    
+    //Cantidad de caracteres que tendrán los campos de texto
+    public static final int NUM_CARACTERES = 20;
+    
 }

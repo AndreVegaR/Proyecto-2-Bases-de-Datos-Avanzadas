@@ -1,5 +1,4 @@
 package Utilerias;
-import Coordinadores.CoordinadorPantallas;
 import Principal.MenuPrincipal;
 import java.awt.BorderLayout;
 import java.util.ArrayList;
@@ -12,6 +11,9 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.JTextField;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableRowSorter;
 
 /**
  * Utilerías que implementa el patrón Builder:
@@ -51,46 +53,28 @@ public class UtilBuild {
     
     
     /**
-     * Se encarga de inyectar lógica en todo los botones CRUD
-     * Itera sobre el tamaño de OPCIONES_CRUD_MINUS, obtiene lo necesario y lo pone en el mapa
-     * Modifica el mapa del parámetro, por lo que la lista va a quedar con botones funcionales
+     * Dibuja la parte del campo de búsqueda y los botones según el filtro
+     * Llena el mapa del parámetro para ser usado después
      * 
-     * @param panel
-     * @param botones El mapa String, BotonPersonalizado que crea el método dibujarBotonesCRUD
-     * @param dialogos Un arrayList de suppliers de JDialog en este orden: Registrar, Actualizar, Eliminar
+     * @param panelBusqueda
+     * @param filtros en un arreglo de Strings
+     * @param botonesFiltros en un mapa que vacío que será poblado con los botones
+     * @return 
      */
-    public static void inyectarLogicaCRUD(JPanel panel, Map<String, JButton> botones, ArrayList<Supplier<? extends JDialog>> dialogos) {
+    public static JTextField dibujarCampoBusqueda(JPanel panelBusqueda, String[] filtros, Map<String, JButton> botonesFiltros) {
         
-        //Mapa actualizado de botones con lógica
-        Map<String, JButton> botonesNuevos = new HashMap<>();
+        //Crea el campo de búsqueda
+        JTextField campoBuscar = UtilGeneral.crearCampoFormulario(panelBusqueda, "Buscar", Constantes.NUM_CARACTERES);
+        campoBuscar.setToolTipText("Ingrese el término a buscar");
+        panelBusqueda.add(campoBuscar);
         
-        //Rescata en una variable el arreglo de opciones para manejarlo fácilmente
-        String[] opciones = Constantes.OPCIONES_CRUD_MINUS;
-        
-        //Itera sobre el arreglo de opciones. O sea, trabaja sobre los botones definidos
-        for (int i = 0; i < opciones.length; i++) {
-            
-            //Crea un botón ya con lógica de abrir el formulario
-            //Si es 0, se trata de refrescar y no debe tener esa lógica
-            String opcion = opciones[i];
-            if (i > 0){
-   
-                //El arreglo de suppliers solo tiene tres elementos, debe ser ajustado
-                int indiceDialogo = i-1;
-                
-                //Guarda el botón actual del mapa de botones
-                //Como opciones no tiene "Refresca", se ajusta el índice por desfase
-                JButton boton = botones.get(opciones[i]);
-                
-                //Guarda el supplier actual
-                Supplier<? extends JDialog> dialogo = dialogos.get(indiceDialogo);
-                
-                //Inyecta logica al botón
-                boton.addActionListener(e -> {
-                    CoordinadorPantallas.getInstance().abrirDialogo(dialogo);
-                });
-            }
+        //Crea los botones y los agrega al mapa
+        for (String filtro: filtros) {
+             JButton boton = UtilBoton.crearBoton(filtro);
+             panelBusqueda.add(boton);
+             botonesFiltros.put(filtro.toLowerCase(), boton);
         }
+        return campoBuscar;
     }
     
     
@@ -107,9 +91,12 @@ public class UtilBuild {
      * @param panelBusqueda
      * @param panelBotones
      * @param panelTabla
+     * @param filtros Arreglo de Strings con el texto de los botones para filtrar
      * @param columnasTabla los campos de la tabla
-     * @param botones el mapa con el juego texto del botón y el botón en sí mismo
+     * @param botonesFiltros el mapa con botones de filtrado
+     * @param botonesCRUD el mapa con el juego texto del botón y el botón en sí mismo
      * @param dialogos una lista tipo Suplier con los diálogos que van a abrir
+     * @param columnaActiva arreglo donde se guarda el índice de la tabla a fitrar
      * @return la tabla creada para inyectarle un mouseClicked por ejemplo
      */
     public static JTable ensamblarPantallaAdministrar(String tituloVentana,
@@ -117,12 +104,18 @@ public class UtilBuild {
                                                         JPanel panelBusqueda,
                                                         JPanel panelBotones,
                                                         JPanel panelTabla,
+                                                        String[] filtros,
+                                                        Map<String, JButton> botonesFiltros,
                                                         String[] columnasTabla,
-                                                        Map<String, JButton> botones,
-                                                        ArrayList<Supplier<? extends JDialog>> dialogos) {
+                                                        Map<String, JButton> botonesCRUD,
+                                                        ArrayList<Supplier<? extends JDialog>> dialogos,
+                                                        int[] columnaActiva) {
         
         //Configuración básica del frame
         UtilGeneral.configurarFrame(tituloVentana, frame);
+        
+        //Crea el campo de búsqueda y sus botones
+        JTextField campoBusqueda = dibujarCampoBusqueda(panelBusqueda, filtros, botonesFiltros);
         
         //Crea y configura la tabla
         JTable tabla = UtilGeneral.crearTabla(columnasTabla);
@@ -133,9 +126,17 @@ public class UtilBuild {
         panelTabla.revalidate();
         panelTabla.repaint();
         
+        //Configura el sorter para el modelo de la tabla
+        DefaultTableModel modelo = (DefaultTableModel) tabla.getModel();
+        TableRowSorter<DefaultTableModel> sorter = new TableRowSorter<>(modelo);
+        tabla.setRowSorter(sorter);
+        
+        //Inyecta la lógica al campo de búsqueda
+        UtilLogica.inyectarLogicaBusqueda(campoBusqueda, filtros, columnasTabla, botonesFiltros, sorter, columnaActiva);
+        
         //Crea el campo para CRUD
-        botones.putAll(dibujarBotonesCRUD(frame, panelBotones));
-        inyectarLogicaCRUD(panelBotones, botones, dialogos);
+        botonesCRUD.putAll(dibujarBotonesCRUD(frame, panelBotones));
+        UtilLogica.inyectarLogicaCRUD(panelBotones, botonesCRUD, dialogos);
         
         //Agrega los paneles al frame
         frame.add(panelBusqueda, BorderLayout.NORTH);

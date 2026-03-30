@@ -64,6 +64,7 @@ public class UtilGeneral {
      * @return la tabla ya lista
      */
     public static JTable crearTabla(String[] columnas) {
+        //Evita que puedan editar la tabla
         DefaultTableModel modeloTabla = new DefaultTableModel(columnas, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
