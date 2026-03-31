@@ -1,5 +1,5 @@
 package BO;
-import DAOs.ClienteFrecuenteDAO;
+import DAOs.ClienteDAO;
 import DTOs.ClienteFrecuenteDTO;
 import Entidades.Cliente;
 import Entidades.ClienteFrecuente;
@@ -16,22 +16,22 @@ import utilerias.Utilerias;
  * Utiliza el singleton de ClienteFrecuenteDAO
  * @author Jazmin
  */
-public class ClienteFrecuenteBO {
+public class ClienteBO {
     
     //Instancia
-    private static ClienteFrecuenteBO instancia;
+    private static ClienteBO instancia;
     
     //Constructor privado
-    private ClienteFrecuenteBO() {}
+    private ClienteBO() {}
     
     /**
      * Singleton
      * 
      * @return el BO listo
      */
-    public static ClienteFrecuenteBO getInstance() {
+    public static ClienteBO getInstance() {
         if (instancia == null) {
-            instancia = new ClienteFrecuenteBO();
+            instancia = new ClienteBO();
         }
         return instancia;
     }
@@ -65,7 +65,7 @@ public class ClienteFrecuenteBO {
         String telefono = cliente.getTelefono();
         String telefonoEncriptado = EncriptarTelefono.encriptar(telefono);
         cliente.setTelefono(telefonoEncriptado);
-        cliente = ClienteFrecuenteDAO.getInstance().guardarCliente(cliente);
+        cliente = ClienteDAO.getInstance().guardarCliente(cliente);
         
         //Mapeo a DTO
         ClienteFrecuenteDTO resultado = ClienteMapper.mapearEntidadDTO(cliente);
@@ -86,7 +86,7 @@ public class ClienteFrecuenteBO {
      */
     public ClienteFrecuenteDTO eliminarCliente(Long id){
         Utilerias.esNumeroPositivo(id, "ID");
-        ClienteFrecuente eliminado = ClienteFrecuenteDAO.getInstance().eliminarCliente(id);
+        ClienteFrecuente eliminado = ClienteDAO.getInstance().eliminarCliente(id);
         return ClienteMapper.mapearEntidadDTO(eliminado);
     }
     
@@ -104,8 +104,8 @@ public class ClienteFrecuenteBO {
         if (dto.getId() == null) throw new IllegalArgumentException("El ID es obligatorio para actualizar");
 
         // 2. BUSCAR EL REGISTRO ORIGINAL (Para no perder datos como puntos o fecha)
-        ClienteFrecuenteDAO dao = ClienteFrecuenteDAO.getInstance();
-        ClienteFrecuente clienteExistente = ClienteFrecuenteDAO.getInstance().buscarPorId(dto.getId()); 
+        ClienteDAO dao = ClienteDAO.getInstance();
+        ClienteFrecuente clienteExistente = ClienteDAO.getInstance().buscarPorId(dto.getId()); 
 
         if (clienteExistente == null) throw new RuntimeException("Cliente no encontrado");
 
@@ -135,7 +135,7 @@ public class ClienteFrecuenteBO {
      * @return lista de ClienteFrecuente con los datos actualizados
      */
     public List<ClienteFrecuenteDTO> verClientes(){
-        List<ClienteFrecuente> lista = ClienteFrecuenteDAO.getInstance().verClientes();
+        List<ClienteFrecuente> lista = ClienteDAO.getInstance().verClientes();
         
         List<ClienteFrecuenteDTO> listaDtos = lista.stream()
                                               .map(ClienteMapper :: mapearEntidadDTO)
@@ -152,7 +152,7 @@ public class ClienteFrecuenteBO {
     
     
     public ClienteFrecuenteDTO consultarCliente(Long id) {
-        ClienteFrecuente cliente = ClienteFrecuenteDAO.getInstance().buscarPorId(id);
+        ClienteFrecuente cliente = ClienteDAO.getInstance().buscarPorId(id);
         return ClienteMapper.mapearEntidadDTO(cliente);
     }
 }

@@ -8,11 +8,11 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class ClienteFrecuenteDAOTest {
 
-    private ClienteFrecuenteDAO dao;
+    private ClienteDAO dao;
 
     @BeforeEach
     void setUp() {
-        dao = ClienteFrecuenteDAO.getInstance();
+        dao = ClienteDAO.getInstance();
     }
 
     

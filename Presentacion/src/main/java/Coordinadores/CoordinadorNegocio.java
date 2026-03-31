@@ -1,5 +1,5 @@
 package Coordinadores;
-import BO.ClienteFrecuenteBO;
+import BO.ClienteBO;
 import DTOs.ClienteFrecuenteDTO;
 import java.util.List;
 
@@ -51,7 +51,7 @@ public class CoordinadorNegocio implements ICoordinadorNegocio {
     @Override
     public void registrarClienteFrecuente(ClienteFrecuenteDTO clienteFrecuente){
         setClienteFrecuente(clienteFrecuente);
-        ClienteFrecuenteBO.getInstance().guardarCliente(clienteFrecuente);
+        ClienteBO.getInstance().guardarCliente(clienteFrecuente);
     }
     
     
@@ -63,7 +63,7 @@ public class CoordinadorNegocio implements ICoordinadorNegocio {
      */
     @Override
     public List<ClienteFrecuenteDTO> consultarClientesFrecuentes() {
-        return ClienteFrecuenteBO.getInstance().verClientes();
+        return ClienteBO.getInstance().verClientes();
     }
     
     
@@ -76,7 +76,7 @@ public class CoordinadorNegocio implements ICoordinadorNegocio {
      */
     @Override
     public ClienteFrecuenteDTO actualizarCliente(ClienteFrecuenteDTO clienteFrecuente) {
-        return ClienteFrecuenteBO.getInstance().modificarCliente(clienteFrecuente);
+        return ClienteBO.getInstance().modificarCliente(clienteFrecuente);
     }
     
     
@@ -88,7 +88,7 @@ public class CoordinadorNegocio implements ICoordinadorNegocio {
      */
     @Override
     public void eliminarClienteFrecuente(ClienteFrecuenteDTO clienteFrecuente) {
-        ClienteFrecuenteBO.getInstance().eliminarCliente(clienteFrecuente.getId());
+        ClienteBO.getInstance().eliminarCliente(clienteFrecuente.getId());
     }
     
     

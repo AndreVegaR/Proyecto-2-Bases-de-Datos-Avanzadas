@@ -1,44 +1,42 @@
 package DAOs;
 
-import Entidades.Cliente;
-import conexion.ConexionBD;
 import java.util.List;
+import Entidades.ClienteFrecuente;
+import conexion.ConexionBD;
 import javax.persistence.EntityManager;
 
 /**
- *
- * @author Angel
- * DAO para la entidad cliente y para hacer operaciones
+ * DAO para la entidad ClienteFrecuente
+ * @author Jazmin
  */
 public class ClienteDAO {
-    //Instancia que compartira todo el proyecto
-    private static ClienteDAO instanciaCliente;
-    
-    //Constructor privado
-    private ClienteDAO(){
-        
+
+    private static ClienteDAO instancia;
+
+    private ClienteDAO() {
     }
-    //Metodo que regresa la instancia
-    public static ClienteDAO getInstance(){
-        if(instanciaCliente == null ){
-            instanciaCliente = new ClienteDAO();
+
+    public static ClienteDAO getInstance() {
+        if (instancia == null) {
+            instancia = new ClienteDAO();
         }
-        return instanciaCliente;
+        return instancia;
     }
-    
-    //Metodo para guardar el cliente
-    /*
-    Se crea el entity manager y simplemente se persiste con JPA
-    */
-    public Cliente guardarCliente(Cliente cliente){
+
+    /**
+     * Guarda un cliente frecuente
+     *
+     * @param cliente a persistir
+     * @return entidad persistida con ID generado
+     */
+    public ClienteFrecuente guardarCliente(ClienteFrecuente cliente) {
         EntityManager em = ConexionBD.crearConexion();
-        
-        try{
+        try {
             em.getTransaction().begin();
             em.persist(cliente);
             em.getTransaction().commit();
             return cliente;
-        }catch (Exception e) {
+        } catch (Exception e) {
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
             }
@@ -47,57 +45,89 @@ public class ClienteDAO {
             em.close();
         }
     }
-    
-    //Metodo para eliminar un cliente buscandolo por su id y encontrandolo por el find de JPA
-    public Cliente eliminarCliente(Long id){
-        EntityManager em = ConexionBD.crearConexion();
-        
-        try{
-            em.getTransaction().begin();
-            Cliente eliminarCliente = em.find(Cliente.class, id);
-            em.remove(eliminarCliente);
-            em.getTransaction().commit();
-            return eliminarCliente;
-        }catch (Exception e) {
-            if (em.getTransaction().isActive()) {
-                em.getTransaction().rollback();
-            }
-            throw e;
-        } finally {
-            em.close();
-        }
-    }
-    
-    //Metodo que modifica a un cliente seleccionandolo por id y usando merge de JPA
-      public Cliente modificarCliente(Long id){
-            EntityManager em = ConexionBD.crearConexion();
-            
-            try{
-                em.getTransaction().begin();
-                Cliente modificar = em.find(Cliente.class, id);
-                em.merge(modificar);
-                return modificar;
-            }catch (Exception e) {
-            if (em.getTransaction().isActive()) {
-                em.getTransaction().rollback();
-            }
-            throw e;
-        } finally {
-            em.close();
-        }
-        }
-      
-      //Metodo que muestra a todos los clientes mediante una consulta jqpl
-      public List<Cliente> verClientes(){
-          EntityManager em = ConexionBD.crearConexion();
 
-          try{
-              String jpql = "SELECT c FROM Cliente c";
-              return em.createQuery(jpql, Cliente.class).getResultList();
-          }finally {
+    public ClienteFrecuente modificarCliente(ClienteFrecuente clienteModificado) {
+        EntityManager em = ConexionBD.crearConexion();
+        try {
+            em.getTransaction().begin();
+
+            ClienteFrecuente persistente = em.find(ClienteFrecuente.class, clienteModificado.getId());
+
+            if (persistente != null) {
+
+                persistente.setNombres(clienteModificado.getNombres());
+                persistente.setApellidoPaterno(clienteModificado.getApellidoPaterno());
+                persistente.setApellidoMaterno(clienteModificado.getApellidoMaterno());
+                persistente.setTelefono(clienteModificado.getTelefono());
+                persistente.setCorreo(clienteModificado.getCorreo());
+
+                em.getTransaction().commit();
+                return persistente;
+            } else {
+                throw new RuntimeException("No se encontró el cliente con ID: " + clienteModificado.getId());
+            }
+        } catch (Exception e) {
+            if (em.getTransaction().isActive()) em.getTransaction().rollback();
+            throw e;
+        } finally {
             em.close();
         }
-          
-      }
-      
+    }
+
+    /**
+     * Elimina un cliente frecuente por su ID
+     *
+     * @param id del cliente
+     * @return entidad eliminada
+     */
+    public ClienteFrecuente eliminarCliente(Long id) {
+        EntityManager em = ConexionBD.crearConexion();
+        try {
+            em.getTransaction().begin();
+            ClienteFrecuente cliente = em.find(ClienteFrecuente.class, id);
+            if (cliente != null) {
+                em.remove(cliente);
+            }
+            em.getTransaction().commit();
+            return cliente;
+        } catch (Exception e) {
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            throw e;
+        } finally {
+            em.close();
+        }
+    }
+
+    /**
+     * Obtiene todos los clientes frecuentes
+     *
+     * @return lista de clientes frecuentes
+     */
+    public List<ClienteFrecuente> verClientes() {
+        EntityManager em = ConexionBD.crearConexion();
+        try {
+            String jpql = "SELECT c FROM ClienteFrecuente c";
+            return em.createQuery(jpql, ClienteFrecuente.class).getResultList();
+        } finally {
+            em.close();
+        }
+    }
+
+    /**
+     * Busca un cliente frecuente por su ID
+     *
+     * @param id del cliente
+     * @return entidad encontrada o null
+     */
+    public ClienteFrecuente buscarPorId(Long id) {
+        EntityManager em = ConexionBD.crearConexion();
+        try {
+            return em.find(ClienteFrecuente.class, id);
+        } finally {
+            em.close();
+        }
+    }
+
 }
