@@ -7,17 +7,8 @@ import java.time.LocalDateTime;
  * DTO para un cliente
  * @author Andre
  */
-public class ClienteFrecuenteDTO {
-    
-    //Atributos de cliente
-    Long id;
-    String nombres;
-    String apellidoPaterno;
-    String apellidoMaterno;
-    String telefono;
-    String correo;
-    LocalDateTime fechaRegistro;
-    
+public class ClienteFrecuenteDTO extends ClienteDTO{
+   
     //Atributos cliente frecuente
     int visitas;
     Double gastoTotal;
@@ -34,16 +25,11 @@ public class ClienteFrecuenteDTO {
      * @param fechaRegistro
      */
     public ClienteFrecuenteDTO(Long id,String nombres, String apellidoPaterno, String apellidoMaterno, String telefono, LocalDateTime fechaRegistro, String correo, int visitas, Double gastoTotal, int puntosFidelidad) {
-        this.id=id;
-        this.nombres = nombres;
-        this.apellidoPaterno = apellidoPaterno;
-        this.apellidoMaterno = apellidoMaterno;
-        this.telefono = telefono;
-        this.fechaRegistro = fechaRegistro;
-        this.correo = correo;
+        super(id, nombres, apellidoPaterno, apellidoMaterno, telefono, fechaRegistro, correo);
         this.visitas = visitas;
         this.gastoTotal = gastoTotal;
         this.puntosFidelidad = puntosFidelidad;
+       
     }
     
     /**
@@ -57,19 +43,14 @@ public class ClienteFrecuenteDTO {
      * @param fechaRegistro
      */
     public ClienteFrecuenteDTO(Long id,String nombres, String apellidoPaterno, String apellidoMaterno, String telefono, LocalDateTime fechaRegistro, String correo) {
-        this.id = id;
-        this.nombres = nombres;
-        this.apellidoPaterno = apellidoPaterno;
-        this.apellidoMaterno = apellidoMaterno;
-        this.telefono = telefono;
-        this.fechaRegistro = fechaRegistro;
-        this.correo = correo;
+        super(id, nombres, apellidoPaterno, apellidoMaterno, telefono, fechaRegistro, correo);
     }
     
     /**
      * Constructor vacío
      */
     public ClienteFrecuenteDTO() {
+        super();
         
     }
     
@@ -78,58 +59,7 @@ public class ClienteFrecuenteDTO {
     }
 
     //Getters y setters
-    public void setId(Long id) {    
-        this.id = id;
-    }
-
-    public String getNombres() {
-        return nombres;
-    }
-
-    public void setNombres(String nombres) {
-        this.nombres = nombres;
-    }
-
-    public String getApellidoPaterno() {
-        return apellidoPaterno;
-    }
-
-    public void setApellidoPaterno(String apellidoPaterno) {
-        this.apellidoPaterno = apellidoPaterno;
-    }
-
-    public String getApellidoMaterno() {
-        return apellidoMaterno;
-    }
-
-    public void setApellidoMaterno(String apellidoMaterno) {
-        this.apellidoMaterno = apellidoMaterno;
-    }
-
-    public String getTelefono() {
-        return telefono;
-    }
-
-    public void setTelefono(String telefono) {
-        this.telefono = telefono;
-    }
-
-    public LocalDateTime getFechaRegistro() {
-        return fechaRegistro;
-    }
-
-    public void setFechaRegistro(LocalDateTime fechaRegistro) {
-        this.fechaRegistro = fechaRegistro;
-    }
-    
-    public String getCorreo() {
-        return correo;
-    }
-
-    public void setCorreo(String correo) {
-        this.correo = correo;
-    }
-
+   
     public int getVisitas() {
         return visitas;
     }
