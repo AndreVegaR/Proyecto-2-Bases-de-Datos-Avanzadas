@@ -26,7 +26,7 @@ import javax.persistence.Table;
  * una tabla intermedia
  */
 @Entity
-@Table(name = "Productos")
+@Table(name = "producto")
 public class Producto {
 
     @Id
@@ -58,14 +58,14 @@ public class Producto {
    private EstadoProducto estadoProducto = EstadoProducto.ACTIVO;
    
    //mapeo para tabla intermedia entre product e ingrediente
-   @OneToMany(mappedBy = "producto",cascade = CascadeType.PERSIST)
+   @OneToMany(mappedBy = "producto",cascade = {CascadeType.PERSIST,CascadeType.MERGE})
    private List<IngredienteProducto> productosIngredientes = new ArrayList<>();
 
    
     public Producto(Long id, String nombre, TipoProducto tipo) {
         this.id = id;
         this.nombre = nombre;
-        this.tipoProducto = tipoProducto;
+        this.tipoProducto = tipo;
     }
 
     public Producto(String nombre, TipoProducto tipo) {
@@ -100,7 +100,7 @@ public class Producto {
         this.tipoProducto = tipoProducto;
     }
 
-    public EstadoProducto isEstado() {
+    public EstadoProducto getEstadoProducto() {
         return estadoProducto;
     }
 

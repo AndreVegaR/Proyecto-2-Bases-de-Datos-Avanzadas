@@ -5,6 +5,7 @@
 package DAOs;
 
 import Entidades.Producto;
+import Enumeradores.EstadoProducto;
 import conexion.ConexionBD;
 import excepciones.PersistenciaException;
 import java.util.List;
@@ -90,25 +91,33 @@ public class ProductoDAO {
     /*
     Use JPQL y primero hacemos el query para usar, despues con el setParameter damos el dato del id escrito en el metodo por el de la consulta
     y use executeUpdate por que ese se usa para eliminar o actualizar
+    Eliminamos las 2 cosas mediante el mismo id por que los 2 apuntan a producto
     */
     public void eliminarProducto(Long id){
         EntityManager em = ConexionBD.crearConexion();
         try{
-            String Query = "DELETE p FROM Producto p WHERE p.id = :id ";
-            em.createQuery(Query, Producto.class).setParameter("id", id).executeUpdate();
+            //Primero eliminamos la relacion de la tabla de los ingredientes con el de producto
+            //Se elimina la tabla donde esta relacionado con el producto
+            em.getTransaction().begin();
+            String sql = "DELETE FROM IngredienteProducto ip WHERE ip.producto.id = :id";
+            em.createQuery(sql).setParameter("id", id).executeUpdate();
+            
+            //Despues eliminamos el producto por su id
+            String Query = "DELETE FROM Producto p WHERE p.id = :id ";
+            em.createQuery(Query).setParameter("id", id).executeUpdate();
             em.getTransaction().commit();
         }catch (Exception e) {
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
             }
-            throw new PersistenciaException("Error al intentar actualizar el producto");
+            throw new PersistenciaException("Error al intentar eliminar el producto");
         } finally {
             em.close();
         }
     }
     
     /*
-    * METODO PARA BUSCAR UN PRODUCTO POR SU ID MEDIANTE CRITERIA QUERY
+    *METODO PARA BUSCAR UN PRODUCTO POR SU ID MEDIANTE CRITERIA QUERY
     *@param ID del producto a buscar en la base de datos
     *@return Producto buscado
     */
@@ -162,4 +171,41 @@ public class ProductoDAO {
             em.close();
         }
     }
+    
+    
+     /*
+    * METODO PARA CAMBIAR EL ESTADO DE UN PRODUCTO
+    *@return Producto actualizado
+    *@param id del producto y el estado
+    */
+    
+    /*
+    Use entity manager por que se me hace mas sencillo buscarlo por el id que hacer una consulta
+    */
+    public Producto cambiarEstado(Long id, EstadoProducto estado){
+      EntityManager em = ConexionBD.crearConexion();
+      try{
+          //Comenzamos la transaccion
+          em.getTransaction().begin();
+          //Buscamos si existe un producto con ese id 
+          Producto producto = em.find(Producto.class, id);  
+          //Si existe el producto cambiamos el estado
+          if(producto != null){
+              producto.setEstado(estado);
+          }   
+          //Terminamos la transacción
+          em.getTransaction().commit();
+          //Regresamos el producto
+          return producto; 
+      }catch (Exception e) {
+          if (em.getTransaction().isActive()) {
+              em.getTransaction().rollback();
+          }
+          throw new PersistenciaException("Error al cambiar el estado del producto");
+
+      } finally {
+          em.close();
+      }
+
+      }
 }
