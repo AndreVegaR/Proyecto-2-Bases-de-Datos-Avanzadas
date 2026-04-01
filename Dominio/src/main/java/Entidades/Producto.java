@@ -37,23 +37,13 @@ public class Producto {
     @Column(name = "nombre",nullable = false,unique = true)
     private String nombre;
     
-    /*
-    Este es un enum para los estados del producto ya sea activo e inactivo
-    EnumType.String guarda el nombre del string
-    Por ejemplo Producto p = new Producto();
-    p.setTipo(TipoProducto.BEBIDA);
-    */
-    public enum TipoProducto {
-        ENTRADA,
-        PLATILLO,
-        BEBIDA,
-        POSTRE
-    }
+
+    
    @Enumerated(EnumType.STRING)  
    @Column(name = "tipo_producto",nullable = false)
    private TipoProducto tipoProducto;
 
-   
+   @Enumerated(EnumType.STRING)
    @Column(name = "estado", nullable = false)
    private EstadoProducto estadoProducto = EstadoProducto.ACTIVO;
    

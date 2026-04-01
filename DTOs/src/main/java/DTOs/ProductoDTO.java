@@ -5,7 +5,6 @@
 package DTOs;
 
 import java.util.List;
-
 /**
  *
  * @author Angel
