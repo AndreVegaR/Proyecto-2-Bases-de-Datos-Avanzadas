@@ -3,8 +3,6 @@ import Enumeradores.EstadoComanda;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -12,7 +10,6 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
 
 
 
@@ -40,10 +37,9 @@ public class Comanda implements Serializable {
     @Column(name = "estado", nullable = false)
     private EstadoComanda estadoComanda = EstadoComanda.ABIERTA;
     
-    
     @ManyToOne
-    @JoinColumn(name = "id_Cliente")
-//    @Column(name = "cliente", nullable = true)
+    @JoinColumn(name = "id_cliente")
+    @Column(name = "cliente", nullable = true)
     private Cliente cliente;
     
     @Column(name = "comentarios", nullable = true, length = 200)
@@ -58,6 +54,7 @@ public class Comanda implements Serializable {
     //@OneToMany(mappedBy = "comanda")
     //private List<DetalleComanda> detalles = new ArrayList<>();
 
+    
     
     
     /**
@@ -127,13 +124,15 @@ public class Comanda implements Serializable {
     public void setEstadoComanda(EstadoComanda estadoComanda) {
         this.estadoComanda = estadoComanda;
     }
-
-  
-
-    public void setCliente(ClienteFrecuente cliente) {
+    
+    public Cliente getCliente() {
+        return cliente;
+    }
+    
+    public void setCliente(Cliente cliente) {
         this.cliente = cliente;
     }
-
+    
     public String getComentarios() {
         return comentarios;
     }

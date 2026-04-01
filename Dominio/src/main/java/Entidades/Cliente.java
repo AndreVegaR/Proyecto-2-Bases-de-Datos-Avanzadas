@@ -48,6 +48,8 @@ public class Cliente implements Serializable {
     @OneToMany(mappedBy = "cliente")
     private List<Comanda> comandas = new ArrayList<>();
 
+    
+    
     /**
      * Constructor completo
      * @param nombres
@@ -80,16 +82,12 @@ public class Cliente implements Serializable {
         this.fechaRegistro = fechaRegistro;
     }
     
-    
     /**
      * Constructor vacío
      */
     public Cliente() {
         
     }
-
-    
-    
     
     
     
@@ -165,5 +163,6 @@ public class Cliente implements Serializable {
      */
     public void agregarComanda(Comanda comanda) {
         comandas.add(comanda);
+        comanda.setCliente(this);
     }
 }

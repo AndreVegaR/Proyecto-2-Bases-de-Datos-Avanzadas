@@ -8,7 +8,7 @@ import java.util.List;
 
 /**
  *
- * @author Usuario
+ * @author Angel
  */
 public class ProductoDTO {
     

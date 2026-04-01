@@ -37,7 +37,7 @@ public class AdministrarClientes extends JFrame implements IObservador {
         //Crea el panel de búsqueda
         JPanel panelBusqueda = new JPanel(new FlowLayout(FlowLayout.LEFT, 20, 10));
         
-        //Arreglo con los textos de los diferentes botones
+        //Arreglo con los botones que permitirán filtrar según su campo de la tabla
         String[] filtros = {"Nombre", "Teléfono", "Correo"};
         
         //Mapa vacío que será poblado con botones de filtrad opor un método posterior
@@ -149,13 +149,17 @@ public class AdministrarClientes extends JFrame implements IObservador {
         
         String[] nombres = {"Andre", "Angel", "Jazmin", "Maye", "Quiñones", "Domitsu"};
         
+        Long contador = 0L;
+        
         for (String nombre: nombres) {
+            contador++;
             ClienteFrecuenteDTO cliente = new ClienteFrecuenteDTO();
             cliente.setNombres(nombre);
             cliente.setApellidoPaterno("");
             cliente.setApellidoMaterno("");
             cliente.setTelefono("1234566");
             cliente.setCorreo(nombre + "@gmail.com");
+            cliente.setId(contador);
             listaFalsa.add(cliente);
         }
         
@@ -165,6 +169,7 @@ public class AdministrarClientes extends JFrame implements IObservador {
         cliente.setApellidoMaterno("");
         cliente.setTelefono("999999");
         cliente.setCorreo("correoinsano@hotmail.com");
+        cliente.setId(20L);
         listaFalsa.add(cliente);
         
         mapearTabla(listaFalsa);

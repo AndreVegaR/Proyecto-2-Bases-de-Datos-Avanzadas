@@ -15,28 +15,28 @@ public class ClienteFrecuente extends Cliente implements Serializable {
     //Atributo
     @Transient
     private double gastoTotal = 0;
-
     
     //Constructores
     /**
-     * Constructors
+     * Constructor completo
+     * @param nombres
+     * @param apellidoPaterno
+     * @param apellidoMaterno
+     * @param telefono
+     * @param fechaRegistro
+     * @param correo 
      */
     public ClienteFrecuente(String nombres, String apellidoPaterno, String apellidoMaterno, String telefono, LocalDateTime fechaRegistro, String correo) {
         super(nombres, apellidoPaterno, apellidoMaterno, telefono, fechaRegistro, correo);
      
     }
     
-     /**
+    /**
      * Constructor vacío
      */
     public ClienteFrecuente() {
         super();
     }
-    
-    
-    
-    
-    
     
     
     
@@ -60,6 +60,7 @@ public class ClienteFrecuente extends Cliente implements Serializable {
         gastoTotal += comanda.getTotal();
     }
      */
+    
     
     
     

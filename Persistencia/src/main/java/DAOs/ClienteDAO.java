@@ -1,12 +1,13 @@
 package DAOs;
-
+import Entidades.Cliente;
 import java.util.List;
-import Entidades.ClienteFrecuente;
 import conexion.ConexionBD;
+import excepciones.PersistenciaException;
 import javax.persistence.EntityManager;
 
 /**
  * DAO para la entidad ClienteFrecuente
+ * Aplica el Principio de Sustitución de Liskov: el contrato aplica para el padre y sus hijas
  * @author Jazmin
  */
 public class ClienteDAO {
@@ -16,6 +17,11 @@ public class ClienteDAO {
     private ClienteDAO() {
     }
 
+    /**
+     * Singleton
+     * 
+     * @return DAO ya listo
+     */
     public static ClienteDAO getInstance() {
         if (instancia == null) {
             instancia = new ClienteDAO();
@@ -23,13 +29,15 @@ public class ClienteDAO {
         return instancia;
     }
 
+    
+    
     /**
-     * Guarda un cliente frecuente
+     * Guarda un cliente
      *
      * @param cliente a persistir
      * @return entidad persistida con ID generado
      */
-    public ClienteFrecuente guardarCliente(ClienteFrecuente cliente) {
+    public Cliente registrarCliente(Cliente cliente) {
         EntityManager em = ConexionBD.crearConexion();
         try {
             em.getTransaction().begin();
@@ -40,94 +48,121 @@ public class ClienteDAO {
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
             }
-            throw e;
+            throw new PersistenciaException("Error al registrar al cliente");
         } finally {
             em.close();
         }
     }
 
-    public ClienteFrecuente modificarCliente(ClienteFrecuente clienteModificado) {
+    
+    
+    /**
+     * Actualiza un cliente ya existente
+     * 
+     * @param clienteActualizado
+     * @return cliente actualizado
+     */
+    public Cliente actualizarCliente(Cliente clienteActualizado) {
         EntityManager em = ConexionBD.crearConexion();
         try {
             em.getTransaction().begin();
 
-            ClienteFrecuente persistente = em.find(ClienteFrecuente.class, clienteModificado.getId());
+            //Obtiene el tipo de cliente del parámetro con el .getClass()
+            Cliente cliente = em.find(clienteActualizado.getClass(), clienteActualizado.getId());
 
-            if (persistente != null) {
-
-                persistente.setNombres(clienteModificado.getNombres());
-                persistente.setApellidoPaterno(clienteModificado.getApellidoPaterno());
-                persistente.setApellidoMaterno(clienteModificado.getApellidoMaterno());
-                persistente.setTelefono(clienteModificado.getTelefono());
-                persistente.setCorreo(clienteModificado.getCorreo());
-
+            //Lo actualiza si no es nulo
+            if (cliente != null) {
+                cliente.setNombres(clienteActualizado.getNombres());
+                cliente.setApellidoPaterno(clienteActualizado.getApellidoPaterno());
+                cliente.setApellidoMaterno(clienteActualizado.getApellidoMaterno());
+                cliente.setTelefono(clienteActualizado.getTelefono());
+                cliente.setCorreo(clienteActualizado.getCorreo());
                 em.getTransaction().commit();
-                return persistente;
+                return cliente;
             } else {
-                throw new RuntimeException("No se encontró el cliente con ID: " + clienteModificado.getId());
+                throw new PersistenciaException("No se encontró el cliente con ID: " + clienteActualizado.getId());
             }
-        } catch (Exception e) {
-            if (em.getTransaction().isActive()) em.getTransaction().rollback();
-            throw e;
+        }
+        catch (Exception e) {
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            throw new PersistenciaException("Error al actualizar el cliente con ID: " + clienteActualizado.getId());
         } finally {
             em.close();
         }
     }
 
+    
+    
     /**
-     * Elimina un cliente frecuente por su ID
+     * Elimina un cliente por su ID
      *
      * @param id del cliente
      * @return entidad eliminada
      */
-    public ClienteFrecuente eliminarCliente(Long id) {
+    public Cliente eliminarCliente(Long id) {
         EntityManager em = ConexionBD.crearConexion();
         try {
             em.getTransaction().begin();
-            ClienteFrecuente cliente = em.find(ClienteFrecuente.class, id);
+            Cliente cliente = em.find(Cliente.class, id);
             if (cliente != null) {
                 em.remove(cliente);
             }
             em.getTransaction().commit();
             return cliente;
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
             }
-            throw e;
-        } finally {
+            throw new PersistenciaException("Error al eliminar el cliente");
+        }
+        finally {
             em.close();
         }
     }
 
+    
+    
     /**
-     * Obtiene todos los clientes frecuentes
+     * Obtiene todos los clientes de cualquier tipo
+     * En la tabla solo se van a mostrar los datos genéricos de los clientes
      *
-     * @return lista de clientes frecuentes
+     * @return lista de todos los clientes
      */
-    public List<ClienteFrecuente> verClientes() {
+    public List<Cliente> consultarClientes() {
         EntityManager em = ConexionBD.crearConexion();
         try {
-            String jpql = "SELECT c FROM ClienteFrecuente c";
-            return em.createQuery(jpql, ClienteFrecuente.class).getResultList();
-        } finally {
+            String jpql = "SELECT c FROM Cliente c";
+            return em.createQuery(jpql, Cliente.class).getResultList();
+        }
+        catch (Exception e) {
+            throw new PersistenciaException("Error al consultar los clientes");
+        }
+        finally {
             em.close();
         }
     }
 
+    
+    
     /**
-     * Busca un cliente frecuente por su ID
+     * Busca un cliente por su ID
      *
      * @param id del cliente
      * @return entidad encontrada o null
      */
-    public ClienteFrecuente buscarPorId(Long id) {
+    public Cliente buscarPorId(Long id) {
         EntityManager em = ConexionBD.crearConexion();
         try {
-            return em.find(ClienteFrecuente.class, id);
-        } finally {
+            return em.find(Cliente.class, id);
+        } 
+        catch (Exception e) {
+            throw new PersistenciaException("Error al buscar el client con ID " + id);
+        }
+        finally {
             em.close();
         }
     }
-
 }

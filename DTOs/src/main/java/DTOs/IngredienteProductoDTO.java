@@ -6,7 +6,7 @@ package DTOs;
 
 /**
  *
- * @author Usuario
+ * @author Angel
  */
 public class IngredienteProductoDTO {
     

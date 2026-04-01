@@ -1,5 +1,6 @@
 package BO;
 import DAOs.ClienteDAO;
+import DTOs.ClienteDTO;
 import DTOs.ClienteFrecuenteDTO;
 import Entidades.Cliente;
 import Entidades.ClienteFrecuente;
@@ -12,8 +13,11 @@ import utilerias.Utilerias;
 
 
 /**
- * Logica de negocio para ClienteFrecuentes
- * Utiliza el singleton de ClienteFrecuenteDAO
+ * Logica de negocio para Cliente
+ * Utiliza el singleton de ClienteDAO
+ * Utiliza el principio de Liskov, así que acepta cualquier tipo de cliente
+ * El mape a dominio-DTO y viceversa se hace mediante métodos mappers
+ * Negocio solo sabe que trabaja con clientes, los mappers hacen el resto
  * @author Jazmin
  */
 public class ClienteBO {
@@ -36,15 +40,44 @@ public class ClienteBO {
         return instancia;
     }
     
+    /**
+     * Se encarga de recibir datos de presentación y empaquetarlos a persistencia
+     * Se procesan mediant un mapper, del cual negocio desconoce su funcionamiento
+     * Como el flujo es de presentación a persistencia, se convierte un DTO a entidad
+     * 
+     * @param dto de presentación
+     * @return un cliente persistido
+     */
+    public ClienteDTO registrarCliente(ClienteDTO dto) {
+        //(Validaciones necesarias)
+        
+        //Fecha y hora de cuándo se manda a convertir en dominio para ser persistido
+        //Se hace aquí porque es lógica de negocio
+        dto.setFechaRegistro(LocalDateTime.now());
+        
+        //Se mapea de DTO a entidad
+        Cliente cliente = ClienteMapper.mapearDTOEntidad(dto);
+        
+        //(Encriptación)
+        
+        //Se man1da a persistir al DAO
+        ClienteDAO.getInstance().registrarCliente(cliente);
+        
+        //(Desencriptación)
+        
+        //Se regresa el DTO
+        return ClienteMapper.mapearEntidadDTO(cliente);
+    }
+    
     
     
     /**
-     * Guarda un cliente frecuente despues de validarse
+     * Guarda un cliente despues de validarse
      * 
-     * @param clienteDTO datos del cliente capturado desde la capa de presentación
-     * @return ClienteFrecuenteDTO con los datos guardados
+     * @param cliente datos del cliente capturado desde la capa de presentación
+     * @return Cliente con los datos guardados
      */
-    public ClienteFrecuenteDTO guardarCliente(ClienteFrecuenteDTO clienteDTO){
+    public Cliente agregarCliente(ClienteDTO clienteDTO){
         //Validaciones
         Utilerias.esNulo(clienteDTO);
         Utilerias.esCadenadaVacia(clienteDTO.getNombres(), "Nombres");
@@ -53,19 +86,17 @@ public class ClienteBO {
         Utilerias.esCadenadaVacia(clienteDTO.getTelefono(),"Teléfono");
         //Utilerias.validarTelefono(clienteDTO.getTelefono());
         
-        //Crea la fecha del registro al persistirse
-        if(clienteDTO.getFechaRegistro() == null){
-            clienteDTO.setFechaRegistro(LocalDateTime.now());
-        }
+
+        clienteDTO.setFechaRegistro(LocalDateTime.now());
         
         //Mapeo a entidad
-        ClienteFrecuente cliente = ClienteMapper.mapearDTOEntidad(clienteDTO);
+        Cliente cliente = ClienteMapper.mapearDTOEntidad(clienteDTO);
         
         //Encriptar antes de guardar
         String telefono = cliente.getTelefono();
         String telefonoEncriptado = EncriptarTelefono.encriptar(telefono);
         cliente.setTelefono(telefonoEncriptado);
-        cliente = ClienteDAO.getInstance().guardarCliente(cliente);
+        cliente = (ClienteFrecuente) ClienteDAO.getInstance().guardarCliente(cliente);
         
         //Mapeo a DTO
         ClienteFrecuenteDTO resultado = ClienteMapper.mapearEntidadDTO(cliente);

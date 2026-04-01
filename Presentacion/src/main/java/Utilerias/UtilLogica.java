@@ -82,7 +82,7 @@ public class UtilLogica {
                                             TableRowSorter<DefaultTableModel> sorter,
                                             int[] columnaActiva) {
         
-        //Es la condición base del Regex, que filtra cualquier cosa que coincida
+        //Es la condición base del Regex, que ignora diferencia entre mayúsculas y minúsculas
         String regexBase = "(?i)";
         
         //Bucle que creará un botón con lógica según los necesarios (filtrar Lógica)
