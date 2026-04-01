@@ -1,5 +1,6 @@
 package Coordinadores;
 import BO.ClienteBO;
+import DTOs.ClienteDTO;
 import DTOs.ClienteFrecuenteDTO;
 import java.util.List;
 
@@ -7,19 +8,20 @@ import java.util.List;
  * @author Angel
  * Coordinador que unifica lógica de negocio
  * Utiliza un singleton
+ * Los atributos (como el cliente) los guarda aquí para trabajar con ellos después
+ * Esto se hace con la lógica de al hacer clic en un registro de la tabla se guarda en el atributo especificado
  */
 public class CoordinadorNegocio implements ICoordinadorNegocio {
     
-    //Atributo clienteFrecuente seleccionado
-    private ClienteFrecuenteDTO clienteFrecuente = new ClienteFrecuenteDTO();
+    //El cliente seleccionado en un momento del programa (clic en registro de la tabla)
+    private ClienteDTO cliente = new ClienteDTO();
     public void setClienteFrecuente(ClienteFrecuenteDTO clienteFrecuente) {
-        this.clienteFrecuente = clienteFrecuente;
+        this.cliente = cliente;
     }
-    public ClienteFrecuenteDTO getClienteFrecuente(){
-        return clienteFrecuente;
+    public ClienteDTO getClienteFrecuente(){
+        return cliente;
     }
-
-
+    
     //Única instancia
     private static CoordinadorNegocio instancia;
     
@@ -40,19 +42,19 @@ public class CoordinadorNegocio implements ICoordinadorNegocio {
         return instancia;
     }
     
-    
-    
     /**
      * Recibe un DTO con los datos del cliente y los guarda mediante el BO de cliente
-     * También lo guarda para ser usado
+     * Llama al método de BO simplemente
      * 
-     * @param clienteFrecuente 
+     * @param cliente a registrar
      */
     @Override
-    public void registrarClienteFrecuente(ClienteFrecuenteDTO clienteFrecuente){
-        setClienteFrecuente(clienteFrecuente);
-        ClienteBO.getInstance().guardarCliente(clienteFrecuente);
+    public void registrarCliente(ClienteDTO cliente) {
+        ClienteBO.getInstance().registrarCliente(cliente);
     }
+    
+    
+    
     
     
     
@@ -61,10 +63,13 @@ public class CoordinadorNegocio implements ICoordinadorNegocio {
      * 
      * @return lista de clientes ya registrados
      */
-    @Override
+    /**
+     *  @Override
     public List<ClienteFrecuenteDTO> consultarClientesFrecuentes() {
         return ClienteBO.getInstance().verClientes();
     }
+     */
+   
     
     
     
@@ -74,10 +79,14 @@ public class CoordinadorNegocio implements ICoordinadorNegocio {
      * @param clienteFrecuente
      * @return el cliente actualizado
      */
-    @Override
+    /**
+     * @Override
     public ClienteFrecuenteDTO actualizarCliente(ClienteFrecuenteDTO clienteFrecuente) {
         return ClienteBO.getInstance().modificarCliente(clienteFrecuente);
     }
+     * 
+     * 
+     */
     
     
     
@@ -86,16 +95,24 @@ public class CoordinadorNegocio implements ICoordinadorNegocio {
      * 
      * @param clienteFrecuente
      */
-    @Override
+    /**
+     * 
+     * @Override
     public void eliminarClienteFrecuente(ClienteFrecuenteDTO clienteFrecuente) {
-        ClienteBO.getInstance().eliminarCliente(clienteFrecuente.getId());
+        //ClienteBO.getInstance().eliminarCliente(clienteFrecuente.getId());
     }
+     * 
+     */
     
     
     
-    @Override
+    /**
+     * 
+     * @Override
     public ClienteFrecuenteDTO consultarCliente(Long id) {
         //return ClienteFrecuenteBO.getInstance().consultarCliente(id);
         return null;
     }
+     * 
+     */
 }

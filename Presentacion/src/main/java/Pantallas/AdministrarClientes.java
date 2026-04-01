@@ -1,6 +1,7 @@
 package pantallas;
 import Coordinadores.CoordinadorNegocio;
 import Coordinadores.CoordinadorPantallas;
+import DTOs.ClienteDTO;
 import DTOs.ClienteFrecuenteDTO;
 import Principal.MenuPrincipal;
 import Utilerias.Constantes;
@@ -17,6 +18,7 @@ import javax.swing.*;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Supplier;
+import javax.swing.table.DefaultTableModel;
 import observadores.IObservador;
 
 /**
@@ -30,7 +32,23 @@ public class AdministrarClientes extends JFrame implements IObservador {
     //Se instancia como atributo para usarlo en métodos fuera del constructor
     private JTable tabla;
     
+    /**
+     * Arreglo que contiene solo un elemento: el índice del botón que filtra en la búsqueda
+     * Se implementa así porque los addActionListeners usan variables final
+     * Como una variable final no puede cambiar, se guarda en un arreglo
+     * Entonces el arreglo en sí nunca cambia en sí; solo cambia su contenido
+     * Este movimiento no es ilegal para Java y permite el flujo perfectamente
+     * 
+     */
     final int[] columnaActiva = {-1}; // -1 significa "todas las columnas"
+    
+    /**
+     * Atributo en donde se almacena en memoria la lista de todos los clientes
+     * Esto para poder manipular estos registros (para obtener uno en específico por índice como ejemplo)
+     * De esta forma no se tiene que llamar cada vez al BO y gastar recursos en consultas SQL
+     * Mejor todo se consulta localmente
+     */
+    private List<ClienteDTO> listaTemporal;
 
     public AdministrarClientes() {
 
@@ -97,24 +115,25 @@ public class AdministrarClientes extends JFrame implements IObservador {
         tabla.addMouseListener(new java.awt.event.MouseAdapter() {
             @Override
             public void mouseClicked(java.awt.event.MouseEvent evt) {
+                ClienteDTO cliente = null;
                 int fila = tabla.getSelectedRow();
                 if (fila != -1) {
-                        /**
-                         * //Obtiene la lista de todos los clientes
-                        List<ClienteFrecuenteDTO> lista = CoordinadorNegocio.getInstance().consultarClientesFrecuentes();
-
-                        //El cliente seleccionado es el mismo del índice seleccionado de las filas
-                        ClienteFrecuenteDTO clienteSeleccionado = lista.get(fila);
-
-                        //El coordinador reconoce al cliente seleccionado para operaciones futuras
-                        CoordinadorNegocio.getInstance().setClienteFrecuente(clienteSeleccionado);
-                         * 
-                         * 
-                         */
-                    }
+                    /**
+                     * Esto mantiene siempre el índice real de los registros
+                     * Por ejemplo, si selecciono el primer registro de una tabla filtrada, y sabe
+                     * que se trata en realidad de otro índice real en la lista
+                     */
+                    int indiceReal = tabla.convertRowIndexToModel(fila);
+                    
+                    //
+                    //listaTemporal = Cordinador.getInstance().consultarClientes();
+                    
+                    //Obtiene el cliente en dicho índice y lo manda al método que muestra su info
+                    //cliente = listaTemporal.get(indiceReal);
+                }
+                
                 if (evt.getClickCount() >= 2) {
-                    List<ClienteFrecuenteDTO> l = llenarTablaFalsa();
-                    ClienteFrecuenteDTO cliente = l.get(fila);
+                    DefaultTableModel modelo = (DefaultTableModel) tabla.getModel();
                     mostrarInfoEspecifica(cliente);
                 }
            }
@@ -127,25 +146,28 @@ public class AdministrarClientes extends JFrame implements IObservador {
         });
 
         //Llena la tabla cada vez que se entre a la pantalla
+        //Una vez terminadas las pruebas, debe ser llenarTabla() a secas
         llenarTablaFalsa();
     }
     
     
     
     /**
-     * Llena la tabla con los registros Obtiene del coordinador todos los
-     * registros de la BD Con el lambda CASTEA a la clase en concreto para
-     * aplicar getters
+     * Llena la tabla con registros de cada cliente
+     * También se guardan en el atributo local de listaTemporal
+     * De esta forma podemos acceder a su contenido sin tener que conectarnos cada vez
      */
     public void llenarTabla() {
-        //List<ClienteFrecuenteDTO> lista = CoordinadorNegocio.getInstance().consultarClientesFrecuentes();
-        //mapearTabla(lista);
-        
+        //listaTemporal = Cordinador.getInstance().consultarClientes();
+        //mapearTabla(lista); 
     }
     
-    
-    public List<ClienteFrecuenteDTO> llenarTablaFalsa() {
-        List<ClienteFrecuenteDTO> listaFalsa = new ArrayList<>();
+    /**
+     * SOLO ES TEMPORAL
+     * @return 
+     */
+    public List<ClienteDTO> llenarTablaFalsa() {
+        List<ClienteDTO> listaFalsa = new ArrayList<>();
         
         String[] nombres = {"Andre", "Angel", "Jazmin", "Maye", "Quiñones", "Domitsu"};
         
@@ -172,54 +194,58 @@ public class AdministrarClientes extends JFrame implements IObservador {
         cliente.setId(20L);
         listaFalsa.add(cliente);
         
-        mapearTabla(listaFalsa);
+        //POR AHORA LO REEMPLAZA ESTO ES SOLO PARA PRUEBAS
+        listaTemporal = listaFalsa;
+        
+        
+        mapearTabla();
         
         return listaFalsa;
     }
     
-
     
+    
+    /**
+     * Muestra los atributos base de los clientes en la tabla directo de la BD
+     */
+    private void mapearTabla() {
+        UtilGeneral.registrarTabla(tabla, listaTemporal, c -> new Object[]{
+            c.getId(),
+            c.getNombres() + " " + c.getApellidoPaterno() + " " + c.getApellidoMaterno(),
+            c.getTelefono(),
+            (c.getCorreo() != null && !c.getCorreo().isEmpty()) ? c.getCorreo() : "No tiene",
+            c.getFechaRegistro(),
+            "Frecuente"
+        });
+    }
    
    
-   private void mapearTabla(List<ClienteFrecuenteDTO> lista) {
-       UtilGeneral.registrarTabla(tabla, lista, c -> new Object[]{
-           c.getId(),
-           c.getNombres() + " " + c.getApellidoPaterno() + " " + c.getApellidoMaterno(),
-           c.getTelefono(),
-           (c.getCorreo() != null && !c.getCorreo().isEmpty()) ? c.getCorreo() : "No tiene",
-           c.getFechaRegistro(),
-           "Frecuente"
-       });
-   }
-   
-   
-   
-   private void mostrarInfoEspecifica(ClienteFrecuenteDTO dto) {
-       
-       String info = "Información adicional del cliente " + dto.getId() + ": \n"
-                      + "Puntos de fidelidad: " + dto.getPuntosFidelidad() +  "\n"
-                      + "Número de visitas: " + dto.getVisitas() + "\n"
-                      + "Gasto total. " + dto.getGastoTotal() + "\n";
-       
-       UtilGeneral.dialogoAviso(this, info);
+   /**
+    * Muestra la información adicional del tipo de cliente
+    * No debe preocuparse por esos datos en específico
+    * Solo sabe que cualquier subclase de ClienteDTO tiene ese método
+    * Así que es ajeno a los tipos de clientes, solo sabe que debe llamar al método getInfoAdicional()
+    * 
+    * @param dto del cliente a mostrar información adicional
+    */
+    private void mostrarInfoEspecifica(ClienteDTO dto) {
+       String info = dto.getInfoAdicional();
+
+       //Si sí regresó algo despliga en efecto el mensaje
+       if (info != null && !info.isBlank()) {
+           UtilGeneral.dialogoAviso(this, info);
+       }
    }
    
    
    
    /**
      * Método de la IObservador
-     * Escucha el llamado el formulario y activa la lógica de registrar al
-     * cliente en la tabla Hace una lista con el único elemento, esto para poder
-     * trabajar bien con el método
+     * Escucha el llamado el formulario de registrar o actualizar cliente
+     * Entonces cuando se haga el procedimiennto automáticamnete se refleja en la tabla
      */
     @Override
     public void notificarCambio() {
         llenarTabla();
-    }
-    
-    
-    
-    public void ejecutarAccion(int i) {
-        UtilGeneral.dialogoSiNo(this, "Prueba: ¡Yo soy el índice " + i + "!");
     }
 }

@@ -1,4 +1,5 @@
 package Coordinadores;
+import DTOs.ClienteDTO;
 import DTOs.ClienteFrecuenteDTO;
 import java.util.List;
 
@@ -10,13 +11,17 @@ public interface ICoordinadorNegocio {
     
 
     //Métodos de clientes
-    void registrarClienteFrecuente(ClienteFrecuenteDTO clienteFrecuente);
+    public void registrarCliente(ClienteDTO cliente);
     
-    public void eliminarClienteFrecuente(ClienteFrecuenteDTO cliente);
+    /**
+     * 
+     * public void eliminarClienteFrecuente(ClienteFrecuenteDTO cliente);
     
     public List<ClienteFrecuenteDTO> consultarClientesFrecuentes();
     
     public ClienteFrecuenteDTO actualizarCliente(ClienteFrecuenteDTO clienteFrecuente);
     
     ClienteFrecuenteDTO consultarCliente(Long id);
+     * 
+     */
 }

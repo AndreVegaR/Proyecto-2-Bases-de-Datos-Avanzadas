@@ -83,4 +83,20 @@ public class ClienteFrecuenteDTO extends ClienteDTO{
     public void setPuntosFidelidad(int puntosFidelidad) {
         this.puntosFidelidad = puntosFidelidad;
     } 
+    
+    /**
+     * Obtiene la información específica de este tipo de cliente
+     * Será útil para presentación
+     * 
+     * @return un String con la información adicional
+     */
+    @Override
+    public String getInfoAdicional() {
+        String info = "Información adicional del cliente " + getId() + ": \n"
+                      + "Puntos de fidelidad: " + getPuntosFidelidad() +  "\n"
+                      + "Número de visitas: " + getVisitas() + "\n"
+                      + "Gasto total: " + getGastoTotal() + "\n";
+        
+        return info;
+    }
 }

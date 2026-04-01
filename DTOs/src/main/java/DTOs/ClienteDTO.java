@@ -97,6 +97,15 @@ public class ClienteDTO {
         this.fechaRegistro = fechaRegistro;
     }
     
-    
+    /**
+     * Regresa la información adicional para la pantalla de la tabla
+     * Se declara en la superclase solo para afirmar que cualquier subclase tiene este método
+     * No debería hacer nada aquí, y eso está bien
+     * 
+     * @return nada en este caso en específico; no se necesita
+     */
+    public String getInfoAdicional() {
+        return "";
+    }
     
 }
