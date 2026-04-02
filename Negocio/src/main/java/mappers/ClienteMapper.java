@@ -28,20 +28,26 @@ public class ClienteMapper {
             return null;
         }
         
+        //Crea la instancia de dominio primero para no tener problemas de casteo
+        Cliente entidad = null;
+        
         /**
-         * En esta parte va preguntando qué tipo de instancia es
-         * Siempre serán un ClienteDTO, pero con instanceof preguntan la subclase en específico
-         * Lo castea según la subclase para el método en específico
-         * Regresa una entidad mapeada
-         * Si de casualidad no encontró nada, regresa null
-         * 
+         * En este grupo de condiciones pregunta por la sublase específica
+         * Si una coincide, castea el objeto a la subclase y lo regresa mapeado
+         * Primero lo específico, después lo general
          */
         if (dto instanceof ClienteFrecuenteDTO) {
-            return mapearDTOEntidadFrecuente((ClienteFrecuenteDTO) dto);
+            entidad = mapearDTOEntidadFrecuente((ClienteFrecuenteDTO) dto);
         }
         
-        //Null si no hay coincidencias
-        return null;
+        //Si no coincidió ninguna clase, regresa null
+        if (entidad == null) {
+            return null;
+        }
+        
+        //Mapea los atributos base y regresa la entidad
+        mapearDTOEntidadBase(dto, entidad);
+        return entidad;
     }
     
     
@@ -63,20 +69,26 @@ public class ClienteMapper {
             return null;
         }
         
+        //Crea la instancia del DTO de una vez para no tener problemas de casteo
+        ClienteDTO dto = null;
+        
         /**
-         * En esta parte va preguntando qué tipo de instancia es
-         * Siempre serán un Cliente, pero con instanceof preguntan la subclase en específico
-         * Lo castea según la subclase para el método en específico
-         * Regresa una entidad mapeada
-         * Si de casualidad no encontró nada, regresa null
-         * 
+         * En este grupo de condiciones pregunta por la sublase específica
+         * Si una coincide, castea el objeto a la subclase y lo regresa mapeado
+         * Primero lo específico, después lo general
          */
         if (entidad instanceof ClienteFrecuente) {
-            return mapearEntidadDTOFrecuente((ClienteFrecuente) entidad);
+            dto = mapearEntidadDTOFrecuente((ClienteFrecuente) entidad);
         }
         
-        //Null si no hay coincidencias
-        return null;
+        //Si no coincidió ninguna clase, regresa null
+        if (dto == null) {
+            return null;
+        }
+        
+        //Mapea los datos base y regresa el DTO
+        mapearEntidadDTOBase(entidad, dto);
+        return dto;
     }
     
     
@@ -91,8 +103,7 @@ public class ClienteMapper {
         
         //Llama al método base y casta el resultado a un tipo específico
         ClienteFrecuente entidad = new ClienteFrecuente();
-        mapearDTOEntidadBase(dto, entidad);
-        
+
         /**
          * Aquí debería estar la lógica de mapeo adicional según la subclase
          * Como en este caso todos los atributos de frecuente son calculados, no hay nada
@@ -115,9 +126,8 @@ public class ClienteMapper {
         
         //Llama al método base y casta el resultado a un tipo específico
         ClienteFrecuenteDTO dto = new ClienteFrecuenteDTO();
-        mapearEntidadDTOBase(entidad, dto);
         
-        //Se agregan los atributos específicos de un client frecuente
+        //Se agregan los atributos específicos de un cliente frecuente
         dto.setVisitas(entidad.getVisitas());
         dto.setGastoTotal(entidad.getGastoTotal());
         dto.setPuntosFidelidad(entidad.getPuntosFidelidad());
