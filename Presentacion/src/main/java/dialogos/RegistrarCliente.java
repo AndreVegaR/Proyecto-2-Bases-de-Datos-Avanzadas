@@ -15,6 +15,8 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import observadores.IObservador;
+import DTOs.ClienteDTO;
+import excepciones.NegocioException;
 
 /**
  * JDialog para registrar un cliente
@@ -72,16 +74,6 @@ public class RegistrarCliente extends JDialog {
                     return;
                 }
 
-                //Esto va pa negocio creo
-                /**
-                 * if (!telefono.matches("\\d{10}")) {
-                    JOptionPane.showMessageDialog(RegistrarCliente.this, 
-                        "El teléfono debe tener exactamente 10 dígitos", 
-                        "Formato incorrecto", JOptionPane.WARNING_MESSAGE);
-                    return;
-                }
-                 */
-
                 //Confirmación
                 int opcion = JOptionPane.showConfirmDialog(
                         RegistrarCliente.this,
@@ -92,16 +84,21 @@ public class RegistrarCliente extends JDialog {
 
                 if (opcion == JOptionPane.YES_OPTION) {
                     //Crea el DTO
-                    ClienteFrecuenteDTO dto = new ClienteFrecuenteDTO();
-                    dto.setNombres(nombre);
-                    dto.setApellidoPaterno(apellidoP);
-                    dto.setApellidoMaterno(apellidoM);
-                    dto.setTelefono(telefono);
-                    dto.setCorreo(correo); 
+                    ClienteFrecuenteDTO cliente = new ClienteFrecuenteDTO();
+                    cliente.setNombres(nombre);
+                    cliente.setApellidoPaterno(apellidoP);
+                    cliente.setApellidoMaterno(apellidoM);
+                    cliente.setTelefono(telefono);
+                    cliente.setCorreo(correo); 
 
                     //Agrega al cliente al sistema
-                    CoordinadorNegocio.getInstance().registrarClienteFrecuente(dto);
-                    JOptionPane.showMessageDialog(RegistrarCliente.this, "Cliente creado correctamente");
+                    try {
+                        CoordinadorNegocio.getInstance().registrarCliente(cliente);
+                        JOptionPane.showMessageDialog(RegistrarCliente.this, "Cliente creado correctamente");
+                    } catch (NegocioException ex) {
+                        JOptionPane.showMessageDialog(RegistrarCliente.this, ex.getMessage());
+                    }
+                    
                     
                     //Notifica al observador sobre el nuevo cliente para que lo registre
                     if (RegistrarCliente.this.observador != null) {

@@ -14,6 +14,9 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import observadores.IObservador;
+import DTOs.ClienteDTO;
+import excepciones.NegocioException;
+import java.time.LocalDateTime;
 
 /**
  * JDialog para actualizar un cliente
@@ -67,7 +70,7 @@ public class ActualizarCliente extends JDialog {
                 if (opcion == JOptionPane.YES_OPTION) {
 
                     // 1. Obtener los datos del cliente que seleccionaste (EL QUE TIENE EL ID REAL)
-                    ClienteFrecuenteDTO clienteOriginal = CoordinadorNegocio.getInstance().getClienteFrecuente();
+                    ClienteDTO clienteOriginal = CoordinadorNegocio.getInstance().getCliente();
 
                     // 2. Crear el objeto actualizado
                     ClienteFrecuenteDTO clienteActualizado = new ClienteFrecuenteDTO();
@@ -78,6 +81,7 @@ public class ActualizarCliente extends JDialog {
                     String apellidoM = tFApellidoM.getText().trim();
                     String telefono = tFTelefono.getText().trim();
                     String correo = tFCorreo.getText().trim();
+                    LocalDateTime fechaRegistro = clienteActualizado.getFechaRegistro();
 
                     
                     //Pasa los atributos del cliente seleccionado, pero actualiza si reconoce si hubo cambios en el formulario
@@ -87,9 +91,15 @@ public class ActualizarCliente extends JDialog {
                     clienteActualizado.setApellidoMaterno(apellidoM.isBlank() ? clienteOriginal.getApellidoMaterno() : apellidoM);
                     clienteActualizado.setTelefono(telefono.isBlank() ? clienteOriginal.getTelefono() : telefono);
                     clienteActualizado.setCorreo(correo.isBlank() ? clienteOriginal.getCorreo() : correo);
+                    clienteActualizado.setFechaRegistro(fechaRegistro);
 
-                    //Mandar a actualizar
-                    CoordinadorNegocio.getInstance().actualizarCliente(clienteActualizado);
+                    //Lo manda a actualizar
+                    try {
+                        CoordinadorNegocio.getInstance().actualizarCliente(clienteActualizado);
+                        JOptionPane.showMessageDialog(ActualizarCliente.this, "Cliente creado correctamente");
+                    } catch (NegocioException ex) {
+                        JOptionPane.showMessageDialog(ActualizarCliente.this, ex.getMessage());
+                    }
 
                     //Observador
                     if (ActualizarCliente.this.observador != null) {

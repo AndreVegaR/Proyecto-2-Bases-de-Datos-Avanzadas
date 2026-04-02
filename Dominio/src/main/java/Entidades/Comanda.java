@@ -11,11 +11,11 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
-
-
 /**
  * Representa a una comanda, una orden pedida por clientes
  * Puede estar relacionada o no a un cliente frecuente previamente registrado
+ * 
+ * @author Andre
  */
 @Entity
 public class Comanda implements Serializable {
@@ -38,8 +38,7 @@ public class Comanda implements Serializable {
     private EstadoComanda estadoComanda = EstadoComanda.ABIERTA;
     
     @ManyToOne
-    @JoinColumn(name = "id_cliente")
-    @Column(name = "cliente", nullable = true)
+    @JoinColumn(name = "id_cliente", nullable = true)
     private Cliente cliente;
     
     @Column(name = "comentarios", nullable = true, length = 200)
@@ -55,16 +54,12 @@ public class Comanda implements Serializable {
     //private List<DetalleComanda> detalles = new ArrayList<>();
 
     
-    
-    
     /**
      * Constructor vacío
      */
     public Comanda() {
         
     }
-    
-    
     
     /**
      * Genera un folio según un formato establecido

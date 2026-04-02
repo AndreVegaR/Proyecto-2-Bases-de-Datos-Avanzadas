@@ -48,7 +48,7 @@ public class ClienteDAO {
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
             }
-            throw new PersistenciaException("Error al registrar al cliente");
+            throw new PersistenciaException("Error al registrar al cliente: " + e.getMessage());
         } finally {
             em.close();
         }
@@ -56,43 +56,22 @@ public class ClienteDAO {
 
     
     
-    /**
-     * Actualiza un cliente ya existente
-     * 
-     * @param clienteActualizado
-     * @return cliente actualizado
-     */
     public Cliente actualizarCliente(Cliente clienteActualizado) {
         EntityManager em = ConexionBD.crearConexion();
         try {
             em.getTransaction().begin();
-
-            //Obtiene el tipo de cliente del parámetro con el .getClass()
-            Cliente cliente = em.find(clienteActualizado.getClass(), clienteActualizado.getId());
-
-            //Lo actualiza si no es nulo
-            if (cliente != null) {
-                cliente.setNombres(clienteActualizado.getNombres());
-                cliente.setApellidoPaterno(clienteActualizado.getApellidoPaterno());
-                cliente.setApellidoMaterno(clienteActualizado.getApellidoMaterno());
-                cliente.setTelefono(clienteActualizado.getTelefono());
-                cliente.setCorreo(clienteActualizado.getCorreo());
-                em.getTransaction().commit();
-                return cliente;
-            } else {
-                throw new PersistenciaException("No se encontró el cliente con ID: " + clienteActualizado.getId());
-            }
-        }
-        catch (Exception e) {
+            Cliente actualizado = em.merge(clienteActualizado);
+            em.getTransaction().commit();
+            return actualizado;
+        } catch (Exception e) {
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
             }
-            throw new PersistenciaException("Error al actualizar el cliente con ID: " + clienteActualizado.getId());
+            throw new PersistenciaException("Error al actualizar al cliente: " + e.getMessage());
         } finally {
             em.close();
         }
     }
-
     
     
     /**
@@ -116,7 +95,7 @@ public class ClienteDAO {
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
             }
-            throw new PersistenciaException("Error al eliminar el cliente");
+            throw new PersistenciaException("Error al eliminar el cliente: " + e.getMessage());
         }
         finally {
             em.close();
@@ -138,7 +117,7 @@ public class ClienteDAO {
             return em.createQuery(jpql, Cliente.class).getResultList();
         }
         catch (Exception e) {
-            throw new PersistenciaException("Error al consultar los clientes");
+            throw new PersistenciaException("Error al consultar los clientes: " + e.getMessage());
         }
         finally {
             em.close();
@@ -159,7 +138,7 @@ public class ClienteDAO {
             return em.find(Cliente.class, id);
         } 
         catch (Exception e) {
-            throw new PersistenciaException("Error al buscar el client con ID " + id);
+            throw new PersistenciaException("Error al buscar el client con ID " + id + ": " + e.getMessage());
         }
         finally {
             em.close();

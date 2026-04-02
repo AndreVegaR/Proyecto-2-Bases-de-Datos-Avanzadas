@@ -3,9 +3,15 @@ import DTOs.ClienteDTO;
 import DTOs.ClienteFrecuenteDTO;
 import Entidades.Cliente;
 import Entidades.ClienteFrecuente;
+import excepciones.NegocioException;
+import utilerias.EncriptarTelefono;
 
 /**
- * Clase que mapea de DTO a entidad y viceversa a ClienteFrecuente
+ * Clase que mapea de DTO a entidad y viceversa a Cliente
+ * El mapper es inteligente: ya sabe qué protocolo existe para cada tipo de subclase
+ * Negocio solo conoce dos métodos: mapearDTOEntidad y mapearEntidadDTO
+ * Debajo hay múltiples privados auxiliares que hacen la magia de reconocer la subclase específica
+ * 
  * @author Andre
  */
 public class ClienteMapper {
@@ -25,7 +31,7 @@ public class ClienteMapper {
 
         //Protección si es nulo
         if (dto == null) {
-            return null;
+            throw new NegocioException("ClienteDTO null");
         }
         
         //Crea la instancia de dominio primero para no tener problemas de casteo
@@ -42,7 +48,7 @@ public class ClienteMapper {
         
         //Si no coincidió ninguna clase, regresa null
         if (entidad == null) {
-            return null;
+            throw new NegocioException("No se reconoció una subclase para ClienteDTO");
         }
         
         //Mapea los atributos base y regresa la entidad
@@ -66,7 +72,7 @@ public class ClienteMapper {
     public static ClienteDTO mapearEntidadDTO(Cliente entidad) {
         //Protección si es nulo
         if (entidad == null) {
-            return null;
+            throw new NegocioException("Cliente null");
         }
         
         //Crea la instancia del DTO de una vez para no tener problemas de casteo
@@ -83,7 +89,7 @@ public class ClienteMapper {
         
         //Si no coincidió ninguna clase, regresa null
         if (dto == null) {
-            return null;
+            throw new NegocioException("No se reconoció una subclase para Cliente");
         }
         
         //Mapea los datos base y regresa el DTO
@@ -151,9 +157,16 @@ public class ClienteMapper {
         entidad.setNombres(dto.getNombres());
         entidad.setApellidoPaterno(dto.getApellidoPaterno());
         entidad.setApellidoMaterno(dto.getApellidoMaterno());
-        entidad.setTelefono(dto.getTelefono());
         entidad.setFechaRegistro(dto.getFechaRegistro());
         
+        /**
+         * Cifra el numero de teléfono del cliente
+         * Como este flujo es de DTO a entidad, se debe encriptar para que llegue cifrado a la BD
+         * Se encripta aquí y no en negocio porque es una regla de lenguaje, de traducción
+         */
+        String telefonoEncriptado = EncriptarTelefono.encriptar(dto.getTelefono());
+        entidad.setTelefono(telefonoEncriptado);
+
         //Correo opcional
         String correo = dto.getCorreo();
         if (correo != null) {
@@ -177,8 +190,11 @@ public class ClienteMapper {
         dto.setNombres(entidad.getNombres());
         dto.setApellidoPaterno(entidad.getApellidoPaterno());
         dto.setApellidoMaterno(entidad.getApellidoMaterno());
-        dto.setTelefono(entidad.getTelefono());
         dto.setFechaRegistro(entidad.getFechaRegistro());
+        
+        //Desencripta el teléfono cifrado de la BD para verse bien en presentación
+        String telefonoDesencriptado = EncriptarTelefono.desencriptar(entidad.getTelefono());
+        dto.setTelefono(telefonoDesencriptado);
         
         //Correo opcional
         String correo = entidad.getCorreo();

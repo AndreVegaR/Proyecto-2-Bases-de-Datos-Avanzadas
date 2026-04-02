@@ -1,11 +1,6 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package dialogos;
-
 import Coordinadores.CoordinadorNegocio;
-import DTOs.ClienteFrecuenteDTO;
+import DTOs.ClienteDTO;
 import Utilerias.UtilBoton;
 import Utilerias.UtilGeneral;
 import java.awt.BorderLayout;
@@ -47,7 +42,7 @@ public class EliminarCliente extends JDialog {
         JTextField tFCorreo = UtilGeneral.crearCampoFormulario(panel, "Correo", tamanio);
 
         //Recupera el cliente desde el coordinador
-        ClienteFrecuenteDTO cliente = CoordinadorNegocio.getInstance().getClienteFrecuente();
+        ClienteDTO cliente = CoordinadorNegocio.getInstance().getCliente();
         
         // Precarga los datos del cliente
         tFNombre.setText(cliente.getNombres());
@@ -82,13 +77,13 @@ public class EliminarCliente extends JDialog {
                     JOptionPane.YES_NO_OPTION
             );
 
+            //Eliminar no ocupa parámetro: es el que tiene el coordinador guardado
             if (opcion == JOptionPane.YES_OPTION) {
-                CoordinadorNegocio.getInstance().eliminarClienteFrecuente(cliente);
+                CoordinadorNegocio.getInstance().eliminarCliente();
                 JOptionPane.showMessageDialog(EliminarCliente.this, "Cliente eliminado correctamente");
                 if (observador != null) {
                     observador.notificarCambio();
                 }
-                CoordinadorNegocio.getInstance().setClienteFrecuente(null);
                 dispose();
             }
         });

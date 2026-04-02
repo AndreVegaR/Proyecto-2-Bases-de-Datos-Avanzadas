@@ -11,7 +11,7 @@ import Enumeradores.EstadoProducto;
 import Enumeradores.TipoProducto;
 import java.util.List;
 import java.util.stream.Collectors;
-import utilerias.Utilerias;
+import utilerias.UtilNegocio;
 
 /**
  *
@@ -41,9 +41,9 @@ public class ProductoBO {
     
     public Producto agregarProducto(ProductoDTO producto){
         //Validaciones
-        Utilerias.esCadenadaVacia(producto.getNombre(), "nombre");
-        Utilerias.esNulo(producto.getEstadoProducto());
-        Utilerias.esNulo(producto.getTipoProducto());
+        UtilNegocio.esCadenadaVacia(producto.getNombre(), "nombre");
+        UtilNegocio.esNulo(producto.getEstadoProducto());
+        UtilNegocio.esNulo(producto.getTipoProducto());
       
         //Mapeo a entidad
         Producto productoNuevo = new Producto();
@@ -72,7 +72,7 @@ public class ProductoBO {
     */
     public void eliminarProducto(Long id){
         //Validaciones
-        Utilerias.esNulo(id);
+        UtilNegocio.esNulo(id);
        ProductoDAO.getInstance().eliminarProducto(id);
         
     }
@@ -84,10 +84,10 @@ public class ProductoBO {
     */
     public Producto actualizarProducto(ProductoDTO dto){
         //Validaciones
-        Utilerias.esNulo(dto);
-        Utilerias.esCadenadaVacia(dto.getNombre(), "nombre");
-        Utilerias.esNulo(dto.getEstadoProducto());
-        Utilerias.esNulo(dto.getTipoProducto());
+        UtilNegocio.esNulo(dto);
+        UtilNegocio.esCadenadaVacia(dto.getNombre(), "nombre");
+        UtilNegocio.esNulo(dto.getEstadoProducto());
+        UtilNegocio.esNulo(dto.getTipoProducto());
         //Si no existe el producto lanzamos una excepción
         Producto existeProducto = ProductoDAO.getInstance().buscarProductoPorId(dto.getId());
         if(existeProducto == null){
@@ -111,7 +111,7 @@ public class ProductoBO {
     public List<ProductoDTO> verTodosLosProductos(){
         List<Producto> listaProductos = ProductoDAO.getInstance().verTodosLosProductos();
         //Validamos que no sea null
-        Utilerias.esNulo(listaProductos);
+        UtilNegocio.esNulo(listaProductos);
         /*
         En esta parte primero con el stream hacemos un flujo o linea de objetos 1 por 1 
         En el map pasamos el Producto a ProductoDTO para poder utilizarlo sin dañar la logica y no usar a la entidad
@@ -142,8 +142,8 @@ public class ProductoBO {
     
     public Producto cambiarEstado(Long id,EstadoProducto estado){
         //Validaciones
-        Utilerias.esNulo(id);
-        Utilerias.esNulo(estado);  
+        UtilNegocio.esNulo(id);
+        UtilNegocio.esNulo(estado);  
         //En el dao se valida que exista un producto con ese id asi que solo lo regresamos
         return ProductoDAO.getInstance().cambiarEstado(id, estado);    
     }

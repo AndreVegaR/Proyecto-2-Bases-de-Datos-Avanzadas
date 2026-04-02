@@ -1,27 +1,23 @@
 package Coordinadores;
 import DTOs.ClienteDTO;
-import DTOs.ClienteFrecuenteDTO;
 import java.util.List;
 
 /**
  * @author Angel
  * Interfaz para un control de las pantallas
+ * Establece el contrato entre negocio y presentación
+ * Es un patrón fachada
  */
 public interface ICoordinadorNegocio {
     
-
     //Métodos de clientes
-    public void registrarCliente(ClienteDTO cliente);
+    ClienteDTO consultarCliente(Long id);
     
-    /**
-     * 
-     * public void eliminarClienteFrecuente(ClienteFrecuenteDTO cliente);
+    ClienteDTO registrarCliente(ClienteDTO cliente);
     
-    public List<ClienteFrecuenteDTO> consultarClientesFrecuentes();
+    ClienteDTO actualizarCliente(ClienteDTO cliente);
     
-    public ClienteFrecuenteDTO actualizarCliente(ClienteFrecuenteDTO clienteFrecuente);
+    ClienteDTO eliminarCliente();
     
-    ClienteFrecuenteDTO consultarCliente(Long id);
-     * 
-     */
+    List<ClienteDTO> consultarClientes();
 }

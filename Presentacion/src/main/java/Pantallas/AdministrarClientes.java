@@ -1,12 +1,9 @@
 package pantallas;
 import Coordinadores.CoordinadorNegocio;
-import Coordinadores.CoordinadorPantallas;
 import DTOs.ClienteDTO;
 import DTOs.ClienteFrecuenteDTO;
-import Principal.MenuPrincipal;
 import Utilerias.Constantes;
 import dialogos.RegistrarCliente;
-import Utilerias.UtilBoton;
 import Utilerias.UtilBuild;
 import Utilerias.UtilGeneral;
 import dialogos.ActualizarCliente;
@@ -18,7 +15,6 @@ import javax.swing.*;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Supplier;
-import javax.swing.table.DefaultTableModel;
 import observadores.IObservador;
 
 /**
@@ -115,6 +111,8 @@ public class AdministrarClientes extends JFrame implements IObservador {
         tabla.addMouseListener(new java.awt.event.MouseAdapter() {
             @Override
             public void mouseClicked(java.awt.event.MouseEvent evt) {
+                
+                //Crea el cliente desde aquí para usarlo fuera del if
                 ClienteDTO cliente = null;
                 int fila = tabla.getSelectedRow();
                 if (fila != -1) {
@@ -125,16 +123,16 @@ public class AdministrarClientes extends JFrame implements IObservador {
                      */
                     int indiceReal = tabla.convertRowIndexToModel(fila);
                     
-                    //
-                    //listaTemporal = Cordinador.getInstance().consultarClientes();
-                    
                     //Obtiene el cliente en dicho índice y lo manda al método que muestra su info
-                    //cliente = listaTemporal.get(indiceReal);
+                    cliente = listaTemporal.get(indiceReal);
+                    
+                    //Asigna el cliente al coordinador para que sea usado
+                    CoordinadorNegocio.getInstance().setCliente(cliente);
                 }
                 
+                //Si se cliquea dos veces, muestra su información específica
                 if (evt.getClickCount() >= 2) {
-                    DefaultTableModel modelo = (DefaultTableModel) tabla.getModel();
-                    mostrarInfoEspecifica(cliente);
+                    mostrarDetalles(cliente);
                 }
            }
          });
@@ -142,12 +140,11 @@ public class AdministrarClientes extends JFrame implements IObservador {
         //Inyecta la lógica de refrescar la tabla al botón Refrescar
         JButton botonRefrescar = mapaBotones.get(Constantes.OPCIONES_CRUD_MINUS[0]);
         botonRefrescar.addActionListener(e -> {
-            llenarTablaFalsa();
+            llenarTabla();
         });
 
         //Llena la tabla cada vez que se entre a la pantalla
-        //Una vez terminadas las pruebas, debe ser llenarTabla() a secas
-        llenarTablaFalsa();
+        llenarTabla();
     }
     
     
@@ -158,12 +155,15 @@ public class AdministrarClientes extends JFrame implements IObservador {
      * De esta forma podemos acceder a su contenido sin tener que conectarnos cada vez
      */
     public void llenarTabla() {
-        //listaTemporal = Cordinador.getInstance().consultarClientes();
-        //mapearTabla(lista); 
+        List<ClienteDTO> clientes = CoordinadorNegocio.getInstance().consultarClientes();
+        listaTemporal = clientes;
+        mapearTabla(); 
     }
     
+    
+    
     /**
-     * SOLO ES TEMPORAL
+     * SOLO ES TEMPORAL, método para probar sin conectarse
      * @return 
      */
     public List<ClienteDTO> llenarTablaFalsa() {
@@ -215,30 +215,31 @@ public class AdministrarClientes extends JFrame implements IObservador {
             c.getTelefono(),
             (c.getCorreo() != null && !c.getCorreo().isEmpty()) ? c.getCorreo() : "No tiene",
             c.getFechaRegistro(),
-            "Frecuente"
+            "Frecuente" //-> CORREGIR PRONTO
         });
     }
    
    
+    
    /**
     * Muestra la información adicional del tipo de cliente
     * No debe preocuparse por esos datos en específico
     * Solo sabe que cualquier subclase de ClienteDTO tiene ese método
     * Así que es ajeno a los tipos de clientes, solo sabe que debe llamar al método getInfoAdicional()
     * 
-    * @param dto del cliente a mostrar información adicional
+    * @param cliente a mostrar información adicional
     */
-    private void mostrarInfoEspecifica(ClienteDTO dto) {
-       String info = dto.getInfoAdicional();
+    private void mostrarDetalles(ClienteDTO cliente) {
+       String info = cliente.getInfoAdicional();
 
        //Si sí regresó algo despliga en efecto el mensaje
        if (info != null && !info.isBlank()) {
            UtilGeneral.dialogoAviso(this, info);
        }
    }
-   
-   
-   
+    
+    
+    
    /**
      * Método de la IObservador
      * Escucha el llamado el formulario de registrar o actualizar cliente

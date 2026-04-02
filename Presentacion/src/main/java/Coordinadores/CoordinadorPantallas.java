@@ -1,5 +1,4 @@
 package Coordinadores;
-import DTOs.ClienteFrecuenteDTO;
 import java.util.function.Supplier;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
@@ -63,8 +62,6 @@ public class CoordinadorPantallas implements ICoordinadorPantallas {
         JDialog dialogo = formulario.get();
         dialogo.setVisible(true);
     }
-    
-    
     
     /**
      * Regresa el rol del usuario con la sesión actual

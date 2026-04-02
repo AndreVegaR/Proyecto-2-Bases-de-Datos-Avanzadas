@@ -1,15 +1,13 @@
 package BO;
 import DAOs.ClienteDAO;
 import DTOs.ClienteDTO;
-import DTOs.ClienteFrecuenteDTO;
 import Entidades.Cliente;
-import Entidades.ClienteFrecuente;
+import excepciones.PersistenciaException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 import mappers.ClienteMapper;
-import utilerias.EncriptarTelefono;
-import utilerias.Utilerias;
+import utilerias.UtilNegocio;
 
 
 /**
@@ -41,149 +39,167 @@ public class ClienteBO {
     }
     
     /**
-     * Se encarga de recibir datos de presentación y empaquetarlos a persistencia
+     * Recibe una ID y la utiliza para consultar un cliente ya registrado
+     * Lo regresa empaquetado en DTO para presentación
+     * 
+     * @param id del cliente a eliminar
+     * @return el cliente en DTO
+     */
+    public ClienteDTO consultarCliente(Long id) {
+        UtilNegocio.esNumeroPositivo(id, "ID");
+        
+        //Obtiene el cliente del DAO
+        Cliente cliente = ClienteDAO.getInstance().buscarPorId(id);
+        
+        //Excepción
+        if (cliente == null) {
+            throw new PersistenciaException("No se consultar al cliente");
+        }
+        
+        //Regresa al cliente mapeado
+        return ClienteMapper.mapearEntidadDTO(cliente);
+    }
+    
+    
+    
+    /**
+     * Recibe datos de presentación y empaquetarlos a persistencia
      * Se procesan mediant un mapper, del cual negocio desconoce su funcionamiento
      * Como el flujo es de presentación a persistencia, se convierte un DTO a entidad
      * 
-     * @param dto de presentación
+     * @param clienteRegistrar de presentación
      * @return un cliente persistido
      */
-    public ClienteDTO registrarCliente(ClienteDTO dto) {
-        //(Validaciones necesarias)
+    public ClienteDTO registrarCliente(ClienteDTO clienteRegistrar) {
+        validarCliente(clienteRegistrar);
         
-        //Fecha y hora de cuándo se manda a convertir en dominio para ser persistido
-        //Se hace aquí porque es lógica de negocio
-        dto.setFechaRegistro(LocalDateTime.now());
+        /**
+         * Fecha y hora de cuándo se manda a convertir en dominio para ser persistido
+         * Se hace aquí porque es lógica de negocio
+         * Se maneja en variable aparte: ¿y si por alguna razón esa regla cambia?
+         */
+        LocalDateTime fechaRegistro = LocalDateTime.now();
+        clienteRegistrar.setFechaRegistro(fechaRegistro);
         
-        //Se mapea de DTO a entidad
-        Cliente cliente = ClienteMapper.mapearDTOEntidad(dto);
+        //Mapea a entidad
+        Cliente cliente = ClienteMapper.mapearDTOEntidad(clienteRegistrar);
         
-        //(Encriptación)
-        
-        //Se man1da a persistir al DAO
+        //Lo manda a persistirse
         ClienteDAO.getInstance().registrarCliente(cliente);
-        
-        //(Desencriptación)
-        
-        //Se regresa el DTO
+
+        //Regresa el DTO
         return ClienteMapper.mapearEntidadDTO(cliente);
     }
     
     
-    
     /**
-     * Guarda un cliente despues de validarse
+     * Recibe un clienteDTO de presentación
+     * Su ID ya debe existir dentro de la BD, pues solo actualiza, no registra
+     * Lo regresa empaquetado en DTO para presentación
      * 
-     * @param cliente datos del cliente capturado desde la capa de presentación
-     * @return Cliente con los datos guardados
+     * @param clienteNuevo a actualizar
+     * @return el cliente actualizado exitosamente
      */
-    public Cliente agregarCliente(ClienteDTO clienteDTO){
-        //Validaciones
-        Utilerias.esNulo(clienteDTO);
-        Utilerias.esCadenadaVacia(clienteDTO.getNombres(), "Nombres");
-        Utilerias.esCadenadaVacia(clienteDTO.getApellidoPaterno(), "Apellido Paterno");
-        Utilerias.esCadenadaVacia(clienteDTO.getApellidoMaterno(), "Apellido Materno");
-        Utilerias.esCadenadaVacia(clienteDTO.getTelefono(),"Teléfono");
-        //Utilerias.validarTelefono(clienteDTO.getTelefono());
+    public ClienteDTO actualizarCliente(ClienteDTO clienteNuevo) {
+        validarCliente(clienteNuevo);
+        Long id = clienteNuevo.getId();
+        UtilNegocio.esNumeroPositivo(id, "ID");
         
-
-        clienteDTO.setFechaRegistro(LocalDateTime.now());
+        //Consulta primero si ya existe un cliente con esa ID
+        Cliente clienteViejo = ClienteDAO.getInstance().buscarPorId(id);     
+        if (clienteViejo == null) {
+            throw new PersistenciaException("ID inválida");
+        }
         
-        //Mapeo a entidad
-        Cliente cliente = ClienteMapper.mapearDTOEntidad(clienteDTO);
+        //Mapea al cliente a una entidad
+        Cliente clienteActualizado = ClienteMapper.mapearDTOEntidad(clienteNuevo);
         
-        //Encriptar antes de guardar
-        String telefono = cliente.getTelefono();
-        String telefonoEncriptado = EncriptarTelefono.encriptar(telefono);
-        cliente.setTelefono(telefonoEncriptado);
-        cliente = (ClienteFrecuente) ClienteDAO.getInstance().guardarCliente(cliente);
+        //Lo manda a actualizar con DAO
+        Cliente resultado = ClienteDAO.getInstance().actualizarCliente(clienteActualizado);
         
-        //Mapeo a DTO
-        ClienteFrecuenteDTO resultado = ClienteMapper.mapearEntidadDTO(cliente);
-        
-        //Desencriptar para volverlo legible 
-        String telefonoDesencriptado = EncriptarTelefono.desencriptar(resultado.getTelefono());
-        resultado.setTelefono(telefonoDesencriptado);
-        return resultado;
+        //Regresa ese actualizado mapeado como DTO
+        return ClienteMapper.mapearEntidadDTO(resultado);
     }
     
     
     
     /**
-     * Elimina un cliente frecuente por ID y lo regresa
+     * Recibe una ID y la utiliza para consultar un cliente ya registrado
+     * Si sí existe, procede a eliminarlo
+     * Lo regresa empaquetado en DTO para presentación
      * 
-     * @param id identificador unico del cliente a eliminar
-     * @return el cliente eliminado
+     * @param id del cliente a eliminar
+     * @return el cliente en DTO
      */
-    public ClienteFrecuenteDTO eliminarCliente(Long id){
-        Utilerias.esNumeroPositivo(id, "ID");
-        ClienteFrecuente eliminado = ClienteDAO.getInstance().eliminarCliente(id);
-        return ClienteMapper.mapearEntidadDTO(eliminado);
-    }
-    
-    
-    
-    /**
-     * Modifica un cliente frecuente
-     * 
-     * @param dto datos modificados del cliente frecuente
-     * @return ClienteFrecuenteDTO con la informacion actualizada
-     */
-    public ClienteFrecuenteDTO modificarCliente(ClienteFrecuenteDTO dto) {
-
-        Utilerias.esNulo(dto);
-        if (dto.getId() == null) throw new IllegalArgumentException("El ID es obligatorio para actualizar");
-
-        // 2. BUSCAR EL REGISTRO ORIGINAL (Para no perder datos como puntos o fecha)
-        ClienteDAO dao = ClienteDAO.getInstance();
-        ClienteFrecuente clienteExistente = ClienteDAO.getInstance().buscarPorId(dto.getId()); 
-
-        if (clienteExistente == null) throw new RuntimeException("Cliente no encontrado");
-
-        clienteExistente.setNombres(dto.getNombres());
-        clienteExistente.setApellidoPaterno(dto.getApellidoPaterno());
-        clienteExistente.setApellidoMaterno(dto.getApellidoMaterno());
-        clienteExistente.setCorreo(dto.getCorreo());
-
-        String telefonoLimpio = dto.getTelefono();
-        String telefonoEncriptado = EncriptarTelefono.encriptar(telefonoLimpio);
-        clienteExistente.setTelefono(telefonoEncriptado);
-
-        ClienteFrecuente clienteActualizado = dao.modificarCliente(clienteExistente);
-
-        ClienteFrecuenteDTO resultado = ClienteMapper.mapearEntidadDTO(clienteActualizado);
-
-        resultado.setTelefono(EncriptarTelefono.desencriptar(resultado.getTelefono()));
-
-        return resultado;
-    }
-
-    
-    
-    /**
-     * Obtiene la lista de todos los clientes frecuentes registrados
-     * 
-     * @return lista de ClienteFrecuente con los datos actualizados
-     */
-    public List<ClienteFrecuenteDTO> verClientes(){
-        List<ClienteFrecuente> lista = ClienteDAO.getInstance().verClientes();
+    public ClienteDTO eliminarCliente(Long id) {
+        UtilNegocio.esNumeroPositivo(id, "ID");
         
-        List<ClienteFrecuenteDTO> listaDtos = lista.stream()
+        //Primero se asegura de que exista ese cliente
+        Cliente clienteEliminado = ClienteDAO.getInstance().buscarPorId(id);
+        
+        //Excepción
+        if (clienteEliminado == null) {
+            throw new PersistenciaException("No se pudo eliminar al cliente");
+        }
+        
+        //Lo elimina y lo regresa mapeado
+        ClienteDAO.getInstance().eliminarCliente(clienteEliminado.getId());
+        return ClienteMapper.mapearEntidadDTO(clienteEliminado);
+    }
+    
+    
+    
+    /**
+     * Obtiene del DAO una lista con todos los clientes del sistema
+     * No discrimina por subclase
+     * Una lista vacía no es excepción: es un estado natural posible
+     * 
+     * @return lista de clientes en DTO para presentación
+     */
+    public List<ClienteDTO> consultarClientes() {
+        
+        //Obtiene todos los clientes del DAO
+        List<Cliente> clientes = ClienteDAO.getInstance().consultarClientes();
+        
+        /**
+         * Mapea a todos los clientes en una lista de tipo ClienteDTO
+         * Todos empaquetados listos para presentación
+         * El mapper es inteligente, cada cliente será procesado como debe ser
+         */
+        List<ClienteDTO> clientesDTO = clientes.stream()
                                               .map(ClienteMapper :: mapearEntidadDTO)
                                               .collect(Collectors.toList());
-        listaDtos.forEach(dto -> {
-            String telEncriptado = dto.getTelefono();
-            String telDesencriptado = EncriptarTelefono.desencriptar(telEncriptado);
-            dto.setTelefono(telDesencriptado);
-        });
         
-        return listaDtos;
+        //Regresa la nueva lista
+        return clientesDTO;
+        
     }
     
     
     
-    public ClienteFrecuenteDTO consultarCliente(Long id) {
-        ClienteFrecuente cliente = ClienteDAO.getInstance().buscarPorId(id);
-        return ClienteMapper.mapearEntidadDTO(cliente);
+     /**
+     * Valida los campos base y específicos de un cliente
+     * Solo es un envoltorio de validaciones generales, pero en caso de ocuparse puede crecer a ser más específico
+     * Los métodos que usen este auxiliar no sabrán nada de los detalles internos, solo validan y punto
+     * De otra forma: abstracción necesaria para facilitar escalabilidad
+     * 
+     * @param cliente a validar
+     */
+    private void validarCliente(Object objeto) {
+        UtilNegocio.validarObjeto(objeto);
+        
+        //Casteo a clienteDTO
+        ClienteDTO cliente = (ClienteDTO) objeto;
+        
+        //Valida el teléfono
+        UtilNegocio.validarTelefono(cliente.getTelefono());
+        
+        //Valida el correo si lo tiene
+        String correo = cliente.getCorreo();
+        if (correo != null && !correo.isBlank()) {
+            UtilNegocio.validarCorreo(correo);
+        }
+        
+        //Aquí irían condiciones y validaciones específicas...
     }
 }

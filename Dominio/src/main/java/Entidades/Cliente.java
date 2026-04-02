@@ -36,13 +36,13 @@ public class Cliente implements Serializable {
     @Column(name = "apellido_materno", nullable = false, length = 30)
     private String apellidoMaterno;
     
-    @Column(name = "telefono", nullable = false, length = 15)
+    @Column(name = "telefono", nullable = false, length = 255)
     private String telefono;
     
     @Column(name = "correo", nullable = true, length = 50)
     private String correo;
     
-    @Column(name = "fecha_registro", nullable = false)
+    @Column(name = "fecha_registro", nullable = false, updatable = false)
     private LocalDateTime fechaRegistro;
     
     @OneToMany(mappedBy = "cliente")
