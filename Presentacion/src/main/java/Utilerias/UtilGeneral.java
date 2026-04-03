@@ -1,5 +1,4 @@
 package Utilerias;
-
 import java.awt.Color;
 import javax.swing.*;
 import java.awt.*;
@@ -27,6 +26,7 @@ public class UtilGeneral {
             setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
         }
 
+        @Override
         protected void paintComponent(Graphics g) {
             Graphics2D g2 = (Graphics2D) g.create();
 
@@ -42,6 +42,7 @@ public class UtilGeneral {
             g2.dispose();
         }
 
+        @Override
         protected void paintBorder(Graphics g) {
             Graphics2D g2 = (Graphics2D) g.create();
 
@@ -176,13 +177,41 @@ public class UtilGeneral {
         }
     }
     
-    public static void dialogoAviso(JFrame frame, String mensaje) {
-        JOptionPane.showMessageDialog(frame, mensaje, "Aviso", JOptionPane.WARNING_MESSAGE);
+    
+    public static void dialogoAviso(Component componente, String mensaje) {
+        JOptionPane.showMessageDialog(componente, mensaje, "Aviso", JOptionPane.WARNING_MESSAGE);
     }
     
-    public static void dialogoSiNo(JFrame frame, String mensaje) {
-        JOptionPane.showMessageDialog(frame, mensaje, "Aviso", JOptionPane.YES_OPTION);
+    public static void dialogoSiNo(Component componente, String mensaje) {
+        JOptionPane.showMessageDialog(componente, mensaje, "Aviso", JOptionPane.YES_OPTION);
     }
     
+    
+    
+    /**
+     * En orden de instrucciones:
+     * -Acomoda en layout
+     * -Bloquea la pantalla de fondo
+     * -Si se puede ajustar el tamaño o no
+     * 
+     * @param dialogo 
+     */
+    public static void configurarDialogoInicio(JDialog dialogo, boolean reajustable) {
+        dialogo.setLayout(new BorderLayout());
+        dialogo.setModal(true);
+        dialogo.setResizable(reajustable);
+    }
+    
+    
+    
+    /**
+     * En orden de instrucciones:
+     * -Ajusta el tamaño del contenido
+     * -Centra respecto al menú principal
+     */
+    public static void configurarDialogoFinal(JDialog dialogo) {
+        dialogo.pack();
+        dialogo.setLocationRelativeTo(null);
+    }
     
 }

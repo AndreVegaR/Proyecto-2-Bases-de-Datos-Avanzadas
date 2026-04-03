@@ -1,16 +1,13 @@
 package Principal;
-
-import Coordinadores.CoordinadorPantallas;
+import Pantallas.AdministrarComandas;
 import Utilerias.Constantes;
 import Utilerias.UtilBoton;
 import Utilerias.UtilGeneral;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
-import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Locale;
 import pantallas.AdministrarClientes;
 
 /**
@@ -66,7 +63,7 @@ public class MenuPrincipal extends JFrame {
         //En caso de que el usuario sea administrador añade funciones extra
         if (UtilGeneral.admin) {
             //Crea botones
-            JButton botonAdministrarComandas = UtilBoton.crearBoton("Administrar comandas");
+            JButton botonAdministrarComandas = UtilBoton.crearBotonNavegar("Administrar comandas", this, AdministrarComandas::new);
             JButton botonAdministrarProductos = UtilBoton.crearBoton("Administrar productos");
             JButton botonAdministrarIngredientes = UtilBoton.crearBoton("Administrar ingredientes");
             JButton administrarClientes = UtilBoton.crearBotonNavegar("Administrar clientes", this, AdministrarClientes::new);

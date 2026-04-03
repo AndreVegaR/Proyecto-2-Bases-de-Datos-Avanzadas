@@ -92,6 +92,7 @@ public class ClienteBO {
     }
     
     
+    
     /**
      * Recibe un clienteDTO de presentación
      * Su ID ya debe existir dentro de la BD, pues solo actualiza, no registra

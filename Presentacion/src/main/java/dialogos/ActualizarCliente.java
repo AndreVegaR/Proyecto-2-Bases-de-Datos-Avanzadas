@@ -96,7 +96,7 @@ public class ActualizarCliente extends JDialog {
                     //Lo manda a actualizar
                     try {
                         CoordinadorNegocio.getInstance().actualizarCliente(clienteActualizado);
-                        JOptionPane.showMessageDialog(ActualizarCliente.this, "Cliente creado correctamente");
+                        JOptionPane.showMessageDialog(ActualizarCliente.this, "Cliente actualizado correctamente");
                     } catch (NegocioException ex) {
                         JOptionPane.showMessageDialog(ActualizarCliente.this, ex.getMessage());
                     }

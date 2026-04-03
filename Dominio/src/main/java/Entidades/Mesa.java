@@ -20,25 +20,22 @@ public class Mesa implements Serializable {
     @Column(name = "id_mesa")
     private Long id;
     
-    @Column(name = "disponible", nullable = false)
-    private boolean disponible = true;
+    @Column(name = "disponible", nullable = false, length = 30)
+    private String estadoMesa;
     
     @Column(name = "numero", nullable = false, unique = true)
-    private static int numero;
-
-    //Contador que llevará que lleva un registro de cuántas mesas hay y se asignan automáticamente en el constructor
-    private static int contador = 1;
+    private int numero;  
     
     
+    public Mesa() {}
     
     /**
      * Constructor
      */
-    public Mesa() {
-        this.numero = contador++;
+    public Mesa(int numero, String estadoMesa) {
+        this.numero = numero;
+        this.estadoMesa = estadoMesa;
     }
-    
-    
     
     //Getters y setters
     public Long getId() {
@@ -48,20 +45,20 @@ public class Mesa implements Serializable {
     public void setId(Long id) {
         this.id = id;
     }
-
-    public boolean isDisponible() {
-        return disponible;
-    }
-
-    public void setDisponible(boolean disponible) {
-        this.disponible = disponible;
-    }
-
-    public static int getNumero() {
+    
+    public int getNumero() {
         return numero;
     }
 
-    public static void setNumero(int numero) {
-        Mesa.numero = numero;
+    public void setNumero(int numero) {
+        this.numero = numero;
+    }
+
+    public String getEstadoMesa() {
+        return estadoMesa;
+    }
+
+    public void setEstadoMesa(String estadoMesa) {
+        this.estadoMesa = estadoMesa;
     }
 }

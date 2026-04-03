@@ -30,6 +30,8 @@ public class UtilNegocio {
      */
     private static String[] CAMPOS_OPCIONALES = {"correo"};
     
+    
+    
     /**
      * Compara que el campo del parámetro se halle en el arreglo de campos opcionales
      * Es auxiliar de stringsVacios

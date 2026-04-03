@@ -1,5 +1,4 @@
 package dialogos;
-
 import Coordinadores.CoordinadorNegocio;
 import DTOs.ClienteFrecuenteDTO;
 import Utilerias.UtilBoton;
@@ -15,7 +14,6 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import observadores.IObservador;
-import DTOs.ClienteDTO;
 import excepciones.NegocioException;
 
 /**
@@ -48,7 +46,7 @@ public class RegistrarCliente extends JDialog {
         
         //Panel de botones
         JPanel panelBotones = new JPanel(new FlowLayout(FlowLayout.RIGHT, 15, 15));
-        JButton botonAceptar = UtilBoton.crearBoton("Aceptar");
+        JButton botonAceptar = UtilBoton.crearBoton("Registrar");
         panelBotones.add(botonAceptar);
 
         //Agregamos todo al JDialog
@@ -94,11 +92,10 @@ public class RegistrarCliente extends JDialog {
                     //Agrega al cliente al sistema
                     try {
                         CoordinadorNegocio.getInstance().registrarCliente(cliente);
-                        JOptionPane.showMessageDialog(RegistrarCliente.this, "Cliente creado correctamente");
+                        UtilGeneral.dialogoAviso(RegistrarCliente.this, "Registro exitoso");
                     } catch (NegocioException ex) {
                         JOptionPane.showMessageDialog(RegistrarCliente.this, ex.getMessage());
                     }
-                    
                     
                     //Notifica al observador sobre el nuevo cliente para que lo registre
                     if (RegistrarCliente.this.observador != null) {

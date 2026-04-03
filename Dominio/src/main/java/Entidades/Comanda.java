@@ -1,8 +1,9 @@
 package Entidades;
 import Enumeradores.EstadoComanda;
 import java.io.Serializable;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -10,6 +11,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
 
 /**
  * Representa a una comanda, una orden pedida por clientes
@@ -18,10 +21,10 @@ import javax.persistence.ManyToOne;
  * @author Andre
  */
 @Entity
+@Table(name = "comanda")
 public class Comanda implements Serializable {
     private static final long serialVersionUID = 1L;
     
-    //Atributos
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_comanda")
@@ -33,59 +36,34 @@ public class Comanda implements Serializable {
     @Column(name = "folio", nullable = false, length = 15)
     private String folio;
     
-    //Una comanda es abierta apenas se crea
-    @Column(name = "estado", nullable = false)
-    private EstadoComanda estadoComanda = EstadoComanda.ABIERTA;
+    @Column(name = "estado", nullable = false, length = 30)
+    private String estado;
     
+    //Le pertenece a un cliente
     @ManyToOne
     @JoinColumn(name = "id_cliente", nullable = true)
     private Cliente cliente;
     
-    @Column(name = "comentarios", nullable = true, length = 200)
-    private String comentarios;
-    
-    //Cuenta cada comanda aumentando por cada folio generado
-    private static int contador = 0;
-    
-    //Registro de la fecha actual para reiniciar el contador
-    private static LocalDate ultimaFecha = LocalDate.now();
-    
-    //@OneToMany(mappedBy = "comanda")
-    //private List<DetalleComanda> detalles = new ArrayList<>();
+    //Está asignada a una mesa
+    @ManyToOne
+    @JoinColumn(name = "id_mesa", nullable = false)
+    private Mesa mesa;
 
+    //Tiene muchos detallesComanda
+    @OneToMany(mappedBy = "comanda", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<DetallesComanda> detalles = new ArrayList<>();
     
     /**
-     * Constructor vacío
+     * Constructores
      */
-    public Comanda() {
-        
+    public Comanda() {}
+    public Comanda(double total, String folio, String estado, Cliente cliente, Mesa mesa) {
+        this.total = total;
+        this.folio = folio;
+        this.estado = estado;
+        this.cliente = cliente;
+        this.mesa = mesa;
     }
-    
-    /**
-     * Genera un folio según un formato establecido
-     * Extrae los datos de la fecha y genera un código numérico aleatorio
-     * Formato del folio: OB-YYYYMMDD-XXX
-     */
-    private void generarFolio() {
-        String PREFIJO = "OB";
-        
-        //Compara la fecha de hoy con la última guardada, si no coinciden reinicia contador y actualiza ultimaFecha
-        LocalDate hoy = LocalDate.now();
-        if (!hoy.equals(ultimaFecha)) {
-            contador = 0;
-            ultimaFecha = hoy;
-        }
-
-        //Transforma la información de la fecha en String en fomato AAAAMMDD
-        String fechaString = ultimaFecha.format(DateTimeFormatter.ofPattern("yyyyMMdd"));
-        
-        //Aplica formato al número único consecutivo
-        String clave = String.format("%03d", contador++);
-        
-        //Le da valor al folio
-        folio = PREFIJO + "-" + fechaString + "-" + clave;
-    }
-
     
     //Getters y setters
     public Long getId() {
@@ -112,12 +90,12 @@ public class Comanda implements Serializable {
         this.folio = folio;
     }
 
-    public EstadoComanda getEstadoComanda() {
-        return estadoComanda;
+    public String getEstado() {
+        return estado;
     }
 
-    public void setEstadoComanda(EstadoComanda estadoComanda) {
-        this.estadoComanda = estadoComanda;
+    public void setEstado(String estadoComanda) {
+        this.estado = estadoComanda;
     }
     
     public Cliente getCliente() {
@@ -127,56 +105,20 @@ public class Comanda implements Serializable {
     public void setCliente(Cliente cliente) {
         this.cliente = cliente;
     }
-    
-    public String getComentarios() {
-        return comentarios;
+
+    public Mesa getMesa() {
+        return mesa;
     }
 
-    public void setComentarios(String comentarios) {
-        this.comentarios = comentarios;
+    public void setMesa(Mesa mesa) {
+        this.mesa = mesa;
     }
 
-    public static int getContador() {
-        return contador;
+    public List<DetallesComanda> getDetalles() {
+        return detalles;
     }
 
-    public static void setContador(int contador) {
-        Comanda.contador = contador;
-    }
-
-    public static LocalDate getUltimaFecha() {
-        return ultimaFecha;
-    }
-
-    public static void setUltimaFecha(LocalDate ultimaFecha) {
-        Comanda.ultimaFecha = ultimaFecha;
-    }
-    
-    
-    
-    //Misceláneos
-    @Override
-    public int hashCode() {
-        int hash = 0;
-        hash += (id != null ? id.hashCode() : 0);
-        return hash;
-    }
-
-    @Override
-    public boolean equals(Object object) {
-        // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof Comanda)) {
-            return false;
-        }
-        Comanda other = (Comanda) object;
-        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
-            return false;
-        }
-        return true;
-    }
-
-    @Override
-    public String toString() {
-        return "Dominio.Comanda[ id=" + id + " ]";
+    public void setDetalles(List<DetallesComanda> detalles) {
+        this.detalles = detalles;
     }
 }
