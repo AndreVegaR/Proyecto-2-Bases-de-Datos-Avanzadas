@@ -73,16 +73,16 @@ public class ClienteBO {
     public ClienteDTO registrarCliente(ClienteDTO clienteRegistrar) {
         validarCliente(clienteRegistrar);
         
+        //Mapea a entidad
+        Cliente cliente = ClienteMapper.mapearDTOEntidad(clienteRegistrar);
+        
         /**
          * Fecha y hora de cuándo se manda a convertir en dominio para ser persistido
          * Se hace aquí porque es lógica de negocio
          * Se maneja en variable aparte: ¿y si por alguna razón esa regla cambia?
          */
-        LocalDateTime fechaRegistro = LocalDateTime.now();
-        clienteRegistrar.setFechaRegistro(fechaRegistro);
-        
-        //Mapea a entidad
-        Cliente cliente = ClienteMapper.mapearDTOEntidad(clienteRegistrar);
+        LocalDateTime fecha = LocalDateTime.now();
+        cliente.setFechaRegistro(fecha);
         
         //Lo manda a persistirse
         ClienteDAO.getInstance().registrarCliente(cliente);

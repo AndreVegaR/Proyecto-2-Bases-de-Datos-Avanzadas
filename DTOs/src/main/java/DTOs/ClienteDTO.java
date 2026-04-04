@@ -1,5 +1,4 @@
 package DTOs;
-import java.time.LocalDateTime;
 
 /**
  * DTO base para la entidad Cliente.
@@ -15,22 +14,12 @@ public class ClienteDTO {
     String apellidoMaterno;
     String telefono;
     String correo;
-    LocalDateTime fechaRegistro;
-    //Constructor vacio
-    public ClienteDTO() {
-    }
+    String fechaRegistro;
     
-    /**
-     * Cosntructor completo
-     * @param id
-     * @param nombres
-     * @param apellidoPaterno
-     * @param apellidoMaterno
-     * @param telefono
-     * @param fechaRegistro
-     * @param correo 
-     */
-    public ClienteDTO(Long id, String nombres, String apellidoPaterno, String apellidoMaterno, String telefono, LocalDateTime fechaRegistro,String correo) {
+    //Constructores
+    public ClienteDTO() {}
+    
+    public ClienteDTO(Long id, String nombres, String apellidoPaterno, String apellidoMaterno, String telefono, String fechaRegistro,String correo) {
         this.id = id;
         this.nombres = nombres;
         this.apellidoPaterno = apellidoPaterno;
@@ -38,8 +27,16 @@ public class ClienteDTO {
         this.telefono = telefono;
         this.fechaRegistro = fechaRegistro;
         this.correo = correo;
-        
     }
+    public ClienteDTO(String nombres, String apellidoPaterno, String apellidoMaterno, String telefono, String correo, String fechaRegistro) {
+        this.nombres = nombres;
+        this.apellidoPaterno = apellidoPaterno;
+        this.apellidoMaterno = apellidoMaterno;
+        this.telefono = telefono;
+        this.correo = correo;
+        this.fechaRegistro = fechaRegistro;
+    }
+    
     //Getter y Setter
     public Long getId() {
         return id;
@@ -89,11 +86,11 @@ public class ClienteDTO {
         this.correo = correo;
     }
 
-    public LocalDateTime getFechaRegistro() {
+    public String getFechaRegistro() {
         return fechaRegistro;
     }
 
-    public void setFechaRegistro(LocalDateTime fechaRegistro) {
+    public void setFechaRegistro(String fechaRegistro) {
         this.fechaRegistro = fechaRegistro;
     }
     

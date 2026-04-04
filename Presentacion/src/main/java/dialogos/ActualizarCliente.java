@@ -81,7 +81,7 @@ public class ActualizarCliente extends JDialog {
                     String apellidoM = tFApellidoM.getText().trim();
                     String telefono = tFTelefono.getText().trim();
                     String correo = tFCorreo.getText().trim();
-                    LocalDateTime fechaRegistro = clienteActualizado.getFechaRegistro();
+                    String fechaRegistro = clienteActualizado.getFechaRegistro();
 
                     
                     //Pasa los atributos del cliente seleccionado, pero actualiza si reconoce si hubo cambios en el formulario

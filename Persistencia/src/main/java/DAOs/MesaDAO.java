@@ -78,4 +78,36 @@ public class MesaDAO {
             em.close();
         }
     }
+    
+    
+    
+    /**
+     * Actualiza el estado de una mesa
+     * Primero la intenta encontrar con un query y si solo actúa su sí hubo coincidencia
+     * De lo contrario, arroja una excepción
+     * 
+     * @param idMesa
+     * @param nuevoEstado de la mesa
+     */
+    public void actualizarEstado(Long idMesa, String nuevoEstado) {
+        EntityManager em = ConexionBD.crearConexion();
+        try {
+            em.getTransaction().begin();
+            int filasActualizadas = em.createQuery("UPDATE Mesa m SET m.estadoMesa = :estado WHERE m.id = :id")
+                                                  .setParameter("estado", nuevoEstado)
+                                                  .setParameter("id", idMesa)
+                                                  .executeUpdate();
+            if (filasActualizadas == 0) {
+                throw new PersistenciaException("Error al buscar la mesa con ID " + idMesa);
+            }
+            em.getTransaction().commit();
+        } catch (Exception e) {
+            if (em.getTransaction().isActive()) {
+                em.getTransaction().rollback();
+            }
+            throw new PersistenciaException("Error al actualizar el estado de la mesa: " + e.getMessage());
+        } finally {
+            em.close();
+        }
+    }
 }

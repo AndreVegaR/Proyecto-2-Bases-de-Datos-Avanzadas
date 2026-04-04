@@ -107,7 +107,7 @@ public class ComandaDAO {
      * @param id de la comanda
      * @return entidad eliminada
      */
-    public Comanda eliminarCliente(Long id) {
+    public Comanda eliminarComanda(Long id) {
         EntityManager em = ConexionBD.crearConexion();
         try {
             em.getTransaction().begin();
@@ -155,6 +155,7 @@ public class ComandaDAO {
     /**
      * Cuenta todas las comandas del día de cuando se haga la consulta
      * Utiliza COUNT y compara con CURRENT_DATE
+     * No cuenta el tamaño de la lista de todas la comandas porque es un crimen contra la memoria
      * 
      * @return la cantidad de comandas
      */

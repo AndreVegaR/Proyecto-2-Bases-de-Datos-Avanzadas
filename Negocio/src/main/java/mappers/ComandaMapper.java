@@ -26,7 +26,11 @@ public class ComandaMapper {
      * Como este es el único lugar donde se crea, no puede haber error de dedo
      * Reemplaza un enumerador que debe viajar entre DTO, Dominio, Negocio...
      */
-    private static String ESTADO_INICIAL = "Abierta";
+    public static String ESTADO_INICIAL = "Abierta";
+    
+    public static String CERRADA = "Cerrada";
+    
+    public static String CANCELADA = "Cancelada";
     
     
     
@@ -35,25 +39,31 @@ public class ComandaMapper {
      * Usa un método adicional para mapear la mesa
      * 
      * @param dto a mapear
-     * @param numConsecutivo del DAO para crear el folio
      * @return la entidad mapeada
      */
-    public static Comanda mapearDTOEntidad(ComandaDTO dto, int numConsecutivo) {
+    public static Comanda mapearDTOEntidad(ComandaDTO dto) {
         
         //Validaciones
         if (dto == null) {
             throw new NegocioException("ComandaDTO null");
         }
-        UtilNegocio.esNumeroPositivo(numConsecutivo, "Número consecutivo");
         
         //Crea la entidad y mapea lo básico
         Comanda entidad = new Comanda();
+        entidad.setId(dto.getId());
         entidad.setTotal(dto.getTotal());
-        entidad.setEstado(ESTADO_INICIAL);
         
-        //Crea y le asigna el folio
-        String folio = crearFolio(numConsecutivo);
-        entidad.setFolio(folio);
+        //Solo le imprime el estado inicial si no lo tiene anteriormente, o sea se está registrando
+        if (dto.getEstado() == null || dto.getEstado().isBlank()) {
+            entidad.setEstado(ESTADO_INICIAL);
+        } else {
+            entidad.setEstado(dto.getEstado());
+        }
+        
+        //Solo mapea el folio si ya existe
+        if (dto.getFolio() != null && !dto.getFolio().isBlank()) {
+            entidad.setFolio(dto.getFolio());
+        }
         
         //Mapea el cliente
         Cliente clienteMapeado = ClienteMapper.mapearDTOEntidad(dto.getCliente());
@@ -80,7 +90,7 @@ public class ComandaMapper {
      * @param entidad a mapear
      * @return la entidad mapeada
      */
-    public static ComandaDTO mapearDTOEntidad(Comanda entidad) {
+    public static ComandaDTO mapearEntidadDTO(Comanda entidad) {
         
         //Validaciones
         if (entidad == null) {
@@ -89,6 +99,7 @@ public class ComandaMapper {
         
         //Crea la entidad y mapea lo básico
         ComandaDTO dto = new ComandaDTO();
+        dto.setId(entidad.getId());
         dto.setTotal(entidad.getTotal());
         dto.setEstado(entidad.getEstado());
         dto.setFolio(entidad.getFolio());
@@ -154,30 +165,5 @@ public class ComandaMapper {
                                         })
                                         .collect(Collectors.toList());
         return dtos;
-    }
-    
-    
-    
-    /**
-     * Crea un folio único para una comanda
-     * Utiliza un prefijo establecido, la fecha y el número de la comanda de ese día
-     * Este número se lo pasa el BO, al que llama a un método del DAO
-     * 
-     * @param consecutivo
-     * @return el folio armado
-     */
-    private static String crearFolio(int numConsecutivo) {
-        
-        //Prefijo asignado para el folio
-        String PREFIJO = "OB";
-        
-        //Obtiene el año, mes y día en String
-        String fecha = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
-        
-        //Rella con ceros el número de 3 dígitos (ejemplo: 19 -> 019)
-        String clave = String.format("%03d", numConsecutivo);
-        
-        //Arma el folio y lo regresa
-        return PREFIJO + "-" + fecha + "-" + clave;       
     }
 }

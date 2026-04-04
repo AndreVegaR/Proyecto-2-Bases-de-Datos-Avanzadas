@@ -1,8 +1,4 @@
 package DTOs;
-
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-
 /**
  * DTO para un cliente
  * @author Andre
@@ -24,7 +20,7 @@ public class ClienteFrecuenteDTO extends ClienteDTO{
      * @param correo
      * @param fechaRegistro
      */
-    public ClienteFrecuenteDTO(Long id,String nombres, String apellidoPaterno, String apellidoMaterno, String telefono, LocalDateTime fechaRegistro, String correo, int visitas, Double gastoTotal, int puntosFidelidad) {
+    public ClienteFrecuenteDTO(Long id,String nombres, String apellidoPaterno, String apellidoMaterno, String telefono, String fechaRegistro, String correo, int visitas, Double gastoTotal, int puntosFidelidad) {
         super(id, nombres, apellidoPaterno, apellidoMaterno, telefono, fechaRegistro, correo);
         this.visitas = visitas;
         this.gastoTotal = gastoTotal;
@@ -42,7 +38,7 @@ public class ClienteFrecuenteDTO extends ClienteDTO{
      * @param correo
      * @param fechaRegistro
      */
-    public ClienteFrecuenteDTO(Long id,String nombres, String apellidoPaterno, String apellidoMaterno, String telefono, LocalDateTime fechaRegistro, String correo) {
+    public ClienteFrecuenteDTO(Long id,String nombres, String apellidoPaterno, String apellidoMaterno, String telefono, String fechaRegistro, String correo) {
         super(id, nombres, apellidoPaterno, apellidoMaterno, telefono, fechaRegistro, correo);
     }
     

@@ -10,6 +10,7 @@ package DTOs;
 public class DetallesComandaDTO {
     
     //Atributos
+    private Long id;
     private ProductoDTO producto;
     private int cantidad;
     private double precioVenta;
@@ -21,6 +22,24 @@ public class DetallesComandaDTO {
     
     /**
      * Constructor completo
+     * @param id
+     * @param producto
+     * @param cantidad
+     * @param precioVenta
+     * @param subtotal
+     * @param comentarios 
+     */
+    public DetallesComandaDTO(Long id, ProductoDTO producto, int cantidad, double precioVenta, double subtotal, String comentarios) {
+        this.id = id;
+        this.producto = producto;
+        this.cantidad = cantidad;
+        this.precioVenta = precioVenta;
+        this.subtotal = subtotal;
+        this.comentarios = comentarios;
+    }
+
+    /**
+     * Constructor sin id
      * @param producto
      * @param cantidad
      * @param precioVenta
@@ -78,5 +97,13 @@ public class DetallesComandaDTO {
 
     public void setPrecioVenta(double precioMomento) {
         this.precioVenta = precioMomento;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 }

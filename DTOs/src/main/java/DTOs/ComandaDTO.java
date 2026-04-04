@@ -10,6 +10,7 @@ import java.util.List;
 public class ComandaDTO {
     
     //Atributos
+    private Long id;
     private double total;
     private String folio;
     private String estado;
@@ -20,15 +21,28 @@ public class ComandaDTO {
 
     //Constructores
     public ComandaDTO() {}
-    public ComandaDTO(double total, String folio, String estado, String comentarios) {
+    public ComandaDTO(Long id, double total, String folio, String estado, String comentarios) {
+        this.id = id;
         this.total = total;
         this.folio = folio;
         this.estado = estado;
         this.comentarios = comentarios;
     }
-
+    public ComandaDTO(double total, String folio, String estado, String comentarios, MesaDTO mesa, ClienteDTO cliente) {
+        this.total = total;
+        this.folio = folio;
+        this.estado = estado;
+        this.comentarios = comentarios;
+        this.mesa = mesa;
+        this.cliente = cliente;
+    }
+    
     //Getters y setters
     public double getTotal() {
+        double total = 0.0;
+        for (DetallesComandaDTO detalle: getDetalles()) {
+            total += detalle.getSubtotal();
+        }
         return total;
     }
 
@@ -82,5 +96,13 @@ public class ComandaDTO {
 
     public void setCliente(ClienteDTO cliente) {
         this.cliente = cliente;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 }

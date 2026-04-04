@@ -4,7 +4,9 @@ import DTOs.ClienteFrecuenteDTO;
 import Entidades.Cliente;
 import Entidades.ClienteFrecuente;
 import excepciones.NegocioException;
+import java.time.LocalDateTime;
 import utilerias.EncriptarTelefono;
+import utilerias.UtilNegocio;
 
 /**
  * Clase que mapea de DTO a entidad y viceversa a Cliente
@@ -157,8 +159,18 @@ public class ClienteMapper {
         entidad.setNombres(dto.getNombres());
         entidad.setApellidoPaterno(dto.getApellidoPaterno());
         entidad.setApellidoMaterno(dto.getApellidoMaterno());
-        entidad.setFechaRegistro(dto.getFechaRegistro());
-        
+ 
+        /**
+         * Desformatea el String a un LocalDatTime para la BD
+         * Solo lo hace si la fecha no es nula, o sea, el cliente ya existe
+         * Si es nula, se está registrando, y el BO se encarga de darle la fecha* 
+         */
+        String fechaString = dto.getFechaRegistro();
+        if (fechaString != null) {
+            LocalDateTime fecha = UtilNegocio.desformatearFecha(fechaString);
+            entidad.setFechaRegistro(fecha);
+        }
+    
         /**
          * Cifra el numero de teléfono del cliente
          * Como este flujo es de DTO a entidad, se debe encriptar para que llegue cifrado a la BD
@@ -190,7 +202,11 @@ public class ClienteMapper {
         dto.setNombres(entidad.getNombres());
         dto.setApellidoPaterno(entidad.getApellidoPaterno());
         dto.setApellidoMaterno(entidad.getApellidoMaterno());
-        dto.setFechaRegistro(entidad.getFechaRegistro());
+        
+        //Da formato a la fecha
+        LocalDateTime fecha = entidad.getFechaRegistro();
+        String fechaFormateada = UtilNegocio.formatearFecha(fecha);
+        dto.setFechaRegistro(fechaFormateada);
         
         //Desencripta el teléfono cifrado de la BD para verse bien en presentación
         String telefonoDesencriptado = EncriptarTelefono.desencriptar(entidad.getTelefono());

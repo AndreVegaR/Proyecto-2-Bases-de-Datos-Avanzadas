@@ -47,8 +47,6 @@ public class Cliente implements Serializable {
     
     @OneToMany(mappedBy = "cliente")
     private List<Comanda> comandas = new ArrayList<>();
-
-    
     
     /**
      * Constructor completo
