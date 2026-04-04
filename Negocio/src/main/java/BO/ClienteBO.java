@@ -85,10 +85,10 @@ public class ClienteBO {
         cliente.setFechaRegistro(fecha);
         
         //Lo manda a persistirse
-        ClienteDAO.getInstance().registrarCliente(cliente);
+        Cliente clienteRegistrado = ClienteDAO.getInstance().registrarCliente(cliente);
 
         //Regresa el DTO
-        return ClienteMapper.mapearEntidadDTO(cliente);
+        return ClienteMapper.mapearEntidadDTO(clienteRegistrado);
     }
     
     

@@ -91,6 +91,8 @@ public class MesaBO {
         MesaDAO.getInstance().actualizarEstado(mesa.getId(), mesa.getEstadoMesa());
     }
     
+    
+    
     /**
      * Mismo sentido que ocuparMesa
      * 
