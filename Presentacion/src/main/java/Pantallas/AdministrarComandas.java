@@ -9,6 +9,7 @@ import DTOs.ProductoDTO;
 import Utilerias.Constantes;
 import Utilerias.UtilBuild;
 import Utilerias.UtilGeneral;
+import Utilerias.UtilLogica;
 import dialogos.ActualizarCliente;
 import dialogos.EliminarCliente;
 import dialogos.InfoComanda;
@@ -117,7 +118,18 @@ public class AdministrarComandas extends JFrame implements IObservador {
                                                               mapaBotones, //Mapa con los botones
                                                               dialogos, //Lista con los JDialog a abrir
                                                               columnaActiva); //Arreglo que contiene el índice para filtrar
-                                                              
+
+        /**
+         * Estas dos líneas se encargan de desaparecer de la interfaz botones del CRUD
+         * El método ensamblarPantallaAdministrar asume todo el CRUD, pero a veces no se ocupa
+         * Un administrador no registra comandas, y las comandas no pueden ser eliminadas
+         * Entonces el método esconderBotones se encarga de extirparlos:
+         * -Busca coincidencias entre el arreglo y el mapa de botones
+         * -Remueve del panel cada coincidencia
+         * -Al final recarga el panel
+         */
+        String[] botonesEliminar = {"registrar", "eliminar"};
+        UtilLogica.esconderBotones(panelBotones, mapaBotones, botonesEliminar);
         
         //Evento que se activa cuando seleccionas una fila de la columna
         tabla.addMouseListener(new java.awt.event.MouseAdapter() {

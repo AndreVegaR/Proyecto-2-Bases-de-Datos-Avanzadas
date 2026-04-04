@@ -13,7 +13,7 @@ import java.util.List;
  */
 public class PinMeseros {
     
-    private static final List<String> PINES = Arrays.asList("1234","5678","8888");
+    private static final List<String> PINES = Arrays.asList("1", "2", "3", "4");
     
     public static boolean validarPin(String pinIngresado){
         if(pinIngresado == null){
@@ -22,5 +22,4 @@ public class PinMeseros {
         String pin = pinIngresado.trim();
         return PINES.contains(pin);
     }
-    
 }

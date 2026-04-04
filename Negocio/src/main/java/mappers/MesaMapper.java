@@ -36,7 +36,7 @@ public class MesaMapper {
         /**
          * Si el estado no está vacío, significa que se está mapeando dentro del flujo de comanda
          * En ese caso, simplemente se pasa el atributo
-         * De lo contrario, apenas se está creando, y se le debe asignar el estado base
+         * De lo contrario, apenas se está creando, y se le debe asignar el estado inicial
          */
         if (dto.getEstadoMesa() != null && !dto.getEstadoMesa().isEmpty()) {
             entidad.setEstadoMesa(dto.getEstadoMesa());
@@ -46,11 +46,13 @@ public class MesaMapper {
         return entidad;
     }
     
+    
+    
     /**
      * Mapea de entidad a DTO
      * 
-     * @param entidad
-     * @return 
+     * @param entidad a mapear
+     * @return la entidad mapeada
      */
     public static MesaDTO mapearEntidadDTO(Mesa entidad) {
         MesaDTO dto = new MesaDTO();

@@ -9,14 +9,24 @@ import javax.swing.JFrame;
  */
 public class CoordinadorPantallas implements ICoordinadorPantallas {
     
-    //Enumerador anidado que guarda el tipo de usuario, esto para adaptar el programa según sus funciones
-    public enum RolUsuario {
-        ADMINISTRADOR,
-        MESERO
+    //Strings estáticos y métodos para manejar el tipo de empleado de la sesión
+    private static final String MESERO = "Mesero";
+    private static final String ADMINISTRADOR = "Administrador";
+    private static String tipoEmpleado = MESERO;
+    @Override
+    public void establecerMesero() {
+        tipoEmpleado = MESERO;
+    }
+    @Override
+    public void establecerAdministrador() {
+        tipoEmpleado = ADMINISTRADOR;
+    }
+    @Override
+    public boolean esAdministrador() {
+        return tipoEmpleado.equals(ADMINISTRADOR);
     }
     
-    //Enumerador con el rol del usiario con la sesión actual
-    private RolUsuario rolUsuario = RolUsuario.MESERO;
+    
     
     //Única instancia
     private static CoordinadorPantallas instancia;
@@ -61,15 +71,5 @@ public class CoordinadorPantallas implements ICoordinadorPantallas {
     public void abrirDialogo(Supplier<? extends JDialog> formulario) {
         JDialog dialogo = formulario.get();
         dialogo.setVisible(true);
-    }
-    
-    /**
-     * Regresa el rol del usuario con la sesión actual
-     * 
-     * @return el valor del enumerador RolUsuario
-     */
-    @Override
-    public RolUsuario getRolUsuario() {
-        return rolUsuario;
     }
 }

@@ -1,6 +1,5 @@
 package Utilerias;
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.Font;
 import java.util.Arrays;
 
