@@ -17,6 +17,7 @@ import observadores.IObservador;
 import DTOs.ClienteDTO;
 import excepciones.NegocioException;
 import java.time.LocalDateTime;
+import javax.swing.JComboBox;
 
 /**
  * JDialog para actualizar un cliente
@@ -47,13 +48,13 @@ public class ActualizarCliente extends JDialog {
         JTextField tFCorreo = UtilGeneral.crearCampoFormulario(panel, "Correo", tamanio);
         
         //Panel de botones
-        JPanel panelBotones = new JPanel(new FlowLayout(FlowLayout.RIGHT, 15, 15));
+        JPanel panelInferior = new JPanel(new FlowLayout(FlowLayout.RIGHT, 15, 15));
         JButton botonAceptar = UtilBoton.crearBoton("Aceptar");
-        panelBotones.add(botonAceptar);
-
+        panelInferior.add(botonAceptar);
+        
         //Agrega todo al JDialog
         add(panel, BorderLayout.CENTER);
-        add(panelBotones, BorderLayout.SOUTH);
+        add(panelInferior, BorderLayout.SOUTH);
 
         //Actualizar
         botonAceptar.addActionListener(new ActionListener() {

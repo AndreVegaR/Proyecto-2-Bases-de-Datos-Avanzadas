@@ -1,5 +1,7 @@
 package Coordinadores;
 import DTOs.ClienteDTO;
+import DTOs.ComandaDTO;
+import DTOs.DetallesComandaDTO;
 import java.util.List;
 
 /**
@@ -20,4 +22,17 @@ public interface ICoordinadorNegocio {
     ClienteDTO eliminarCliente();
     
     List<ClienteDTO> consultarClientes();
+    
+    
+    
+    //Métodos de comandas
+    ComandaDTO consultarComanda(Long id);
+    
+    ComandaDTO registrarComanda(ComandaDTO comanda);
+    
+    ComandaDTO actualizarComanda(ComandaDTO comanda);
+    
+    List<ComandaDTO> consultarComandas();
+    
+    List<DetallesComandaDTO> consultarDetalles();
 }

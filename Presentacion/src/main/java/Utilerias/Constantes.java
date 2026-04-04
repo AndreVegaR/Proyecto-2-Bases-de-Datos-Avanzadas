@@ -10,6 +10,8 @@ import java.util.Arrays;
  */
 public class Constantes {
     
+    public static final boolean TEST_MODE = true;
+    
     //Colores centralizados
     public static final Color COLOR_BOTONES = new Color(37, 99, 235);
     public static final Color COLOR_BOTON_HOVER = new Color(29, 78, 216);
@@ -33,4 +35,6 @@ public class Constantes {
     //Cantidad de caracteres que tendrán los campos de texto
     public static final int NUM_CARACTERES = 20;
     
+    //Arreglo con los tipos de clientes
+    public static final String[] TIPOS_CLIENTES = {"Frecuente"};
 }

@@ -34,22 +34,23 @@ public class Producto {
     @Column(name = "id_Producto")
     private Long id;
     
-    @Column(name = "nombre",nullable = false,unique = true)
+    @Column(name = "nombre",nullable = false, unique = true)
     private String nombre;
     
-
+    @Column(name = "precio", nullable = false)
+    private double precio;
     
-   @Enumerated(EnumType.STRING)  
-   @Column(name = "tipo_producto",nullable = false)
-   private TipoProducto tipoProducto;
+    @Enumerated(EnumType.STRING)  
+    @Column(name = "tipo_producto",nullable = false)
+    private TipoProducto tipoProducto;
 
-   @Enumerated(EnumType.STRING)
-   @Column(name = "estado", nullable = false)
-   private EstadoProducto estadoProducto = EstadoProducto.ACTIVO;
-   
-   //mapeo para tabla intermedia entre product e ingrediente
-   @OneToMany(mappedBy = "producto",cascade = {CascadeType.PERSIST,CascadeType.MERGE})
-   private List<IngredienteProducto> productosIngredientes = new ArrayList<>();
+    @Enumerated(EnumType.STRING)
+    @Column(name = "estado", nullable = false)
+    private EstadoProducto estadoProducto = EstadoProducto.ACTIVO;
+
+    //mapeo para tabla intermedia entre product e ingrediente
+    @OneToMany(mappedBy = "producto",cascade = {CascadeType.PERSIST,CascadeType.MERGE})
+    private List<IngredienteProducto> productosIngredientes = new ArrayList<>();
 
    
     public Producto(Long id, String nombre, TipoProducto tipo) {
@@ -105,4 +106,20 @@ public class Producto {
     public void setProductosIngredientes(List<IngredienteProducto> productosIngredientes) {
         this.productosIngredientes = productosIngredientes;
     } 
+
+    public double getPrecio() {
+        return precio;
+    }
+
+    public void setPrecio(double precio) {
+        this.precio = precio;
+    }
+
+    public TipoProducto getTipoProducto() {
+        return tipoProducto;
+    }
+
+    public void setTipoProducto(TipoProducto tipoProducto) {
+        this.tipoProducto = tipoProducto;
+    }
 }

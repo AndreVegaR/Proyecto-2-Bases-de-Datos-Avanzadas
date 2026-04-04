@@ -5,14 +5,13 @@ import excepciones.NegocioException;
 import DTOs.ComandaDTO;
 import DTOs.DetallesComandaDTO;
 import DTOs.MesaDTO;
+import DTOs.ProductoDTO;
 import Entidades.Cliente;
 import Entidades.DetallesComanda;
 import Entidades.Mesa;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
+import Entidades.Producto;
 import java.util.List;
 import java.util.stream.Collectors;
-import utilerias.UtilNegocio;
 
 /**
  * Mapper que transforma una comanda de DTO a entidad y viceversa
@@ -137,10 +136,10 @@ public class ComandaMapper {
                                             entidad.setPrecioVenta(dto.getPrecioVenta());
                                             entidad.setComentarios(dto.getComentarios());
                                             entidad.setComanda(comanda);
-                                            //entidad.setProducto(ProductoMapper.mapearDTOEntidad(dto.getProducto()));
+                                            entidad.setProducto(ProductoFalso_DTOEntidad(dto.getProducto())); //LUEGO SE REEMPLAZA POR PRODUCTO MAPPER!!!
                                             return entidad;
                                         })
-                                        .collect(Collectors.toList());
+                                        .toList();
         return entidades;
     }
     
@@ -160,10 +159,29 @@ public class ComandaMapper {
                                             dto.setSubtotal(entidad.getSubtotal());
                                             dto.setPrecioVenta(entidad.getPrecioVenta());
                                             dto.setComentarios(entidad.getComentarios());
-                                            //dto.setProducto(ProductoMapper.mapearEntidadDTO(entidad.getProducto()));
+                                            dto.setProducto(ProductoFalso_EntidadDTO(entidad.getProducto())); //LUEGO SE REEMPLAZA POR PRODUCTO MAPPER!!!
                                             return dto;
                                         })
-                                        .collect(Collectors.toList());
+                                        .toList();
         return dtos;
+    }
+    
+    
+    
+    
+    //LUEGO SE REEMPLAZA POR PRODUCTO MAPPER!!!
+    private static Producto ProductoFalso_DTOEntidad(ProductoDTO dto) {
+        Producto entidad = new Producto();
+        entidad.setId(dto.getId());
+        entidad.setNombre(dto.getNombre());
+        entidad.setPrecio(100);
+        return entidad;
+    }
+    private static ProductoDTO ProductoFalso_EntidadDTO(Producto entidad) {
+        ProductoDTO dto = new ProductoDTO();
+        dto.setId(entidad.getId());
+        dto.setNombre(entidad.getNombre());
+        dto.setPrecio(100);
+        return dto;
     }
 }

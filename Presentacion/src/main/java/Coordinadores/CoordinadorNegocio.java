@@ -1,6 +1,10 @@
 package Coordinadores;
 import BO.ClienteBO;
+import BO.ComandaBO;
 import DTOs.ClienteDTO;
+import DTOs.ComandaDTO;
+import DTOs.DetallesComandaDTO;
+import Utilerias.Constantes;
 import java.util.List;
 
 /**
@@ -19,6 +23,15 @@ public class CoordinadorNegocio implements ICoordinadorNegocio {
     }
     public ClienteDTO getCliente(){
         return cliente;
+    }
+    
+    //La comanda selecciona en un momento del programa (clic en el registro de la tabla)
+    private ComandaDTO comanda = new ComandaDTO();
+    public void setComanda(ComandaDTO comanda) {
+        this.comanda = comanda;
+    }
+    public ComandaDTO getComanda(){
+        return comanda;
     }
     
     //Única instancia
@@ -76,5 +89,45 @@ public class CoordinadorNegocio implements ICoordinadorNegocio {
     @Override
     public List<ClienteDTO> consultarClientes() {
         return ClienteBO.getInstance().consultarClientes();
+    }
+    
+    
+    
+    //Métodos de comanda
+    @Override
+    public ComandaDTO consultarComanda(Long id) {
+        return ComandaBO.getInstance().consultarComanda(id);
+    }
+    
+    @Override
+    public ComandaDTO registrarComanda(ComandaDTO comanda) {
+        return ComandaBO.getInstance().registrarComanda(comanda);
+    }
+    
+    @Override
+    public ComandaDTO actualizarComanda(ComandaDTO comanda) {
+        ComandaDTO c = null;
+        if (this.cliente != null) {
+            c = ComandaBO.getInstance().actualizarComanda(comanda);
+        }
+        this.cliente = null;
+        return c; 
+    }
+    
+    @Override
+    public List<ComandaDTO> consultarComandas() {
+        return ComandaBO.getInstance().consultarComandas();
+    }
+    
+    //Su único punto de verdad es la variable interna
+    @Override
+    public List<DetallesComandaDTO> consultarDetalles() {
+        if (Constantes.TEST_MODE) {
+            return comanda.getDetalles();
+        }
+        if (comanda != null) {
+            return ComandaBO.getInstance().consultarDetalles(comanda.getId());
+        }
+        return null;
     }
 }

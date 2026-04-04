@@ -5,6 +5,7 @@ import conexion.ConexionBD;
 import excepciones.PersistenciaException;
 import java.util.List;
 import javax.persistence.EntityManager;
+import javax.persistence.TypedQuery;
 
 /**
  * DAO para la entidad Comanda
@@ -191,6 +192,27 @@ public class ComandaDAO {
                 em.getTransaction().rollback();
             }
             throw new PersistenciaException("Error al registrar el detalle de la comanda: " + e.getMessage());
+        } finally {
+            em.close();
+        }
+    }
+    
+    
+    
+    /**
+     * Consulta todos los detalles de una comanda
+     * Está aquí porque está semánticamente ligado: no existe un detalle sin su comanda
+     * 
+     * @param idComanda a consultarle sus detalles
+     * @return los detalles
+     */
+    public List<DetallesComanda> consultarDetallesComanda(Long idComanda) {
+        EntityManager em = ConexionBD.crearConexion();
+        try {
+            String jpql = "SELECT d FROM DetalleComanda d WHERE d.comanda.id = :idComanda";
+            TypedQuery<DetallesComanda> query = em.createQuery(jpql, DetallesComanda.class);
+            query.setParameter("idComanda", idComanda);
+            return query.getResultList();
         } finally {
             em.close();
         }

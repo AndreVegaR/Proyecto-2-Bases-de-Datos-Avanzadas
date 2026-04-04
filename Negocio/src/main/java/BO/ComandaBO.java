@@ -1,6 +1,7 @@
 package BO;
 import DAOs.ComandaDAO;
 import DTOs.ComandaDTO;
+import DTOs.DetallesComandaDTO;
 import Entidades.Comanda;
 import excepciones.NegocioException;
 import java.util.List;
@@ -156,5 +157,27 @@ public class ComandaBO {
         
         //Regresa la nueva lista
         return dtos;
+    }
+    
+    
+    
+    /**
+     * Consulta todos los detalles asociados a una comanda
+     * Solo regresa la lista de la comanda obtenida por consultarComanda
+     * 
+     * @param id de la comanda
+     * @return la lista de sus detalles
+     */
+    public List<DetallesComandaDTO> consultarDetalles(Long id) {
+        UtilNegocio.esNumeroPositivo(id, "ID");
+        
+        //Comprueba que exista esa comanda
+        ComandaDTO comanda = consultarComanda(id);
+        if (comanda == null) {
+            throw new NegocioException("No existe esa comanda");
+        }
+        
+        //Regresa la lista de sus detalles
+        return comanda.getDetalles();
     }
 }

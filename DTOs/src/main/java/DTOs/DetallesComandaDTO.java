@@ -73,7 +73,7 @@ public class DetallesComandaDTO {
 
     //El subtotal es un calculo entre el precio del producto y la cantidad
     public double getSubtotal() {
-        if (this.subtotal > 0) {
+        if (this.subtotal > 0.0) {
             return this.subtotal;
         }
         return precioVenta * cantidad;

@@ -42,6 +42,22 @@ public class ClienteFrecuenteDTO extends ClienteDTO{
         super(id, nombres, apellidoPaterno, apellidoMaterno, telefono, fechaRegistro, correo);
     }
     
+    
+    /**
+     * Constructor de copia:
+     * Le pasas un cliente base y ya mapea todos los atributos repetidos
+     * 
+     * @param cliente que le copiará sus atributos
+     */
+    public ClienteFrecuenteDTO(ClienteDTO cliente) {
+        this.setId(cliente.getId());
+        this.setNombres(cliente.getNombres());
+        this.setApellidoPaterno(cliente.getApellidoPaterno());
+        this.setApellidoMaterno(cliente.getApellidoMaterno());
+        this.setTelefono(cliente.getTelefono());
+        this.setCorreo(cliente.getCorreo());
+    }
+    
     /**
      * Constructor vacío
      */
@@ -50,12 +66,39 @@ public class ClienteFrecuenteDTO extends ClienteDTO{
         
     }
     
+    /**
+     * Obtiene la información específica de este tipo de cliente
+     * Le agrega los detalles a la información base
+     * Será útil para presentación
+     * 
+     * @return un String con la información adicional
+     */
+    @Override
+    public String getInfoAdicional() {
+        String info = infoBase();
+        info += "Información adicional del cliente \n"
+                    + "Puntos de fidelidad: " + getPuntosFidelidad() +  "\n"
+                    + "Número de visitas: " + getVisitas() + "\n"
+                    + "Gasto total: $" + getGastoTotal() + "\n"; 
+        return info;
+    }
+    
+    /**
+     * Muestra el tipo de cliente específico que es
+     * 
+     * @return el tipo de cliente
+     */
+    @Override
+    public String getTipo() {
+        return "Frecuente";
+    }
+    
+    
+    //Getters y setters
     public Long getId() {
         return id;
     }
-
-    //Getters y setters
-   
+    
     public int getVisitas() {
         return visitas;
     }
@@ -78,21 +121,5 @@ public class ClienteFrecuenteDTO extends ClienteDTO{
 
     public void setPuntosFidelidad(int puntosFidelidad) {
         this.puntosFidelidad = puntosFidelidad;
-    } 
-    
-    /**
-     * Obtiene la información específica de este tipo de cliente
-     * Será útil para presentación
-     * 
-     * @return un String con la información adicional
-     */
-    @Override
-    public String getInfoAdicional() {
-        String info = "Información adicional del cliente " + getId() + ": \n"
-                      + "Puntos de fidelidad: " + getPuntosFidelidad() +  "\n"
-                      + "Número de visitas: " + getVisitas() + "\n"
-                      + "Gasto total: " + getGastoTotal() + "\n";
-        
-        return info;
     }
 }

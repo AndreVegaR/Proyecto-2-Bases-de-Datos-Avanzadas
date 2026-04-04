@@ -10,6 +10,7 @@ public class ProductoDTO {
     private String nombre;
     private TipoProducto tipoProducto;
     private EstadoProducto estadoProducto;
+    private double precio;
     
     // Lista de ingredientes con cantidad
     private List<IngredienteProductoDTO> ingredientes;
@@ -65,6 +66,14 @@ public class ProductoDTO {
 
     public void setIngredientes(List<IngredienteProductoDTO> ingredientes) {
         this.ingredientes = ingredientes;
+    }
+
+    public double getPrecio() {
+        return precio;
+    }
+
+    public void setPrecio(double precio) {
+        this.precio = precio;
     }
     
     /*

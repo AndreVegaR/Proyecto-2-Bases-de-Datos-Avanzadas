@@ -1,7 +1,14 @@
 package Pantallas;
-import DTOs.ClienteDTO;
+import Coordinadores.CoordinadorNegocio;
+import Coordinadores.CoordinadorPantallas;
+import DTOs.ClienteFrecuenteDTO;
+import DTOs.ComandaDTO;
+import DTOs.DetallesComandaDTO;
+import DTOs.MesaDTO;
+import DTOs.ProductoDTO;
 import Utilerias.Constantes;
 import Utilerias.UtilBuild;
+import Utilerias.UtilGeneral;
 import dialogos.ActualizarCliente;
 import dialogos.EliminarCliente;
 import dialogos.InfoComanda;
@@ -29,6 +36,8 @@ import observadores.IObservador;
 //ESTE OBSERVADOR ES TEMPORAL PUEDA QUE SE VAYA O NO YA DEPENDE
 public class AdministrarComandas extends JFrame implements IObservador {
     
+    public static final boolean TEST_MODE = true;
+    
     //Se instancia como atributo para usarlo en métodos fuera del constructor
     private JTable tabla;
     
@@ -42,12 +51,12 @@ public class AdministrarComandas extends JFrame implements IObservador {
     final int[] columnaActiva = {-1};
     
     /**
-     * Atributo en donde se almacena en memoria la lista de todos los clientes
+     * Atributo en donde se almacena en memoria la lista de todos las comandas
      * Esto para poder manipular estos registros (para obtener uno en específico por índice como ejemplo)
      * De esta forma no se tiene que llamar cada vez al BO y gastar recursos en consultas SQL
      * Mejor todo se consulta localmente
      */
-    private List<ClienteDTO> listaTemporal;
+    private List<ComandaDTO> listaTemporal = new ArrayList<>();
 
     public AdministrarComandas() {
 
@@ -70,7 +79,7 @@ public class AdministrarComandas extends JFrame implements IObservador {
          * Será pasado a un próximo método para automatizar la creación de la tabla
          * Importante: debe coincidir con el orden del método mapearTabla
          */
-        String[] columnas = {"ID", "Total", "Mesa", "Fecha de registro", "Estado", "Folio"};
+        String[] columnas = {"ID", "Total", "Mesa", "Estado", "Folio"};
         
         /**
          * Mapa para guardar los botones interiores
@@ -116,34 +125,36 @@ public class AdministrarComandas extends JFrame implements IObservador {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 
                 //Crea el cliente desde aquí para usarlo fuera del if
-                ClienteDTO cliente = null;
+                ComandaDTO comanda = null;
                 int fila = tabla.getSelectedRow();
                 if (fila != -1) {
+                    
                     /**
                      * Esto mantiene siempre el índice real de los registros
                      * Por ejemplo, si selecciono el primer registro de una tabla filtrada, y sabe
                      * que se trata en realidad de otro índice real en la lista
                      */
-                    
-                    /**
-                     * 
-                     * int indiceReal = tabla.convertRowIndexToModel(fila);
+                    int indiceReal = tabla.convertRowIndexToModel(fila);
                     
                     //Obtiene el cliente en dicho índice y lo manda al método que muestra su info
-                    cliente = listaTemporal.get(indiceReal);
+                    comanda = listaTemporal.get(indiceReal);
                     
                     //Asigna el cliente al coordinador para que sea usado
-                    CoordinadorNegocio.getInstance().setCliente(cliente);
-                     * 
-                     */
+                    CoordinadorNegocio.getInstance().setComanda(comanda);
                     
-                    System.out.println("¡Hola! Soy una prueba");
-                }
-                
-                //Si se cliquea dos veces, muestra su información específica
-                if (evt.getClickCount() >= 2) {
-                    //mostrarDetalles(cliente);
-                    System.out.println("¡Hola! Soy una prueba");
+                    /**
+                    * Si se cliquea dos veces, el coordinador abre el diálogo
+                    * Ese diálogo muestra una tabla con los productos de la comanda
+                    */
+                   if (evt.getClickCount() == 2) {
+                       //Se hace una final solo para usarla dentro de este lambda
+                       final ComandaDTO comandaLambda = comanda;
+                       CoordinadorNegocio.getInstance().setComanda(comanda);
+                       CoordinadorPantallas.getInstance().abrirDialogo(() -> {
+                            CoordinadorNegocio.getInstance().setComanda(comandaLambda);
+                            return new InfoComanda(AdministrarComandas.this);
+                        });
+                   }
                 }
            }
          });
@@ -151,23 +162,102 @@ public class AdministrarComandas extends JFrame implements IObservador {
         //Inyecta la lógica de refrescar la tabla al botón Refrescar
         JButton botonRefrescar = mapaBotones.get(Constantes.OPCIONES_CRUD_MINUS[0]);
         botonRefrescar.addActionListener(e -> {
-            //llenarTabla();
-            System.out.println("¡Hola! Soy una prueba");
+            llenarTabla();
         });
 
         //Llena la tabla cada vez que se entre a la pantalla
-        //llenarTabla();
-        System.out.println("¡Hola! Soy una prueba");
+        llenarTabla();
     }
     
+    
     /**
-     * ESTO ES IGUALMENTE TEMPORAL
+     * Llena la tabla con registros de cada comanda
+     * También se guardan en el atributo local de listaTemporal
+     * De esta forma podemos acceder a su contenido sin tener que conectarnos cada vez
+     */
+    public void llenarTabla() {
+        
+        if (!TEST_MODE) {
+            List<ComandaDTO> comandas = CoordinadorNegocio.getInstance().consultarComandas();
+            listaTemporal = comandas;
+        } else {
+            MesaDTO mesa = new MesaDTO("Abierta", 1);
+            mesa.setId(1L);
+            
+            ClienteFrecuenteDTO cliente = new ClienteFrecuenteDTO();
+            cliente.setId(1L);
+            cliente.setNombres("menchaca");
+            cliente.setApellidoPaterno("");
+            cliente.setApellidoMaterno("");
+            cliente.setTelefono("999999");
+            cliente.setCorreo("correoinsano@hotmail.com");
+            
+            ProductoDTO producto1 = new ProductoDTO();
+            producto1.setId(1L);
+            producto1.setNombre("Filete");
+            producto1.setPrecio(100.0);
+            
+            ProductoDTO producto2 = new ProductoDTO();
+            producto2.setId(2L);
+            producto2.setNombre("Vino");
+            producto2.setPrecio(50.0);
+            
+            List<DetallesComandaDTO> detalles = new ArrayList<>();
+            
+            DetallesComandaDTO detalle1 = new DetallesComandaDTO();
+            detalle1.setId(1L);
+            detalle1.setProducto(producto1);
+            detalle1.setCantidad(3);
+            detalle1.setPrecioVenta(producto1.getPrecio());
+            detalle1.setSubtotal(detalle1.getSubtotal());
+            detalles.add(detalle1);
+            
+            DetallesComandaDTO detalle2 = new DetallesComandaDTO();
+            detalle2.setId(2L);
+            detalle2.setProducto(producto2);
+            detalle2.setCantidad(5);
+            detalle2.setPrecioVenta(producto2.getPrecio());
+            detalle2.setSubtotal(detalle2.getSubtotal());
+            detalles.add(detalle2);
+            
+            ComandaDTO comanda = new ComandaDTO();
+            comanda.setId(1L);
+            comanda.setFolio("BO-20260404-001");
+            comanda.setEstado("Abierta");
+            comanda.setComentarios("Hola");
+            comanda.setDetalles(detalles);
+            comanda.setCliente(cliente);
+            comanda.setMesa(mesa);
+            
+            listaTemporal.add(comanda);
+        }
+        mapearTabla();
+    }
+    
+    
+    
+    /**
+     * Muestra los atributos base de los clientes en la tabla directo de la BD
+     */
+    private void mapearTabla() {
+        UtilGeneral.registrarTabla(tabla, listaTemporal, (ComandaDTO c) -> new Object[]{
+            c.getId(),
+            c.getTotal(),
+            c.getMesa().getNumero(),
+            c.getEstado(),
+            c.getFolio()
+        });
+    }
+    
+    
+    
+    /**
      * Método de la IObservador
      * Escucha el llamado el formulario de registrar o actualizar cliente
      * Entonces cuando se haga el procedimiennto automáticamnete se refleja en la tabla
      */
     @Override
     public void notificarCambio() {
-        System.out.println("¡Hola! Soy una prueba");
+        llenarTabla();
     }
 }

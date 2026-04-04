@@ -131,7 +131,7 @@ public class AdministrarClientes extends JFrame implements IObservador {
                 }
                 
                 //Si se cliquea dos veces, muestra su información específica
-                if (evt.getClickCount() >= 2) {
+                if (evt.getClickCount() == 2) {
                     mostrarDetalles(cliente);
                 }
            }
@@ -215,7 +215,7 @@ public class AdministrarClientes extends JFrame implements IObservador {
             c.getTelefono(),
             (c.getCorreo() != null && !c.getCorreo().isEmpty()) ? c.getCorreo() : "No tiene",
             c.getFechaRegistro(),
-            "Frecuente" //-> CORREGIR PRONTO
+            c.getTipo()
         });
     }
    
