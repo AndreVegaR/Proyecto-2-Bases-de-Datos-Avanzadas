@@ -1,6 +1,7 @@
 package Principal;
 
 import Coordinadores.CoordinadorPantallas;
+import Pantallas.AdministrarIngredientes;
 import Utilerias.Constantes;
 import Utilerias.UtilBoton;
 import Utilerias.UtilGeneral;
@@ -68,7 +69,7 @@ public class MenuPrincipal extends JFrame {
             //Crea botones
             JButton botonAdministrarComandas = UtilBoton.crearBoton("Administrar comandas");
             JButton botonAdministrarProductos = UtilBoton.crearBoton("Administrar productos");
-            JButton botonAdministrarIngredientes = UtilBoton.crearBoton("Administrar ingredientes");
+            JButton botonAdministrarIngredientes = UtilBoton.crearBotonNavegar("Administrar ingredientes", this, AdministrarIngredientes::new);
             JButton administrarClientes = UtilBoton.crearBotonNavegar("Administrar clientes", this, AdministrarClientes::new);
             JButton botonReportesComandas = UtilBoton.crearBoton("Reporte de comandas");
 

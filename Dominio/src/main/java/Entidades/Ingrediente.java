@@ -4,27 +4,32 @@
  */
 package Entidades;
 
+import Enumeradores.UnidadMedida;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Lob;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 /**
- *
+ * Entidad JPA que representa un ingrediente del restaurante.
  * @author Angel
  * Tabla de ingrediente junto con su union con la tabla de producto mediante
  * una tabla intermedia
  */
 @Entity
 @Table(name = "ingredientes")
-public class Ingrediente {
+public class Ingrediente implements Serializable {
     
-    @Id
+     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_Ingrediente")
     private Long id;
@@ -33,23 +38,27 @@ public class Ingrediente {
     private String nombre;
     
     @Column(name = "unidad_de_medida",nullable = false)
-    private String unidadMedida;
+    @Enumerated(EnumType.STRING)
+    private UnidadMedida unidadMedida;
     
     @Column(name = "stock",nullable = false)
     private Double stock;
     
+    @Lob
+    @Column(name = "imagen")
+    private byte[] imagen;
     //mapeo para tabla intermedia entre product e ingrediente
     @OneToMany(mappedBy = "ingrediente")
     private List<IngredienteProducto> productosIngredientes = new ArrayList<>();
 
-    public Ingrediente(Long id, String nombre, String unidadMedida, Double stock) {
+    public Ingrediente(Long id, String nombre, UnidadMedida unidadMedida, Double stock) {
         this.id = id;
         this.nombre = nombre;
         this.unidadMedida = unidadMedida;
         this.stock = stock;
     }
 
-    public Ingrediente(String nombre, String unidadMedida, Double stock) {
+    public Ingrediente(String nombre, UnidadMedida unidadMedida, Double stock) {
         this.nombre = nombre;
         this.unidadMedida = unidadMedida;
         this.stock = stock;
@@ -77,11 +86,11 @@ public class Ingrediente {
         this.nombre = nombre;
     }
 
-    public String getUnidadMedida() {
+    public UnidadMedida getUnidadMedida() {
         return unidadMedida;
     }
 
-    public void setUnidadMedida(String unidadMedida) {
+    public void setUnidadMedida(UnidadMedida unidadMedida) {
         this.unidadMedida = unidadMedida;
     }
 
@@ -99,6 +108,14 @@ public class Ingrediente {
 
     public void setProductosIngredientes(List<IngredienteProducto> productosIngredientes) {
         this.productosIngredientes = productosIngredientes;
+    }
+
+    public byte[] getImagen() {
+        return imagen;
+    }
+
+    public void setImagen(byte[] imagen) {
+        this.imagen = imagen;
     }
     
     
