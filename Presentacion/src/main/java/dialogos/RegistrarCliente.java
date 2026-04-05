@@ -1,7 +1,8 @@
 package dialogos;
-
 import Coordinadores.CoordinadorNegocio;
+import DTOs.ClienteDTO;
 import DTOs.ClienteFrecuenteDTO;
+import Utilerias.Constantes;
 import Utilerias.UtilBoton;
 import Utilerias.UtilGeneral;
 import java.awt.BorderLayout;
@@ -15,8 +16,8 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import observadores.IObservador;
-import DTOs.ClienteDTO;
 import excepciones.NegocioException;
+import javax.swing.JComboBox;
 
 /**
  * JDialog para registrar un cliente
@@ -46,14 +47,19 @@ public class RegistrarCliente extends JDialog {
         JTextField tFTelefono = UtilGeneral.crearCampoFormulario(panel, "Teléfono", tamanio);
         JTextField tFCorreo = UtilGeneral.crearCampoFormulario(panel, "Correo", tamanio);
         
-        //Panel de botones
-        JPanel panelBotones = new JPanel(new FlowLayout(FlowLayout.RIGHT, 15, 15));
-        JButton botonAceptar = UtilBoton.crearBoton("Aceptar");
-        panelBotones.add(botonAceptar);
+        //Panel inferiorB
+        JPanel panelInferior = new JPanel(new FlowLayout(FlowLayout.RIGHT, 15, 15));
+        JButton botonAceptar = UtilBoton.crearBoton("Registrar");
+        panelInferior.add(botonAceptar);
+        
+        //Crea un Combobox
+        JComboBox<String> comboClientes = new JComboBox<>(Constantes.TIPOS_CLIENTES);
+        comboClientes.setSelectedIndex(0);
+        panelInferior.add(comboClientes);
 
         //Agregamos todo al JDialog
         add(panel, BorderLayout.CENTER);
-        add(panelBotones, BorderLayout.SOUTH);
+        add(panelInferior, BorderLayout.SOUTH);
 
         //Evento del botón Aceptar
         botonAceptar.addActionListener(new ActionListener() {
@@ -77,30 +83,37 @@ public class RegistrarCliente extends JDialog {
                 //Confirmación
                 int opcion = JOptionPane.showConfirmDialog(
                         RegistrarCliente.this,
-                        "¿Deseas registrar este cliente?",
+                        "¿Desea registrar este cliente?",
                         "Confirmar",
                         JOptionPane.YES_NO_OPTION
                 );
-
                 if (opcion == JOptionPane.YES_OPTION) {
-                    //Crea el DTO
-                    ClienteFrecuenteDTO cliente = new ClienteFrecuenteDTO();
+                    
+                    //Configura el cliente base
+                    ClienteDTO cliente = new ClienteDTO();
                     cliente.setNombres(nombre);
                     cliente.setApellidoPaterno(apellidoP);
                     cliente.setApellidoMaterno(apellidoM);
                     cliente.setTelefono(telefono);
-                    cliente.setCorreo(correo); 
-
-                    //Agrega al cliente al sistema
-                    try {
-                        CoordinadorNegocio.getInstance().registrarCliente(cliente);
-                        JOptionPane.showMessageDialog(RegistrarCliente.this, "Cliente creado correctamente");
-                    } catch (NegocioException ex) {
-                        JOptionPane.showMessageDialog(RegistrarCliente.this, ex.getMessage());
+                    cliente.setCorreo(correo);
+                    
+                    //Crea el DTO y añade información a la subclase en específico
+                    String tipoCliente = (String) comboClientes.getSelectedItem();
+                    ClienteDTO clienteRegistrar = fabricaCliente(tipoCliente, cliente);
+                    
+                    if (clienteRegistrar == null) {
+                        UtilGeneral.dialogoAviso(RegistrarCliente.this, "Error: no se reconoció ese tipo de cliente");
+                    } else {
+                        //Agrega al cliente al sistema
+                        try {
+                            CoordinadorNegocio.getInstance().registrarCliente(clienteRegistrar);
+                            UtilGeneral.dialogoAviso(RegistrarCliente.this, "Registro exitoso");
+                        } catch (NegocioException ex) {
+                            JOptionPane.showMessageDialog(RegistrarCliente.this, ex.getMessage());
+                        }
                     }
                     
-                    
-                    //Notifica al observador sobre el nuevo cliente para que lo registre
+                    //Notifica al observador sobre el nuevo cliente
                     if (RegistrarCliente.this.observador != null) {
                         RegistrarCliente.this.observador.notificarCambio();
                     }
@@ -111,5 +124,24 @@ public class RegistrarCliente extends JDialog {
         //Configuración final y cierre 
         this.pack();
         this.setLocationRelativeTo(padre);
+    }
+    
+    
+    
+    /**
+     * Fábrica especializada en dar un tipo de cliente
+     * Compara el String resultado de la opción elegida de un combobox
+     * Ese String lo compara con los elementos del arreglo TIPOS_CLIENTES
+     * Y usa el constructor copia para pasar todos los atributos del base al nuevo
+     * 
+     * @param tipoCliente a crear
+     * @param clienteBase y sus atributos a pasar
+     * @return el cliente específicio
+     */
+    private ClienteDTO fabricaCliente(String tipoCliente, ClienteDTO clienteBase) {
+        if (tipoCliente.equals(Constantes.TIPOS_CLIENTES[0])) {
+            return new ClienteFrecuenteDTO(clienteBase);
+        }
+        return null;
     }
 }

@@ -1,5 +1,4 @@
 package DTOs;
-import java.time.LocalDateTime;
 
 /**
  * DTO base para la entidad Cliente.
@@ -15,22 +14,11 @@ public class ClienteDTO {
     String apellidoMaterno;
     String telefono;
     String correo;
-    LocalDateTime fechaRegistro;
-    //Constructor vacio
-    public ClienteDTO() {
-    }
+    String fechaRegistro;
     
-    /**
-     * Cosntructor completo
-     * @param id
-     * @param nombres
-     * @param apellidoPaterno
-     * @param apellidoMaterno
-     * @param telefono
-     * @param fechaRegistro
-     * @param correo 
-     */
-    public ClienteDTO(Long id, String nombres, String apellidoPaterno, String apellidoMaterno, String telefono, LocalDateTime fechaRegistro,String correo) {
+    //Constructores
+    public ClienteDTO() {}
+    public ClienteDTO(Long id, String nombres, String apellidoPaterno, String apellidoMaterno, String telefono, String fechaRegistro,String correo) {
         this.id = id;
         this.nombres = nombres;
         this.apellidoPaterno = apellidoPaterno;
@@ -38,8 +26,54 @@ public class ClienteDTO {
         this.telefono = telefono;
         this.fechaRegistro = fechaRegistro;
         this.correo = correo;
-        
     }
+    public ClienteDTO(String nombres, String apellidoPaterno, String apellidoMaterno, String telefono, String correo, String fechaRegistro) {
+        this.nombres = nombres;
+        this.apellidoPaterno = apellidoPaterno;
+        this.apellidoMaterno = apellidoMaterno;
+        this.telefono = telefono;
+        this.correo = correo;
+        this.fechaRegistro = fechaRegistro;
+    }
+    
+    /**
+     * Regresa toda la información en varios renglones
+     * Se usará para mostrar la información en un diálogo por ejemplo
+     * Las demás clases van a sobreescribir ese método
+     * 
+     * @return el String con la información
+     */
+    protected String infoBase() {
+        String info = "Información general del cliente " + id + ": \n"
+                      + "Nombres: " + nombres + " " + apellidoPaterno + " " +apellidoMaterno + "\n"
+                      + "Telefono: " + telefono + "\n";
+        if (correo != null) {
+            info += "Correo: " + correo + "\n";
+        }
+        info += "Fecha de registro: " + fechaRegistro + "\n";
+        info += "\n";
+        return info;
+    }
+    
+    /**
+     * Las sublclases van a sobreescribirlo para mostrar su información específica
+     * 
+     * @return nada, esta clase no lo necesita
+     */
+    public String getInfoAdicional() {
+        return "";
+    }
+    
+    /**
+     * Este método regresa el tipo de cliente que es
+     * Las subclases van a sobreescribirlo
+     * 
+     * @return 
+     */
+    public String getTipo() {
+        return "Sin tipo";
+    }
+    
     //Getter y Setter
     public Long getId() {
         return id;
@@ -89,23 +123,11 @@ public class ClienteDTO {
         this.correo = correo;
     }
 
-    public LocalDateTime getFechaRegistro() {
+    public String getFechaRegistro() {
         return fechaRegistro;
     }
 
-    public void setFechaRegistro(LocalDateTime fechaRegistro) {
+    public void setFechaRegistro(String fechaRegistro) {
         this.fechaRegistro = fechaRegistro;
     }
-    
-    /**
-     * Regresa la información adicional para la pantalla de la tabla
-     * Se declara en la superclase solo para afirmar que cualquier subclase tiene este método
-     * No debería hacer nada aquí, y eso está bien
-     * 
-     * @return nada en este caso en específico; no se necesita
-     */
-    public String getInfoAdicional() {
-        return "";
-    }
-    
 }

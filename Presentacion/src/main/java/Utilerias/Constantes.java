@@ -1,6 +1,5 @@
 package Utilerias;
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.Font;
 import java.util.Arrays;
 
@@ -9,6 +8,8 @@ import java.util.Arrays;
  * @author Andre
  */
 public class Constantes {
+    
+    public static final boolean TEST_MODE = true;
     
     //Colores centralizados
     public static final Color COLOR_BOTONES = new Color(37, 99, 235);
@@ -33,4 +34,6 @@ public class Constantes {
     //Cantidad de caracteres que tendrán los campos de texto
     public static final int NUM_CARACTERES = 20;
     
+    //Arreglo con los tipos de clientes
+    public static final String[] TIPOS_CLIENTES = {"Frecuente"};
 }

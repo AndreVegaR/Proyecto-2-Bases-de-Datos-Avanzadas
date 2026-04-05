@@ -2,6 +2,9 @@ package utilerias;
 
 import excepciones.NegocioException;
 import java.lang.reflect.Field;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 /**
  * Lógica repetida sobre decisiones de negocio
@@ -11,7 +14,7 @@ import java.lang.reflect.Field;
 public class UtilNegocio {
 
     //Mensajes centralizados
-    private static String NULO = "El objeto es nulo";
+    private static String NULO = "Objeto vacío";
     private static String VACIO = "no puede estar vacio";
     private static String POSITIVO = "debe ser un número positivo";
 
@@ -49,6 +52,12 @@ public class UtilNegocio {
     private static String[] CAMPOS_OPCIONALES = {"correo"};
 
     /**
+     * Formato para normalizar una fecha hora en un string cómodo de leer
+     */
+    public static DateTimeFormatter FORMATO_FECHA_HORA =
+            DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+
+    /**
      * Compara que el campo del parámetro se halle en el arreglo de campos
      * opcionales Es auxiliar de stringsVacios Si hay una coincidencia, lo deja
      * pasar
@@ -80,41 +89,36 @@ public class UtilNegocio {
             return true;
         }
 
-        //Obtiene todos los campos en tiempo de ejecución
         Field[] campos = objeto.getClass().getDeclaredFields();
         try {
             for (Field campo : campos) {
 
-                //Filtra solo los strings
                 if (campo.getType().equals(String.class)) {
 
-                    //Desbloquea los atributos privados
                     campo.setAccessible(true);
 
-                    //Descarta si es un campo opcional
                     if (esCampoOpcional(campo)) {
                         continue;
                     }
 
-                    //Convierte a String cada campo del objeto
                     String valor = (String) campo.get(objeto);
 
-                    //Verifica que no sea nulo o blank (String vacío)
                     if (valor == null || valor.isBlank()) {
                         System.out.println("String inválido: " + campo.getName());
                         return true;
                     }
                 }
             }
-        } //Excepción si algo sale mal
-        catch (IllegalAccessException e) {
-            throw new NegocioException("Todos los campos especificados de " + objeto.getClass().getSimpleName() + "son obligatorios");
+        } catch (IllegalAccessException e) {
+            throw new NegocioException("Todos los campos especificados de " 
+                    + objeto.getClass().getSimpleName() + " deben ser obligatorios");
         }
         return false;
     }
 
     /**
      * Determina si un objeto es nulo
+     * Imprime también el objeto en cuestión
      *
      * @param o Objeto
      */
@@ -183,5 +187,54 @@ public class UtilNegocio {
         if (!correo.matches(REGEX_CORREO)) {
             throw new NegocioException("Correo en formato inválido");
         }
+    }
+
+    /**
+     * Transforma una fecha en un String legible y bonito para presentación
+     * Solo se usa en el flujo entidad -> DTO
+     * Utiliza una constante definida en UtilNegocio
+     *
+     * @param fecha a formatear
+     * @return fecha formateada en String
+     */
+    public static String formatearFecha(LocalDateTime fecha) {
+        UtilNegocio.esNulo(fecha);
+        return fecha.format(FORMATO_FECHA_HORA);
+    }
+
+    /**
+     * Transforma un String de fecha en un LocalDateTime
+     * Solo se usa en el flujo DTO -> Entidad
+     * Utiliza la misma constante para un proceso inverso
+     *
+     * @param fechaString a desformatear
+     * @return fecha en LocalDateTime
+     */
+    public static LocalDateTime desformatearFecha(String fechaString) {
+        if (fechaString == null || fechaString.isBlank()) {
+            return LocalDateTime.now();
+        }
+        return LocalDateTime.parse(fechaString, FORMATO_FECHA_HORA);
+    }
+
+    /**
+     * Crea un folio único para una comanda
+     * Utiliza un prefijo establecido, la fecha y el número de la comanda de ese día
+     * Este número se lo pasa el BO, al que llama a un método del DAO
+     * Está aquí porque es formato, es traducción
+     * BO solo orquesta dándole el número consecutivo
+     *
+     * @param numConsecutivo
+     * @return el folio armado
+     */
+    public static String crearFolio(int numConsecutivo) {
+
+        String PREFIJO = "OB";
+
+        String fecha = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
+
+        String clave = String.format("%03d", numConsecutivo);
+
+        return PREFIJO + "-" + fecha + "-" + clave;
     }
 }

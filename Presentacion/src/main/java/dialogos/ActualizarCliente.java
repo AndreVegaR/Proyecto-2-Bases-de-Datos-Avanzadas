@@ -17,6 +17,7 @@ import observadores.IObservador;
 import DTOs.ClienteDTO;
 import excepciones.NegocioException;
 import java.time.LocalDateTime;
+import javax.swing.JComboBox;
 
 /**
  * JDialog para actualizar un cliente
@@ -47,13 +48,13 @@ public class ActualizarCliente extends JDialog {
         JTextField tFCorreo = UtilGeneral.crearCampoFormulario(panel, "Correo", tamanio);
         
         //Panel de botones
-        JPanel panelBotones = new JPanel(new FlowLayout(FlowLayout.RIGHT, 15, 15));
+        JPanel panelInferior = new JPanel(new FlowLayout(FlowLayout.RIGHT, 15, 15));
         JButton botonAceptar = UtilBoton.crearBoton("Aceptar");
-        panelBotones.add(botonAceptar);
-
+        panelInferior.add(botonAceptar);
+        
         //Agrega todo al JDialog
         add(panel, BorderLayout.CENTER);
-        add(panelBotones, BorderLayout.SOUTH);
+        add(panelInferior, BorderLayout.SOUTH);
 
         //Actualizar
         botonAceptar.addActionListener(new ActionListener() {
@@ -81,8 +82,7 @@ public class ActualizarCliente extends JDialog {
                     String apellidoM = tFApellidoM.getText().trim();
                     String telefono = tFTelefono.getText().trim();
                     String correo = tFCorreo.getText().trim();
-                    LocalDateTime fechaRegistro = clienteActualizado.getFechaRegistro();
-
+                    String fechaRegistro = clienteOriginal.getFechaRegistro();
                     
                     //Pasa los atributos del cliente seleccionado, pero actualiza si reconoce si hubo cambios en el formulario
                     clienteActualizado.setId(clienteOriginal.getId()); 
@@ -96,7 +96,7 @@ public class ActualizarCliente extends JDialog {
                     //Lo manda a actualizar
                     try {
                         CoordinadorNegocio.getInstance().actualizarCliente(clienteActualizado);
-                        JOptionPane.showMessageDialog(ActualizarCliente.this, "Cliente creado correctamente");
+                        JOptionPane.showMessageDialog(ActualizarCliente.this, "Cliente actualizado correctamente");
                     } catch (NegocioException ex) {
                         JOptionPane.showMessageDialog(ActualizarCliente.this, ex.getMessage());
                     }

@@ -3,6 +3,8 @@ package Coordinadores;
 import DTOs.ClienteDTO;
 import DTOs.IngredienteDTO;
 import Enumeradores.UnidadMedida;
+import DTOs.ComandaDTO;
+import DTOs.DetallesComandaDTO;
 import java.util.List;
 
 /**
@@ -32,4 +34,16 @@ public interface ICoordinadorNegocio {
     IngredienteDTO buscarIngredientePorId(Long id);
 
     List<IngredienteDTO> buscarIngredientes(String nombre, UnidadMedida unidadMedida);
+    
+    //Métodos de comandas
+    ComandaDTO consultarComanda(Long id);
+    
+    ComandaDTO registrarComanda(ComandaDTO comanda);
+    
+    ComandaDTO actualizarComanda(ComandaDTO comanda);
+    
+    List<ComandaDTO> consultarComandas();
+    
+    List<DetallesComandaDTO> consultarDetalles();
 }
+

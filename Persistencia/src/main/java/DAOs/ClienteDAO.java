@@ -55,7 +55,12 @@ public class ClienteDAO {
     }
 
     
-    
+    /**
+     * Actualiza un cliente
+     * 
+     * @param clienteActualizado
+     * @return 
+     */
     public Cliente actualizarCliente(Cliente clienteActualizado) {
         EntityManager em = ConexionBD.crearConexion();
         try {

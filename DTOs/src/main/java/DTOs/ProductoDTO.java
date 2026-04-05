@@ -1,9 +1,4 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package DTOs;
-
 import java.util.List;
 /**
  *
@@ -15,6 +10,7 @@ public class ProductoDTO {
     private String nombre;
     private TipoProducto tipoProducto;
     private EstadoProducto estadoProducto;
+    private double precio;
     
     // Lista de ingredientes con cantidad
     private List<IngredienteProductoDTO> ingredientes;
@@ -70,6 +66,14 @@ public class ProductoDTO {
 
     public void setIngredientes(List<IngredienteProductoDTO> ingredientes) {
         this.ingredientes = ingredientes;
+    }
+
+    public double getPrecio() {
+        return precio;
+    }
+
+    public void setPrecio(double precio) {
+        this.precio = precio;
     }
     
     /*

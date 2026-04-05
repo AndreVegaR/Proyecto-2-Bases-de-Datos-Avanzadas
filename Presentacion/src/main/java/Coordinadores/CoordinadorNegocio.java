@@ -2,9 +2,13 @@ package Coordinadores;
 
 import BO.ClienteBO;
 import BO.IngredienteBO;
-import DTOs.ClienteDTO;
 import DTOs.IngredienteDTO;
 import Enumeradores.UnidadMedida;
+import BO.ComandaBO;
+import DTOs.ClienteDTO;
+import DTOs.ComandaDTO;
+import DTOs.DetallesComandaDTO;
+import Utilerias.Constantes;
 import java.util.List;
 
 /**
@@ -26,6 +30,7 @@ public class CoordinadorNegocio implements ICoordinadorNegocio {
         return cliente;
     }
 
+    // Ingrediente seleccionado
     private IngredienteDTO ingrediente;
 
     public void setIngrediente(IngredienteDTO ingrediente) {
@@ -35,19 +40,23 @@ public class CoordinadorNegocio implements ICoordinadorNegocio {
     public IngredienteDTO getIngrediente() {
         return ingrediente;
     }
-    //Única instancia
-    private static CoordinadorNegocio instancia;
 
-    //Constructor privado
-    private CoordinadorNegocio() {
+    // Comanda seleccionada
+    private ComandaDTO comanda = new ComandaDTO();
+
+    public void setComanda(ComandaDTO comanda) {
+        this.comanda = comanda;
     }
 
-    /**
-     * Singleton Si se llama por primera vez, crea la instancia Si ya existía,
-     * solo la regresa
-     *
-     * @return la instancia lista
-     */
+    public ComandaDTO getComanda() {
+        return comanda;
+    }
+
+    // Singleton
+    private static CoordinadorNegocio instancia;
+
+    private CoordinadorNegocio() {}
+
     public static CoordinadorNegocio getInstance() {
         if (instancia == null) {
             instancia = new CoordinadorNegocio();
@@ -55,7 +64,7 @@ public class CoordinadorNegocio implements ICoordinadorNegocio {
         return instancia;
     }
 
-    //Métodos de cliente
+    // CLIENTE
     @Override
     public ClienteDTO consultarCliente(Long id) {
         return ClienteBO.getInstance().consultarCliente(id);
@@ -76,7 +85,6 @@ public class CoordinadorNegocio implements ICoordinadorNegocio {
         return c;
     }
 
-    //Su único punto de verdad es su variable interna
     @Override
     public ClienteDTO eliminarCliente() {
         if (this.cliente != null) {
@@ -90,6 +98,7 @@ public class CoordinadorNegocio implements ICoordinadorNegocio {
         return ClienteBO.getInstance().consultarClientes();
     }
 
+    // INGREDIENTE
     @Override
     public IngredienteDTO registrarIngrediente(IngredienteDTO ingrediente) {
         return IngredienteBO.getInstance().registrarIngrediente(ingrediente);
@@ -113,5 +122,42 @@ public class CoordinadorNegocio implements ICoordinadorNegocio {
     @Override
     public List<IngredienteDTO> buscarIngredientes(String nombre, UnidadMedida unidadMedida) {
         return IngredienteBO.getInstance().buscarIngredientes(nombre, unidadMedida);
+    }
+
+    //COMANDA
+    @Override
+    public ComandaDTO consultarComanda(Long id) {
+        return ComandaBO.getInstance().consultarComanda(id);
+    }
+
+    @Override
+    public ComandaDTO registrarComanda(ComandaDTO comanda) {
+        return ComandaBO.getInstance().registrarComanda(comanda);
+    }
+
+    @Override
+    public ComandaDTO actualizarComanda(ComandaDTO comanda) {
+        ComandaDTO c = null;
+        if (this.comanda != null) { // 🔧 corregido (antes decía cliente)
+            c = ComandaBO.getInstance().actualizarComanda(comanda);
+        }
+        this.comanda = null;
+        return c;
+    }
+
+    @Override
+    public List<ComandaDTO> consultarComandas() {
+        return ComandaBO.getInstance().consultarComandas();
+    }
+
+    @Override
+    public List<DetallesComandaDTO> consultarDetalles() {
+        if (Constantes.TEST_MODE) {
+            return comanda.getDetalles();
+        }
+        if (comanda != null) {
+            return ComandaBO.getInstance().consultarDetalles(comanda.getId());
+        }
+        return null;
     }
 }

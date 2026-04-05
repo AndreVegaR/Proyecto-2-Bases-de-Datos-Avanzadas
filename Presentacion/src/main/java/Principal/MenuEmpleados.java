@@ -3,6 +3,7 @@ import Coordinadores.CoordinadorPantallas;
 import Utilerias.Constantes;
 import Utilerias.UtilBoton;
 import Utilerias.UtilGeneral;
+import dialogos.ElegirMesa;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
@@ -84,7 +85,8 @@ public class MenuEmpleados extends JFrame {
                     JOptionPane.QUESTION_MESSAGE);
             
              */
-            CoordinadorPantallas.getInstance().navegar(this, MenuPrincipal::new);
+            CoordinadorPantallas.getInstance().abrirDialogo(() -> new ElegirMesa(MenuEmpleados.this));
+            //CoordinadorPantallas.getInstance().navegar(this, MenuPrincipal::new);
         });
     }
 

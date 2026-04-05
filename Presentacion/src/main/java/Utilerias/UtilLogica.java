@@ -159,4 +159,36 @@ public class UtilLogica {
          //Filtra dinámicamnente los elementos de la tabla
          sorter.setRowFilter(RowFilter.regexFilter(regex, columnaActiva));
     } 
+    
+    
+    
+    /**
+     * Extirpa los botones solicitados de un panel en específico
+     * Útil para cambiar las opciones de una pantalla según el rol o el uso en el momento
+     * Itera sobre el mapa de botones y busca coincidencias en el mapa de botones
+     * Los remueve del panel y al final recarga el panel
+     * 
+     * @param panel donde están los botones
+     * @param mapaBotones de todos los botones de ese panel
+     * @param botonesEliminar en un arreglo de texto
+     */
+    public static void esconderBotones(JPanel panel, Map<String, JButton> mapaBotones, String[] botonesEliminar) {
+        
+        //Convierte el arreglo en minúsculas por si acaso
+        String[] eliminar = Arrays.stream(botonesEliminar)
+                                        .map(String::toLowerCase)
+                                        .toArray(String[]::new);
+        
+        //Itera sobre el arreglo de textos para buscar y eliminar los botones del mapa
+        for (String textoBoton: eliminar) {
+            JButton botonEliminar = mapaBotones.get(textoBoton);
+            if (botonEliminar != null) {
+                panel.remove(botonEliminar);
+            }
+        }
+        
+        //Reconfigura y dedibuja el panel
+        panel.revalidate();
+        panel.repaint();
+    }
 }
