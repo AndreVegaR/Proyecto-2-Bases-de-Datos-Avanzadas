@@ -1,27 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<persistence version="2.2" xmlns="http://xmlns.jcp.org/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence http://xmlns.jcp.org/xml/ns/persistence/persistence_2_2.xsd">
+<persistence version="2.2"
+ xmlns="http://xmlns.jcp.org/xml/ns/persistence"
+ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence http://xmlns.jcp.org/xml/ns/persistence/persistence_2_2.xsd">
+
   <persistence-unit name="ConexionPU" transaction-type="RESOURCE_LOCAL">
     <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+
     <class>Entidades.Mesa</class>
     <class>Entidades.ClienteFrecuente</class>
     <class>Entidades.Comanda</class>
     <class>Entidades.Cliente</class>
-<<<<<<< HEAD
-    <class>Entidades.Ingrediente</class>
-    <class>Entidades.IngredienteProducto</class>
-    <class>Entidades.Producto</class>
-=======
     <class>Entidades.DetallesComanda</class>
     <class>Entidades.Producto</class>
     <class>Entidades.IngredienteProducto</class>
     <class>Entidades.Ingrediente</class>
->>>>>>> 4711f5edc3325971af07ccaeee1f4b7fe349a4ab
+
     <properties>
-      <property name="javax.persistence.jdbc.url" value="jdbc:mysql://localhost:3306/restauranteBD?zeroDateTimeBehavior=CONVERT_TO_NULL"/>
+      <property name="javax.persistence.jdbc.url"
+        value="jdbc:mysql://localhost:3306/restauranteBD?zeroDateTimeBehavior=CONVERT_TO_NULL"/>
       <property name="javax.persistence.jdbc.user" value="root"/>
       <property name="javax.persistence.jdbc.driver" value="com.mysql.cj.jdbc.Driver"/>
-      <property name="javax.persistence.jdbc.password" value="jazminbaldenegro"/>
+      <property name="javax.persistence.jdbc.password" value="Relacional@"/>
       <property name="javax.persistence.schema-generation.database.action" value="drop-and-create"/>
     </properties>
+
   </persistence-unit>
 </persistence>

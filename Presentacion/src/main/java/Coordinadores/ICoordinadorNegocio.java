@@ -5,6 +5,8 @@ import DTOs.IngredienteDTO;
 import Enumeradores.UnidadMedida;
 import DTOs.ComandaDTO;
 import DTOs.DetallesComandaDTO;
+import DTOs.ProductoDTO;
+import DTOs.ProductoDTO.EstadoProducto;
 import java.util.List;
 
 /**
@@ -35,6 +37,8 @@ public interface ICoordinadorNegocio {
 
     List<IngredienteDTO> buscarIngredientes(String nombre, UnidadMedida unidadMedida);
     
+    List<IngredienteDTO> verTodosLosIngredientes();
+    
     //Métodos de comandas
     ComandaDTO consultarComanda(Long id);
     
@@ -45,5 +49,16 @@ public interface ICoordinadorNegocio {
     List<ComandaDTO> consultarComandas();
     
     List<DetallesComandaDTO> consultarDetalles();
+    
+    //Metodos de productos
+    List<ProductoDTO> verTodos();
+    
+    ProductoDTO actualizarProducto(ProductoDTO producto);
+    
+    ProductoDTO registrarProducto(ProductoDTO producto);
+    
+    ProductoDTO buscarProductoPorID(Long id);
+    
+    ProductoDTO cambiarEstado(Long id,EstadoProducto estado);
 }
 

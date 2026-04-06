@@ -57,6 +57,9 @@ public class UtilNegocio {
     public static DateTimeFormatter FORMATO_FECHA_HORA =
             DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
 
+    //Regex para validar que el precio solo sea numeros
+    private static String REGEX_PRECIO = "^-?\\d+(\\.\\d+)?$";
+    
     /**
      * Compara que el campo del parámetro se halle en el arreglo de campos
      * opcionales Es auxiliar de stringsVacios Si hay una coincidencia, lo deja
@@ -236,5 +239,18 @@ public class UtilNegocio {
         String clave = String.format("%03d", numConsecutivo);
 
         return PREFIJO + "-" + fecha + "-" + clave;
+    }
+    
+    /*
+    Metodo para validar el precio para que no sean string o sea null
+    */
+    public static Double validarPrecio(String precio){
+       if (precio == null || precio.trim().isEmpty()) {
+       throw new NegocioException("El precio no puede estar vacío");
+         }
+       if (!precio.matches(REGEX_PRECIO)) {
+      throw new NegocioException("Escriba un precio válido");
+    }
+    return Double.parseDouble(precio);
     }
 }

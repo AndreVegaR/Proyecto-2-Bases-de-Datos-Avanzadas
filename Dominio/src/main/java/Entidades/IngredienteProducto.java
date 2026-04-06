@@ -86,4 +86,6 @@ public class IngredienteProducto {
     public void setIngrediente(Ingrediente ingrediente) {
         this.ingrediente = ingrediente;
     }
+    
+    
 }

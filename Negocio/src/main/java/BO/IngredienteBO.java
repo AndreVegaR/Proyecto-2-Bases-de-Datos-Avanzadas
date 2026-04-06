@@ -13,6 +13,7 @@ import mappers.IngredienteMapper;
 import utilerias.UtilNegocio;
 import DAOs.IngredienteDAO;
 import excepciones.NegocioException;
+import java.util.ArrayList;
 
 
 /**
@@ -108,5 +109,27 @@ public class IngredienteBO {
           return IngredienteMapper.mapearEntidadDTO(entidad);
      }
      
-    
+     
+        /**
+       * Muestra todos los ingredientes
+       * @return List de ingredientes
+       */
+        public List<IngredienteDTO> obtenerTodos() {
+        List<Ingrediente> listaIngredientes = IngredienteDAO.getInstance().obtenerTodos();
+        // Validar que no sea null
+        UtilNegocio.esNulo(listaIngredientes);
+        return listaIngredientes.stream().map(ingrediente -> {
+            IngredienteDTO dto = new IngredienteDTO();
+             dto.setId(ingrediente.getId());
+             dto.setNombre(ingrediente.getNombre());
+             dto.setUnidadMedida(
+             UnidadMedida.valueOf(ingrediente.getUnidadMedida().toString().toUpperCase()));
+             dto.setStock(ingrediente.getStock());
+             dto.setImagen(ingrediente.getImagen());
+          return dto;
+      })
+      .collect(Collectors.toList());
+    }
+        
 }
+

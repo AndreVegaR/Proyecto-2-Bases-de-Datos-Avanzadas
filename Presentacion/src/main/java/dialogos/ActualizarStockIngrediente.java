@@ -109,6 +109,5 @@ public class ActualizarStockIngrediente extends JDialog {
         pack();
         setLocationRelativeTo(padre);
     }
-    
-    
+        
 }
