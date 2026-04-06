@@ -4,6 +4,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.List;
 import java.util.function.Function;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
 
@@ -65,6 +66,7 @@ public class UtilGeneral {
      * @return la tabla ya lista
      */
     public static JTable crearTabla(String[] columnas) {
+        
         //Evita que puedan editar la tabla
         DefaultTableModel modeloTabla = new DefaultTableModel(columnas, 0) {
             @Override
@@ -72,18 +74,37 @@ public class UtilGeneral {
                 return false;
             }
         };
+        
+        //Crea la tabla
         JTable tabla = new JTable(modeloTabla);
-
+        
+        //Crea un renderizado central para cada celda
+        DefaultTableCellRenderer centrado = new DefaultTableCellRenderer();
+        centrado.setHorizontalAlignment(JLabel.CENTER);
+        
+        //Aplica el centrado a cada celda
+        for (int i = 0; i < tabla.getColumnCount(); i++) {
+            tabla.getColumnModel().getColumn(i).setCellRenderer(centrado);
+        }
+        
+        //Elimina la selección múltiple, limitando a solo elegir/resaltar una fila a la vez
+        tabla.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        tabla.setColumnSelectionAllowed(false);
+        tabla.setRowSelectionAllowed(true);
+        tabla.setDragEnabled(false);
+        
         //Evita que el usuario pueda arrastrar las columnas
         tabla.getTableHeader().setReorderingAllowed(false);
-
+        
         //Espacio en las filas
         tabla.setRowHeight(30);
 
         //Configura colores
         tabla.setSelectionBackground(Constantes.COLOR_TABLA);
         tabla.setSelectionForeground(Color.WHITE);
-
+        tabla.setSelectionBackground(Constantes.COLOR_ELEGIR_FILA);
+        tabla.setSelectionForeground(Color.BLACK);
+        
         //Elimina bordes
         tabla.setShowGrid(false);
         tabla.setIntercellSpacing(new Dimension(0, 0));
@@ -95,6 +116,7 @@ public class UtilGeneral {
         header.setForeground(Color.WHITE);
         header.setPreferredSize(new Dimension(0, 35));
 
+        //Regresa la tabla
         return tabla;
     }
 

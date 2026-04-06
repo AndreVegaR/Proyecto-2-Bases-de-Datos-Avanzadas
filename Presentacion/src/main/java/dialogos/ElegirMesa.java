@@ -1,53 +1,103 @@
 package dialogos;
-
+import Coordinadores.CoordinadorNegocio;
+import DTOs.MesaDTO;
+import Utilerias.Constantes;
+import Utilerias.UtilBoton;
+import Utilerias.UtilGeneral;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
+import java.util.List;
+import observadores.IObservador;
 
 public class ElegirMesa extends JDialog {
 
     public ElegirMesa(Frame padre) {
         super(padre, "Selección de Mesas", true);
 
-        // 1. Definimos el tamaño fijo del diálogo
+        //Configuración inicial
         int anchoVentana = 800;
         int altoVentana = 600;
         setSize(anchoVentana, altoVentana);
-        setResizable(false); // Evita que el usuario cambie el tamaño
-
-        // 2. Configuración de espaciado
-        int espacioEntreBotones = 15; // Un poco más de espacio ya que es más grande
-        int paddingMarco = espacioEntreBotones * 2;
-
-        JPanel panelContenedor = new JPanel();
+        setResizable(false);
         
-        // Al usar GridLayout, los botones se estirarán para llenar los 800x600 px
-        panelContenedor.setLayout(new GridLayout(4, 5, espacioEntreBotones, espacioEntreBotones));
-        panelContenedor.setBorder(new EmptyBorder(paddingMarco, paddingMarco, paddingMarco, paddingMarco));
 
-        for (int i = 1; i <= 20; i++) {
-            JButton boton = new JButton("Mesa " + i);
+        //Estblece padding
+        int espacioBotones = 15;
+        int paddingFrame = espacioBotones * 2;
+
+        //Configura el panel
+        JPanel panelMesas = new JPanel();
+        panelMesas.setLayout(new GridLayout(4, 5, espacioBotones, espacioBotones));
+        panelMesas.setBorder(new EmptyBorder(paddingFrame, paddingFrame, paddingFrame, paddingFrame));
+        
+        /**
+         * Obtiene todas las mesas registradas del coordinador
+         * Esto no crea nada: solo dibuja lo que ya existe
+         * Crea la mesa que son en realidad botones elegibles
+         */
+        List<MesaDTO> mesas = CoordinadorNegocio.getInstance().consultarMesas();
+        for (MesaDTO mesa: mesas) {
+            JButton boton = UtilBoton.crearBoton("Mesa " + mesa.getNumero());
+            panelMesas.add(boton);
             
-            // Aumentamos la fuente para que combine con el tamaño de los botones
-            boton.setFont(new Font("Arial", Font.BOLD, 18));
+            /**
+             * Le pregunta el estado de la mesa al DTO
+             * Entonces cambian el color y la lógica según el tipo
+             */
+            if (mesa.getEstadoMesa().equals(Constantes.ESTADO_INICIAL_MESA)) {
+                logicaMesaDisponible(boton, mesa, panelMesas);
+            } else {
+                logicaMesaOcupada(boton, mesa);
+            }
             
-            panelContenedor.add(boton);
+            //Le añade hover a la mesa
+            UtilBoton.asignarHoverBoton(boton, mesa);
         }
+        
+        //Agrega al diálogo
+        add(panelMesas);
 
-        add(panelContenedor);
-
-        // Centrar en pantalla respecto al padre
-        setLocationRelativeTo(padre);
-        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+        //Configuración final
+        UtilGeneral.configurarDialogoFinal(this);
     }
-
     
     
-    // Método main para probarlo rápidamente
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> {
-            ElegirMesa dialogo = new ElegirMesa(null);
-            dialogo.setVisible(true);
+    
+    /**
+     * Encapsula la lógica de ocupar una mesa
+     * Evita ensuciar de más al diálogo
+     * También llama al observador para disparar su acción
+     * 
+     * @param boton
+     * @param mesa
+     * @param panelMesas 
+     */
+    private void logicaMesaDisponible(JButton boton, MesaDTO mesa, JPanel panelMesas) {
+        boton.setBackground(Constantes.COLOR_MESA_DISPONIBLE);
+        final MesaDTO m = mesa;
+        boton.addActionListener(e -> {
+            boton.setBackground(Constantes.COLOR_MESA_OCUPADA);
+            m.setEstadoMesa(Constantes.ESTADO_MESA_OCUPADA);
+            CoordinadorNegocio.getInstance().actualizarMesa(m);
+            CoordinadorNegocio.getInstance().setMesa(m);
+            //notificarCambio(panelMesas);
+        });
+    }
+    
+    
+    
+    /**
+     * Encapsula la lógica de una mesa ocupada
+     * Evita ensuciar al diálogo
+     * 
+     * @param boton
+     * @param mesa 
+     */
+    private void logicaMesaOcupada(JButton boton, MesaDTO mesa) {
+        boton.setBackground(Constantes.COLOR_MESA_OCUPADA);
+        boton.addActionListener(e -> {
+            UtilGeneral.dialogoAviso(ElegirMesa.this, "La mesa " + mesa.getNumero() + " está ocupada");
         });
     }
 }

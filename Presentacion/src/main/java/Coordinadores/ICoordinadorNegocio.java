@@ -8,6 +8,7 @@ import DTOs.DetallesComandaDTO;
 import DTOs.ProductoDTO;
 import DTOs.ProductoDTO.EstadoProducto;
 import java.util.List;
+import DTOs.MesaDTO;
 
 /**
  * @author Angel Interfaz para un control de las pantallas Establece el contrato
@@ -60,5 +61,12 @@ public interface ICoordinadorNegocio {
     ProductoDTO buscarProductoPorID(Long id);
     
     ProductoDTO cambiarEstado(Long id,EstadoProducto estado);
+    
+    //Mesas
+    MesaDTO agregarMesa(MesaDTO mesa);
+    
+    List<MesaDTO> consultarMesas();
+    
+    MesaDTO actualizarMesa(MesaDTO mesa);
 }
 

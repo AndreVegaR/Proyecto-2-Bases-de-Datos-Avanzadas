@@ -1,7 +1,13 @@
 package BO;
+import DAOs.ClienteDAO;
 import DAOs.MesaDAO;
+import DTOs.ClienteDTO;
 import DTOs.MesaDTO;
+import Entidades.Cliente;
 import Entidades.Mesa;
+import java.util.List;
+import java.util.stream.Collectors;
+import mappers.ClienteMapper;
 import mappers.MesaMapper;
 import utilerias.UtilNegocio;
 
@@ -74,6 +80,29 @@ public class MesaBO {
         
         //Regresa la mesa
         return MesaMapper.mapearEntidadDTO(mesaActualizada);
+    }
+    
+    
+    
+    /**
+     * Obtiene todas las mesas y las empaqueta en DTO
+     * 
+     * @return las mesas en DTO
+     */
+    public List<MesaDTO> consultarMesas() {
+        //Obtiene todos los clientes del DAO
+        List<Mesa> mesas = MesaDAO.getInstance().consultarMesas();
+        
+        /**
+         * Mapea a todos los clientes en una lista de tipo MesaDTO
+         * Todos empaquetados listos para presentación
+         */
+        List<MesaDTO> mesasDTO = mesas.stream()
+                                            .map(MesaMapper :: mapearEntidadDTO)
+                                            .collect(Collectors.toList());
+        
+        //Regresa la nueva lista
+        return mesasDTO;
     }
     
     

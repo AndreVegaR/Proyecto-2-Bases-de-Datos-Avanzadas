@@ -1,4 +1,4 @@
-package pantallas;
+package Pantallas;
 import Coordinadores.CoordinadorNegocio;
 import DTOs.ClienteDTO;
 import DTOs.ClienteFrecuenteDTO;
