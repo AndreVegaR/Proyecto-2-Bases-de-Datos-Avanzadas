@@ -24,6 +24,7 @@ public class Presentacion {
             for (int i = 1; i <= Constantes.NUMERO_MESAS; i++) {
                 MesaDTO mesa = new MesaDTO();
                 mesa.setNumero(i);
+                mesa.setEstadoMesa(Constantes.ESTADO_INICIAL_MESA);
                 CoordinadorNegocio.getInstance().agregarMesa(mesa);
             }
         }

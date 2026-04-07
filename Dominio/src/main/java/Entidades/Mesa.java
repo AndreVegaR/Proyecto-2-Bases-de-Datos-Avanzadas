@@ -5,12 +5,14 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Table;
 
 /**
  * Representa una mesa donde los clientes se sentarán a comer
  * El número es único en el restaurante
  */
 @Entity
+@Table(name = "mesas")
 public class Mesa implements Serializable {
     private static final long serialVersionUID = 1L;
     
