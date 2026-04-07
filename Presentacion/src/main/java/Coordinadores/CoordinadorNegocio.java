@@ -25,7 +25,7 @@ import java.util.List;
 public class CoordinadorNegocio implements ICoordinadorNegocio {
 
     //El cliente seleccionado en un momento del programa (clic en registro de la tabla)
-    private ClienteDTO cliente = new ClienteDTO();
+    private ClienteDTO cliente = null;
 
     public void setCliente(ClienteDTO cliente) {
         this.cliente = cliente;
@@ -36,7 +36,7 @@ public class CoordinadorNegocio implements ICoordinadorNegocio {
     }
 
     // Ingrediente seleccionado
-    private IngredienteDTO ingrediente;
+    private IngredienteDTO ingrediente = null;;
 
     public void setIngrediente(IngredienteDTO ingrediente) {
         this.ingrediente = ingrediente;
@@ -46,8 +46,8 @@ public class CoordinadorNegocio implements ICoordinadorNegocio {
         return ingrediente;
     }
 
-    // Comanda seleccionada
-    private ComandaDTO comanda = new ComandaDTO();
+    //Comanda seleccionada
+    private ComandaDTO comanda = null;
 
     public void setComanda(ComandaDTO comanda) {
         this.comanda = comanda;
@@ -66,6 +66,31 @@ public class CoordinadorNegocio implements ICoordinadorNegocio {
     public MesaDTO getMesa(){
         return mesa;
     }
+    
+    
+    //Producto seleccionado en el momento
+    private ProductoDTO producto = null;
+    public ProductoDTO getProducto() {
+        return producto;
+    }
+    public void setProducto(ProductoDTO producto) {
+        this.producto = producto;
+    }
+    
+    
+    //Detalle de una comanda seleccionado en el momento
+    private DetallesComandaDTO detalle = null;
+    public DetallesComandaDTO getDetalle() {
+        return detalle;
+    }
+    public void setDetalle(DetallesComandaDTO detalle) {
+        this.detalle = detalle;
+    }
+    
+    
+    
+    
+    
     
     
 

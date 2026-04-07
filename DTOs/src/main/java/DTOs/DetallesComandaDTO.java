@@ -54,6 +54,27 @@ public class DetallesComandaDTO {
         this.comentarios = comentarios;
     }
     
+    
+    
+    /**
+     * Regresa toda la información en varios renglones
+     * Se usará para mostrar la información en un diálogo por ejemplo
+     * 
+     * @return el String con la información
+     */
+    public String getInfo() {
+        String info = "Información de " + producto.getNombre() + "\n"
+                      + "Cantidad: " + cantidad + "\n"
+                      + "Precio individual $" + precioVenta + "\n"
+                      + "Subtotal: $" + subtotal + "\n"
+                      + "\n"
+                      + "Comentarios: \n"
+                      + comentarios;
+        return info;
+    }
+    
+    
+    
     //Getters y setters
     public ProductoDTO getProducto() {
         return producto;
@@ -106,4 +127,6 @@ public class DetallesComandaDTO {
     public void setId(Long id) {
         this.id = id;
     }
+    
+    
 }
