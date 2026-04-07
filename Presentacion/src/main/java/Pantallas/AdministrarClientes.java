@@ -1,11 +1,14 @@
 package Pantallas;
 import Coordinadores.CoordinadorNegocio;
+import Coordinadores.CoordinadorPantallas;
 import DTOs.ClienteDTO;
 import DTOs.ClienteFrecuenteDTO;
 import Utilerias.Constantes;
+import Utilerias.UtilBoton;
 import dialogos.RegistrarCliente;
 import Utilerias.UtilBuild;
 import Utilerias.UtilGeneral;
+import Utilerias.UtilLogica;
 import dialogos.ActualizarCliente;
 import dialogos.EliminarCliente;
 import java.awt.*;
@@ -52,7 +55,7 @@ public class AdministrarClientes extends JFrame implements IObservador {
         JPanel panelBusqueda = new JPanel(new FlowLayout(FlowLayout.LEFT, 20, 10));
         
         //Arreglo con los botones que permitirán filtrar según su campo de la tabla
-        String[] filtros = {"Nombre", "Teléfono", "Correo"};
+        String[] filtros = {"ID", "Nombre", "Teléfono", "Correo"};
         
         //Mapa vacío que será poblado con botones de filtrad opor un método posterior
         Map<String, JButton> botonesFiltros = new HashMap<>();
@@ -105,7 +108,30 @@ public class AdministrarClientes extends JFrame implements IObservador {
                                                               mapaBotones, //Mapa con los botones
                                                               dialogos, //Lista con los JDialog a abrir
                                                               columnaActiva); //Arreglo que contiene el índice para filtrar
-                                                              
+
+        /**
+         * Pregunta al coordinador si la sesión es de administrador o no
+         * En caso de que no lo sea, activa el método que configura la perspectiva de un mesero
+         * Limitándole bastante las funcionalidades, solo puede seleccionar meseros
+         * Una vez seleccionado, regresará a la pantalla de RegistrarComanda
+         */
+        if (!CoordinadorPantallas.getInstance().esAdministrador()) {
+            configurarPerspectivaMesero(panelBotones, mapaBotones);
+            
+            //Recupera el panel de regresar para removerlo de las opciones
+            JButton botonReg = recuperarBoton(panelBotones, "regresar");
+            panelBotones.remove(botonReg);
+            panelBotones.revalidate();
+            panelBotones.repaint();
+            
+            //Crea otro boton regresar para usarlo
+            JButton botonRegresarNuevo = UtilBoton.crearBotonNavegar("Regresar", AdministrarClientes.this, RegistrarComanda::new);
+            panelBotones.add(botonRegresarNuevo);
+            
+            //Reconfigura y dedibuja el panel
+            panelBotones.revalidate();
+            panelBotones.repaint();
+        }
         
         //Evento que se activa cuando seleccionas una fila de la columna
         tabla.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -145,6 +171,65 @@ public class AdministrarClientes extends JFrame implements IObservador {
 
         //Llena la tabla cada vez que se entre a la pantalla
         llenarTabla();
+    }
+    
+    
+    
+    /**
+     * Busca un botón en específicio de un panel por si se necesita y lo rescata
+     * 
+     * @param panel a buscar
+     * @param texto del botóna recuperar
+     * @return el botón recuperado
+     */
+    private JButton recuperarBoton(JPanel panel, String textoBoton) {
+        for (Component componente: panel.getComponents()) {
+            if (componente instanceof JButton boton && boton.getText().equalsIgnoreCase(textoBoton)) {
+                return boton;
+            }
+        }
+        return null;
+    }
+    
+    
+    
+    /**
+     * Configura la perspectiva del mesero en esta pantalla
+     * Un mesero que accede a esta pantalla solo está seleccionando un cliente, nada más
+     * Una vez seleccionado, regresará a la pantalla de RegistrarComanda
+     * El método existe para no ensuciar el constructor
+     * 
+     * @param panelBotones donde se van a remover los botones
+     * @param mapaBotones que se van a remover
+     */
+    private void configurarPerspectivaMesero(JPanel panelBotones, Map<String, JButton> mapaBotones) {
+       
+        /**
+        * Estas dos líneas se encargan de desaparecer de la interfaz botones del CRUD
+        * El método ensamblarPantallaAdministrar asume todo el CRUD, pero a veces no se ocupa
+        * Un administrador no registra comandas, y las comandas no pueden ser eliminadas
+        * Entonces el método esconderBotones se encarga de extirparlos:
+        * -Busca coincidencias entre el arreglo y el mapa de botones
+        * -Remueve del panel cada coincidencia
+        * -Al final recarga el panel
+        */
+       String[] botonesEliminar = {"registrar", "eliminar", "actualizar"};
+       UtilLogica.esconderBotones(panelBotones, mapaBotones, botonesEliminar);
+
+       //Crea el botón de seleccionar cliente y le da lógica
+       JButton botonSeleccionarCliente = UtilBoton.crearBoton("Seleccionar cliente");
+       botonSeleccionarCliente.addActionListener(e -> {
+
+            //Obliga a elegir primero un cliente validando si el cliente guardado es null
+            if (CoordinadorNegocio.getInstance().getCliente() == null) {
+                UtilGeneral.dialogoAviso(AdministrarClientes.this, "Seleccione un cliente primero");
+            } else {
+                //Si hay un observador, es avisado de que se eligió el cliente
+                CoordinadorPantallas.getInstance().navegar(AdministrarClientes.this, RegistrarComanda::new);
+            }
+
+       });
+       panelBotones.add(botonSeleccionarCliente);
     }
     
     
