@@ -65,8 +65,13 @@ public class IngredienteDTO {
     public void setImagen(byte[] imagen) {
         this.imagen = imagen;
     }
+
+    @Override
+    public String toString() {
+        return " nombre=" + nombre ;
+    }
     
-    
+ 
     
     
 }

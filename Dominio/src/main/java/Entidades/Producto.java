@@ -16,6 +16,7 @@ import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Lob;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
@@ -47,6 +48,13 @@ public class Producto {
     @Enumerated(EnumType.STRING)
     @Column(name = "estado", nullable = false)
     private EstadoProducto estadoProducto = EstadoProducto.ACTIVO;
+    
+    //Atributo para guardar la imagen
+    //Lob es que va a contener un objeto grande
+    //LONGBOB es para que se puedan guardar imagenes mas grandes
+    @Lob
+    @Column(name = "imagen", columnDefinition = "LONGBLOB", nullable = true)
+    private byte[] imagen;
 
     //mapeo para tabla intermedia entre product e ingrediente
     @OneToMany(mappedBy = "producto",cascade = {CascadeType.PERSIST,CascadeType.MERGE})
@@ -63,6 +71,14 @@ public class Producto {
         this.nombre = nombre;
         this.tipoProducto = tipo;
     }
+
+    public Producto(String nombre, double precio, TipoProducto tipoProducto, byte[] imagen) {
+        this.nombre = nombre;
+        this.precio = precio;
+        this.tipoProducto = tipoProducto;
+        this.imagen = imagen;
+    }
+    
     
     public Producto() {
     }
@@ -122,4 +138,15 @@ public class Producto {
     public void setTipoProducto(TipoProducto tipoProducto) {
         this.tipoProducto = tipoProducto;
     }
+
+    public byte[] getImagen() {
+        return imagen;
+    }
+
+    public void setImagen(byte[] imagen) {
+        this.imagen = imagen;
+    }
+    
+    
+    
 }

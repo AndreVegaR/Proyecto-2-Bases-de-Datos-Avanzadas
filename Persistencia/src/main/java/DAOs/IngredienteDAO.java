@@ -10,6 +10,7 @@ import conexion.ConexionBD;
 import excepciones.PersistenciaException;
 import java.util.List;
 import javax.persistence.EntityManager;
+import javax.persistence.Query;
 
 /**
  * DAO para la entidad Ingrediente
@@ -174,4 +175,23 @@ public class IngredienteDAO {
             ent.close();
         }
     }
+    
+      /**
+     * Metodo para obtener todos los ingredientes de la base de datos
+     * @return Lista de ingredientes
+     */
+      public List<Ingrediente> obtenerTodos() throws PersistenciaException {
+         EntityManager em = ConexionBD.crearConexion();
+        try {
+            String jpql = "SELECT i FROM Ingrediente i";
+            Query query = em.createQuery(jpql);
+            return query.getResultList(); // regresa List sin tipo
+
+        } catch (Exception e) {
+            throw new PersistenciaException("Error al obtener los ingredientes", e);
+
+        } finally {
+            em.close();
+        }
+}
 }

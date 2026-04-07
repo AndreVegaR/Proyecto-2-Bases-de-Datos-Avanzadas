@@ -1,6 +1,6 @@
 package Principal;
-
-import Pantallas.AdministrarIngredientes;
+import Coordinadores.CoordinadorNegocio;
+import Coordinadores.CoordinadorPantallas;
 import Pantallas.AdministrarComandas;
 import Utilerias.Constantes;
 import Utilerias.UtilBoton;
@@ -10,96 +10,113 @@ import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
-import pantallas.AdministrarClientes;
+import Pantallas.AdministrarClientes;
+import Pantallas.RegistrarComanda;
+import Pantallas.AdministrarIngredientes;
+import Pantallas.AdministrarProductos;
 
 /**
- * Dibuja el menú principal del sistema
+ * Menú principal del sistema
+ * Cambia la vista según el tipo de empleado ingresado
+ * Puedes administrar productos, ingredientes, clientes y comandas
+ * También generar reportes
  */
 public class MenuPrincipal extends JFrame {
 
-    public static Color COLOR_CUADRO = new Color(245, 247, 250);
-
     public MenuPrincipal() {
+        
+        //Reinicia referencias por si acaso
+        CoordinadorNegocio.getInstance().setCliente(null);
+        CoordinadorNegocio.getInstance().setMesa(null);
+        CoordinadorNegocio.getInstance().setComanda(null);
+        //CoordinadorNegocio.getInstance().setProducto(null);
+        
         UtilGeneral.configurarFrame("Restaurante", this);
 
-        //Panel del título
+        //Panel de título
         JPanel panelTitulo = new JPanel(new BorderLayout());
         panelTitulo.setOpaque(false);
         panelTitulo.setBorder(new EmptyBorder(40, 0, 0, 0));
 
-        //Título
+        //Label del menú principal
         JLabel titleLabel = new JLabel("Menu principal", SwingConstants.CENTER);
         titleLabel.setFont(Constantes.FUENTE_TITULO);
         titleLabel.setForeground(new Color(44, 62, 80));
         panelTitulo.add(titleLabel, BorderLayout.CENTER);
-        
-        
-        //panel usuario 
+
+        //Panel de usuario
         JPanel panelUsuario = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 5));
         panelUsuario.setOpaque(false);
-        JLabel iconoUsuario = new JLabel(
-                new ImageIcon(getClass().getResource("/imagenes/iconUsuario.png")));
-        
         JLabel labelHora = new JLabel();
         labelHora.setFont(Constantes.FUENTE);
         labelHora.setForeground(new Color(100,100,100));
         
-        Timer timer = new Timer(1000,e ->{
-            LocalTime horaActual = LocalTime.now();
-            String textoHora = horaActual.format(DateTimeFormatter.ofPattern("hh:mm a"));
-            labelHora.setText(textoHora);
-    });
+        //Timer para ver la hora en tiempo reaql
+        Timer timer = new Timer(1000, e -> {
+            labelHora.setText(LocalTime.now().format(DateTimeFormatter.ofPattern("hh:mm a")));
+        });
         timer.start();
         
-        panelUsuario.add(iconoUsuario);
+        //Añade al panel
+        panelUsuario.add(new JLabel(new ImageIcon(getClass().getResource("/imagenes/iconUsuario.png"))));
         panelUsuario.add(labelHora);
-        
-        panelTitulo.add(panelUsuario,BorderLayout.EAST);
-        
-        //Cuadro central
-        JPanel panelCentral = new JPanel();
-        panelCentral.setBackground(Color.WHITE);
-        panelCentral.setLayout(new GridLayout(3, 2, 25, 25));
-        panelCentral.setBorder(new EmptyBorder(50, 80, 50, 80));
+        panelTitulo.add(panelUsuario, BorderLayout.EAST);
 
-        //En caso de que el usuario sea administrador añade funciones extra
-        if (UtilGeneral.admin) {
-            //Crea botones
-            JButton botonAdministrarComandas = UtilBoton.crearBotonNavegar("Administrar comandas", this, AdministrarComandas::new);
-            JButton botonAdministrarProductos = UtilBoton.crearBoton("Administrar productos");
-            JButton botonAdministrarIngredientes = UtilBoton.crearBotonNavegar("Administrar ingredientes", this, AdministrarIngredientes::new);
-            JButton administrarClientes = UtilBoton.crearBotonNavegar("Administrar clientes", this, AdministrarClientes::new);
-            JButton botonReportesComandas = UtilBoton.crearBoton("Reporte de comandas");
+        //Panel central redondeado para que no se vea tan tosco
+        JPanel panelCentral = new JPanel() {
+            @Override
+            protected void paintComponent(Graphics g) {
+                Graphics2D g2 = (Graphics2D) g.create();
+                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                g2.setColor(Color.WHITE);
+                g2.fillRoundRect(0, 0, getWidth(), getHeight(), 50, 50);
+                g2.dispose();
+            }
+        };
+        panelCentral.setOpaque(false);
+        
+        //Marco de bordes
+        panelCentral.setLayout(new BoxLayout(panelCentral, BoxLayout.Y_AXIS));
+        panelCentral.setBorder(new EmptyBorder(50, 100, 50, 100));
 
-            //Los agrega al panel central
-            panelCentral.add(botonAdministrarComandas);
-            panelCentral.add(botonAdministrarProductos);
-            panelCentral.add(botonAdministrarIngredientes);
-            panelCentral.add(administrarClientes);
-            panelCentral.add(botonReportesComandas);
+        //Agrega los botones según el rol del usuario
+        if (CoordinadorPantallas.getInstance().esAdministrador()) {
+            agregarPanel(panelCentral, UtilBoton.crearBotonNavegar("Administrar comandas", this, AdministrarComandas::new));
+            agregarPanel(panelCentral, UtilBoton.crearBotonNavegar("Administrar productos", this, AdministrarProductos::new));
+            agregarPanel(panelCentral, UtilBoton.crearBotonNavegar("Administrar ingredientes", this, AdministrarIngredientes::new));
+            agregarPanel(panelCentral, UtilBoton.crearBotonNavegar("Administrar clientes", this, AdministrarClientes::new));
+            agregarPanel(panelCentral, UtilBoton.crearBoton("Reporte de comandas"));
+        } else {
+            agregarPanel(panelCentral, UtilBoton.crearBotonNavegar("Registrar comanda", this, RegistrarComanda::new));
         }
 
-        //Si es mesero
-        if (!UtilGeneral.admin) {
-            JButton botonRegistrarComanda = UtilBoton.crearBoton("Registrar comanda");
-            panelCentral.add(botonRegistrarComanda);
-        }
+        //Este botón siempre existe
+        agregarPanel(panelCentral, UtilBoton.crearBotonNavegar("Regresar", this, MenuEmpleados::new));
 
-        //Siempre crea el botón de regresar
-        JButton botonRegresar = UtilBoton.crearBotonNavegar("Regresar", this, MenuEmpleados::new);
-        panelCentral.add(botonRegresar);
-
-        //Panel intermedio para evitar que los botones se expandan de más
+        //Panel intermedio para contener, no debe ser visible
         JPanel panelIntermedio = new JPanel(new GridBagLayout());
-
-        //Vuelve al panel invisible, pues solo contiene, no es visual
         panelIntermedio.setOpaque(false);
-
-        //Le agrega el panel de botones para contenerlos
         panelIntermedio.add(panelCentral);
 
-        //Agrega los otros dos paneles al panel intermedio
+        //Agrega todo al frame
         add(panelTitulo, BorderLayout.NORTH);
         add(panelIntermedio, BorderLayout.CENTER);
+    }
+
+    
+    
+    /**
+     * Auxiliar para insertar un botón a un panel
+     * Maneja la lógica de acomodo, centrando los botones
+     * 
+     * @param panel
+     * @param boton 
+     */
+    private void agregarPanel(JPanel panel, JButton boton) {
+        boton.setAlignmentX(Component.CENTER_ALIGNMENT);
+        // Ajusta el 320 para que los botones sean más o menos anchos
+        boton.setMaximumSize(new Dimension(320, 50)); 
+        panel.add(boton);
+        panel.add(Box.createRigidArea(new Dimension(0, 15))); // Espacio vertical entre botones
     }
 }

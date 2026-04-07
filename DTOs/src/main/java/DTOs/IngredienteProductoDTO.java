@@ -7,6 +7,7 @@ package DTOs;
 /**
  *
  * @author Angel
+ * DTO de la tabla intermedia entre Producto E Ingrediente
  */
 public class IngredienteProductoDTO {
     
@@ -84,4 +85,13 @@ public class IngredienteProductoDTO {
     public void setNombreIngrediente(String nombreIngrediente) {
         this.nombreIngrediente = nombreIngrediente;
     }
+
+    @Override
+    public String toString() {
+        return "ingredienteId=" + ingredienteId ;
+    }
+
+   
+    
+    
 }

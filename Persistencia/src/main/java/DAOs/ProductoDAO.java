@@ -4,6 +4,7 @@
  */
 package DAOs;
 
+import Entidades.IngredienteProducto;
 import Entidades.Producto;
 import Enumeradores.EstadoProducto;
 import conexion.ConexionBD;
@@ -178,7 +179,6 @@ public class ProductoDAO {
     *@return Producto actualizado
     *@param id del producto y el estado
     */
-    
     /*
     Use entity manager por que se me hace mas sencillo buscarlo por el id que hacer una consulta
     */
@@ -208,4 +208,24 @@ public class ProductoDAO {
       }
 
       }
+     
+   /*
+    * METODO PARA VALIDAR QUE NO EXISTA UN PRODUCTO CON 2 NOMBRES
+    *@return boolean 
+    *@param String
+    */
+    public boolean existeNombre(String nombre) {
+        EntityManager em = ConexionBD.crearConexion();
+        try {
+         String sql = "SELECT COUNT(p) FROM Producto p WHERE p.nombre = :nombre";
+            Long contar = em.createQuery(sql, Long.class).setParameter("nombre", nombre).getSingleResult();
+            //Si contar es mayor que 0 es que ya existe y da True
+            //Si es igual a 0 es que no existe y da False
+        return contar > 0;
+    } catch (Exception e) {
+        throw new PersistenciaException("Error al validar nombre");
+    } finally {
+        em.close();
+    }
+   }
 }

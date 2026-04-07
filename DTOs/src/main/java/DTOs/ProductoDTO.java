@@ -11,6 +11,7 @@ public class ProductoDTO {
     private TipoProducto tipoProducto;
     private EstadoProducto estadoProducto;
     private double precio;
+    private byte[] imagen;
     
     // Lista de ingredientes con cantidad
     private List<IngredienteProductoDTO> ingredientes;
@@ -94,5 +95,20 @@ public class ProductoDTO {
     ACTIVO,
     INACTIVO
 }
+
+    public byte[] getImagen() {
+        return imagen;
+    }
+
+    public void setImagen(byte[] imagen) {
+        this.imagen = imagen;
+    }
+
+    @Override
+    public String toString() {
+        return "ProductoDTO{" + "id=" + id + ", nombre=" + nombre + ", tipoProducto=" + tipoProducto + ", estadoProducto=" + estadoProducto + ", precio=" + precio + ", imagen=" + imagen + ", ingredientes=" + ingredientes + '}';
+    }
+    
+    
     
 }

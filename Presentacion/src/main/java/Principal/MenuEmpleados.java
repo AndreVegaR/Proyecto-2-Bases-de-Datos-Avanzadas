@@ -17,10 +17,7 @@ public class MenuEmpleados extends JFrame {
 
     public MenuEmpleados() {
         UtilGeneral.configurarFrame("Menú empleados", this);
-
-        //Cada vez que se entra a este menú es como cerrar sesión de administrador
-        UtilGeneral.admin = false;
-
+        
         //Panel del título
         JPanel panelTitulo = new JPanel(new BorderLayout());
         panelTitulo.setOpaque(false);
@@ -73,7 +70,7 @@ public class MenuEmpleados extends JFrame {
 
         //Lógica del botón para acceder como administrador
         botonAdministrador.addActionListener(e -> {
-            UtilGeneral.admin = true;
+            CoordinadorPantallas.getInstance().establecerAdministrador();
             CoordinadorPantallas.getInstance().navegar(this, MenuPrincipal::new);
         });
 
@@ -85,8 +82,8 @@ public class MenuEmpleados extends JFrame {
                     JOptionPane.QUESTION_MESSAGE);
             
              */
-            CoordinadorPantallas.getInstance().abrirDialogo(() -> new ElegirMesa(MenuEmpleados.this));
-            //CoordinadorPantallas.getInstance().navegar(this, MenuPrincipal::new);
+            CoordinadorPantallas.getInstance().establecerMesero();
+            CoordinadorPantallas.getInstance().navegar(this, MenuPrincipal::new);
         });
     }
 

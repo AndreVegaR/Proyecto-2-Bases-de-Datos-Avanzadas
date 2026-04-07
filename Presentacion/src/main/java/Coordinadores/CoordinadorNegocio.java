@@ -5,9 +5,14 @@ import BO.IngredienteBO;
 import DTOs.IngredienteDTO;
 import Enumeradores.UnidadMedida;
 import BO.ComandaBO;
+import BO.MesaBO;
+import BO.ProductoBO;
 import DTOs.ClienteDTO;
 import DTOs.ComandaDTO;
 import DTOs.DetallesComandaDTO;
+import DTOs.MesaDTO;
+import DTOs.ProductoDTO;
+import Enumeradores.EstadoProducto;
 import Utilerias.Constantes;
 import java.util.List;
 
@@ -51,6 +56,18 @@ public class CoordinadorNegocio implements ICoordinadorNegocio {
     public ComandaDTO getComanda() {
         return comanda;
     }
+    
+    
+    //La mesa seleccionada en un momento del programa (clic en el registro de la tabla)
+    private MesaDTO mesa = null;
+    public void setMesa(MesaDTO detalle) {
+        this.mesa = detalle;
+    }
+    public MesaDTO getMesa(){
+        return mesa;
+    }
+    
+    
 
     // Singleton
     private static CoordinadorNegocio instancia;
@@ -138,7 +155,7 @@ public class CoordinadorNegocio implements ICoordinadorNegocio {
     @Override
     public ComandaDTO actualizarComanda(ComandaDTO comanda) {
         ComandaDTO c = null;
-        if (this.comanda != null) { // 🔧 corregido (antes decía cliente)
+        if (this.comanda != null) {
             c = ComandaBO.getInstance().actualizarComanda(comanda);
         }
         this.comanda = null;
@@ -160,4 +177,55 @@ public class CoordinadorNegocio implements ICoordinadorNegocio {
         }
         return null;
     }
+
+    @Override
+    public List<ProductoDTO> verTodos() {
+        return ProductoBO.getInstance().verTodosLosProductos();
+    }
+
+    @Override
+    public ProductoDTO actualizarProducto(ProductoDTO producto) {
+        return ProductoBO.getInstance().actualizarProducto(producto);
+    }
+
+    @Override
+    public ProductoDTO registrarProducto(ProductoDTO producto) {
+        return ProductoBO.getInstance().agregarProducto(producto);
+    }
+
+    @Override
+    public List<IngredienteDTO> verTodosLosIngredientes() {
+        return IngredienteBO.getInstance().obtenerTodos();
+    }
+
+    @Override
+    public ProductoDTO buscarProductoPorID(Long id) {
+        return ProductoBO.getInstance().buscarProductoPorId(id);
+    }
+
+    @Override
+    public ProductoDTO cambiarEstado(Long id, ProductoDTO.EstadoProducto estado) {
+        return ProductoBO.getInstance().cambiarEstado(id, EstadoProducto.valueOf(estado.name().toUpperCase()));
+    }
+
+    
+    //Método de mesas
+    @Override
+    public MesaDTO agregarMesa(MesaDTO mesa) {
+        return MesaBO.getInstance().registrarMesa(mesa);
+    }
+    
+    @Override
+    public List<MesaDTO> consultarMesas() {
+        return MesaBO.getInstance().consultarMesas();
+    }
+    
+    @Override
+    public MesaDTO actualizarMesa(MesaDTO mesa) {
+        return MesaBO.getInstance().actualizarMesa(mesa);
+    }
+  
+
+
+    
 }

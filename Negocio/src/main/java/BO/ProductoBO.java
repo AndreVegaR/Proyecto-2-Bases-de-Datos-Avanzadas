@@ -5,13 +5,19 @@
 package BO;
 
 import DAOs.ProductoDAO;
+import DTOs.IngredienteProductoDTO;
 import DTOs.ProductoDTO;
+import Entidades.Ingrediente;
+import Entidades.IngredienteProducto;
 import Entidades.Producto;
 import Enumeradores.EstadoProducto;
 import Enumeradores.TipoProducto;
+import excepciones.NegocioException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import utilerias.UtilNegocio;
+import DAOs.IngredienteDAO;
 
 /**
  *
@@ -33,39 +39,8 @@ public class ProductoBO {
         return instancia;
     }
     
-    /*
-    Metodo para agregar un producto
-    @return producto agregado
-    @param producto
-    */
-    
-    public Producto agregarProducto(ProductoDTO producto){
-        //Validaciones
-        UtilNegocio.esCadenadaVacia(producto.getNombre(), "nombre");
-        UtilNegocio.esNulo(producto.getEstadoProducto());
-        UtilNegocio.esNulo(producto.getTipoProducto());
-      
-        //Mapeo a entidad
-        Producto productoNuevo = new Producto();
-        productoNuevo.setNombre(producto.getNombre());
-        
-        //TipoProducto 
-        //Primero hacemos un set con el nuevo tipo del producto
-        //Depues convertimos un string a un tipoProducto mediante lo que ingresó el usuario
-        //name es de enum a texto por que valueOf solo acepta texto y no enums
-        productoNuevo.setTipo(TipoProducto.valueOf(producto.getTipoProducto().name().toUpperCase()));
 
-        // EstadoProducto 
-        //Primero hacemos un set del nuevo producto
-        //Despues convertimos un string a un EstadoProducto mediante lo que ingresó el usuario en presentacion
-        //El name es para el enum a texto por que valueOf solo acepta string y no enums
-        productoNuevo.setEstado(EstadoProducto.valueOf(producto.getEstadoProducto().name().toUpperCase()));
-        
-        ProductoDAO.getInstance().guardarProducto(productoNuevo);
-        return productoNuevo;
-    
-    }
-    
+
     /*
     Metodo que elimina un producto y su relación con la tabla intermedia mediante su id
     @param id producto
@@ -82,28 +57,78 @@ public class ProductoBO {
     @param id producto
     @return producto
     */
-    public Producto actualizarProducto(ProductoDTO dto){
+    public ProductoDTO actualizarProducto(ProductoDTO dto){
+            
         //Validaciones
         UtilNegocio.esNulo(dto);
         UtilNegocio.esCadenadaVacia(dto.getNombre(), "nombre");
+        UtilNegocio.validarNombre(dto.getNombre());
         UtilNegocio.esNulo(dto.getEstadoProducto());
         UtilNegocio.esNulo(dto.getTipoProducto());
-        //Si no existe el producto lanzamos una excepción
-        Producto existeProducto = ProductoDAO.getInstance().buscarProductoPorId(dto.getId());
-        if(existeProducto == null){
-             throw new RuntimeException("Producto no encontrado");
+        //Convertimos a string el precio para poder usar el validador de Precio de UtilNegocio
+        String precio = String.valueOf(dto.getPrecio());
+        UtilNegocio.validarPrecio(precio);
+        //Buscamos a ver si existe el producto
+        
+        Producto producto = ProductoDAO.getInstance().buscarProductoPorId(dto.getId());
+        //Validamos que no exista otro producto con el mismo nombre al momento de actualizar el producto
+        //Busca en el dao a ver si hay un nombre igual al producto que le vamos a cambiar el nombre
+        if (ProductoDAO.getInstance().existeNombre(dto.getNombre()) && !producto.getNombre().equals(dto.getNombre())) {
+            throw new NegocioException("Ya existe un producto con ese nombre");
+         }
+        if(producto == null){
+            throw new NegocioException("Producto no encontrado");
         }
-      existeProducto.setNombre(dto.getNombre());
-      //Convertimos lo que escribio el usuario y lo hacemos string mediante valueOf
-      //Por ejemplo si escribe activo se convierte a Activo y el EstadoProducto lo convierte a Enum y lo manda al set
-      existeProducto.setEstado(EstadoProducto.valueOf(dto.getEstadoProducto().name().toUpperCase()));
-      //Por ejemplo si escribe bebida se convierte a bebida y el TipoProducto lo convierte a Enum y lo manda al set
-      existeProducto.setTipo(TipoProducto.valueOf(dto.getTipoProducto().name().toUpperCase()));
-      
-      //Regresamos el producto
-      return ProductoDAO.getInstance().actualizarProducto(existeProducto);
+        //Le damos los valores nuevos
+        producto.setNombre(dto.getNombre());
+        producto.setPrecio(dto.getPrecio());
+
+        producto.setEstado(
+            EstadoProducto.valueOf(dto.getEstadoProducto().name())
+        );
+
+        producto.setTipo(
+            TipoProducto.valueOf(dto.getTipoProducto().name())
+        );
+        //INGREDIENTES
+        /*
+        En esta parte es parecida a la de agregarProducto
+        Primero limpiamos la lista para que no esten los otros ingredientes
+        */
+         producto.getProductosIngredientes().clear();
+        //Creamos una lista de ingredientes para agregarselo a el producto
+         List<IngredienteProducto> nuevosIngredientes = new ArrayList<>();
+         //Iteramos en la lista de ingredientes que tiene el producto y nos fijamos si existen
+         for (IngredienteProductoDTO ipDTO : dto.getIngredientes()) {
+            Ingrediente ingrediente = IngredienteDAO.getInstance().buscarPorId(ipDTO.getIngredienteId());
+        if (ingrediente == null) {
+            throw new NegocioException("Ingrediente no encontrado");
+        }
+        //Se crea un ingredienteProducto con los datos de los ingredientes y el producto y los relacionamos
+        IngredienteProducto ip = new IngredienteProducto();
+        ip.setProducto(producto);
+        ip.setIngrediente(ingrediente);
+        ip.setCantidad(ipDTO.getCantidad());
+        //Agregamos a la lista la tabla intermedia de ingredientes
+        nuevosIngredientes.add(ip);
+       }
+         //Relacionamos producto con la nueva tabla de ingredientes
+        producto.setProductosIngredientes(nuevosIngredientes);
+
+        //Actualizamos el producto
+        Producto actualizado = ProductoDAO.getInstance().actualizarProducto(producto);
+        
+        //Lo regresamos como DTO
+        ProductoDTO returnDTO = new ProductoDTO();
+        returnDTO.setId(actualizado.getId());
+        returnDTO.setNombre(actualizado.getNombre());
+        returnDTO.setPrecio(actualizado.getPrecio());
+        returnDTO.setEstadoProducto(ProductoDTO.EstadoProducto.valueOf(actualizado.getEstadoProducto().name()));
+        returnDTO.setTipoProducto( ProductoDTO.TipoProducto.valueOf(actualizado.getTipo().name()) );
+
+        return returnDTO;
     }
-    
+   
     /*
     Metodo para ver todos los productos
     @return List<Producto>
@@ -122,13 +147,23 @@ public class ProductoBO {
             ProductoDTO dto = new ProductoDTO();
             dto.setId(producto.getId());
             dto.setNombre(producto.getNombre());
+            dto.setPrecio(producto.getPrecio());
             dto.setTipoProducto(
                 ProductoDTO.TipoProducto.valueOf(producto.getTipo().name())
             );
             dto.setEstadoProducto(
                 ProductoDTO.EstadoProducto.valueOf(producto.getEstadoProducto().name())
             );
-            //Regresamos el dto que mapeamos cada uno
+              //MAPEO DE INGREDIENTES
+        List<IngredienteProductoDTO> listaIngredientes = producto.getProductosIngredientes().stream().map(ip -> {
+            IngredienteProductoDTO ipDTO = new IngredienteProductoDTO();
+            ipDTO.setIngredienteId(ip.getIngrediente().getId());
+            ipDTO.setCantidad(ip.getCantidad());
+            return ipDTO;
+        }) .collect(Collectors.toList());
+
+            dto.setIngredientes(listaIngredientes);
+            dto.setImagen(producto.getImagen());
             return dto;
         })
         .collect(Collectors.toList());
@@ -136,17 +171,109 @@ public class ProductoBO {
     
    /*
     Metodo cambiar el estado de un Producto
-    @return Producto con otro estado
+    @return ProductoDTO con otro estado
     @param id del producto, estado nuevo del producto
     */
     
-    public Producto cambiarEstado(Long id,EstadoProducto estado){
-        //Validaciones
-        UtilNegocio.esNulo(id);
-        UtilNegocio.esNulo(estado);  
-        //En el dao se valida que exista un producto con ese id asi que solo lo regresamos
-        return ProductoDAO.getInstance().cambiarEstado(id, estado);    
+    public ProductoDTO cambiarEstado(Long id,EstadoProducto estado){
+    //Validaciones    
+    UtilNegocio.esNulo(id);
+    UtilNegocio.esNulo(estado);  
+
+    Producto producto = ProductoDAO.getInstance().cambiarEstado(id, estado);
+
+    ProductoDTO dto = new ProductoDTO();
+    dto.setId(producto.getId());
+    dto.setEstadoProducto(ProductoDTO.EstadoProducto.valueOf(producto.getEstadoProducto().name()));
+
+    return dto;  
     }
     
     
+    /*
+    Metodo para agregar un producto
+    @return producto agregado
+    @param ProductoDTO
+    En este metodo se hace la relacion con la tabla intemedia de IngredienteProductoDTO 
+    Se elije el ingrediente mediante un DAO de buscar ingrediente mediante la tabla intermedia y validamos que exista
+    Si existe creamos un IngredienteProducto y le damos los valores del dto de IngredienteProductoDTO y despues relacionamos producto con la tabla intermedia
+    y visceversa
+    Al final se regresa un ProductoDTO mapeado
+    */
+    
+    public ProductoDTO agregarProducto(ProductoDTO productoDTO){
+       
+        List<IngredienteProductoDTO> ingredientesDTO = productoDTO.getIngredientes();
+
+        // VALIDACIONES
+        UtilNegocio.esCadenadaVacia(productoDTO.getNombre(), "nombre");
+        UtilNegocio.esNulo(productoDTO.getPrecio());
+        UtilNegocio.validarNombre(productoDTO.getNombre());
+        UtilNegocio.esNulo(productoDTO.getTipoProducto());
+        //Convertimos a string el precio para poder usar el validador de Precio de UtilNegocio
+        String precio = String.valueOf(productoDTO.getPrecio());
+        UtilNegocio.validarPrecio(precio);
+
+        if (ProductoDAO.getInstance().existeNombre(productoDTO.getNombre())) {
+            throw new NegocioException("Ya existe un producto con ese nombre");
+        }
+
+        if (ingredientesDTO == null || ingredientesDTO.isEmpty()) {
+            throw new NegocioException("Debe agregar al menos un ingrediente");
+        }
+        // MAPEO PRODUCTO
+        Producto productoNuevo = new Producto();
+        productoNuevo.setNombre(productoDTO.getNombre());
+        productoNuevo.setPrecio(productoDTO.getPrecio());
+        productoNuevo.setImagen(productoDTO.getImagen());
+
+        productoNuevo.setTipo(TipoProducto.valueOf(productoDTO.getTipoProducto().name()));
+        productoNuevo.setEstado(EstadoProducto.ACTIVO);
+
+        // INGREDIENTES
+        for (IngredienteProductoDTO dto : ingredientesDTO) {
+            if (dto.getCantidad() <= 0) {
+                throw new NegocioException("Cantidad inválida");
+            }
+            //Vemos si existe el ingrediente
+            Ingrediente ingrediente = IngredienteDAO.getInstance().buscarPorId(dto.getIngredienteId());
+
+            if (ingrediente == null) {
+                throw new NegocioException("Ingrediente no encontrado");
+            }
+            //Si existe creamos la tabla intermedia y le damos los valores del dto
+            IngredienteProducto ip = new IngredienteProducto();
+            ip.setCantidad(dto.getCantidad());
+            ip.setIngrediente(ingrediente);
+            
+            //Los relacionamos con el producto a crear
+            productoNuevo.getProductosIngredientes().add(ip);
+            //Relacionamos la tabla intermedia con el producto a crear
+            ip.setProducto(productoNuevo);
+        }
+        Producto guardado = ProductoDAO.getInstance().guardarProducto(productoNuevo);
+        ProductoDTO regresarDTO = new ProductoDTO();
+        regresarDTO.setId(guardado.getId());
+        regresarDTO.setNombre(guardado.getNombre());
+        regresarDTO.setPrecio(guardado.getPrecio());
+        regresarDTO.setTipoProducto(ProductoDTO.TipoProducto.valueOf(guardado.getTipo().name()));
+        regresarDTO.setEstadoProducto(ProductoDTO.EstadoProducto.valueOf(guardado.getEstadoProducto().name()));
+
+        return regresarDTO;
+    }
+    
+   /*
+    Metodo para buscar un producto pro su id
+    @return producto 
+    @param Long id
+    */  
+    public ProductoDTO buscarProductoPorId(Long id){
+        //Validaciones 
+        UtilNegocio.esNulo(id);
+        Producto buscarProducto = new Producto();
+        buscarProducto.setId(id);
+        ProductoDAO.getInstance().buscarProductoPorId(buscarProducto.getId());
+        ProductoDTO regresarProducto = new ProductoDTO();
+        return regresarProducto;
+    }
 }

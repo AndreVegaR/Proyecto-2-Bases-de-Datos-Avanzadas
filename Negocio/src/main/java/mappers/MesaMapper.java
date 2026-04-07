@@ -19,6 +19,11 @@ public class MesaMapper {
      * Reemplaza un enumerador que debe viajar entre DTO, Dominio, Negocio...
      */
     private static String ESTADO_INICIAL = "Disponible"; 
+    public static String getEstadoInicial(){
+        return ESTADO_INICIAL;
+    }
+    
+    
     
     /**
      * Mapea de DTO a entidad

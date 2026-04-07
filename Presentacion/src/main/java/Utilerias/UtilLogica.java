@@ -186,9 +186,5 @@ public class UtilLogica {
                 panel.remove(botonEliminar);
             }
         }
-        
-        //Reconfigura y dedibuja el panel
-        panel.revalidate();
-        panel.repaint();
     }
 }
