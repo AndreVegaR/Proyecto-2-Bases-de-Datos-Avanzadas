@@ -11,17 +11,19 @@
     <class>Entidades.ClienteFrecuente</class>
     <class>Entidades.Comanda</class>
     <class>Entidades.Cliente</class>
+    <class>Entidades.Ingrediente</class>
+    <class>Entidades.IngredienteProducto</class>
+    <class>Entidades.Producto</class>
     <class>Entidades.DetallesComanda</class>
     <class>Entidades.Producto</class>
     <class>Entidades.IngredienteProducto</class>
     <class>Entidades.Ingrediente</class>
-
     <properties>
       <property name="javax.persistence.jdbc.url"
         value="jdbc:mysql://localhost:3306/restauranteBD?zeroDateTimeBehavior=CONVERT_TO_NULL"/>
       <property name="javax.persistence.jdbc.user" value="root"/>
       <property name="javax.persistence.jdbc.driver" value="com.mysql.cj.jdbc.Driver"/>
-      <property name="javax.persistence.jdbc.password" value="admin"/>
+      <property name="javax.persistence.jdbc.password" value="jazminbaldenegro"/>
       <property name="javax.persistence.schema-generation.database.action" value="drop-and-create"/>
     </properties>
 
