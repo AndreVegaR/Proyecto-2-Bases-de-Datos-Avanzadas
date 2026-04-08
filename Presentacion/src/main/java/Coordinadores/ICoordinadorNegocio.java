@@ -9,6 +9,9 @@ import DTOs.ProductoDTO;
 import DTOs.ProductoDTO.EstadoProducto;
 import java.util.List;
 import DTOs.MesaDTO;
+import DTOs.ReporteClienteFrecuenteDTO;
+import DTOs.ReporteComandaDTO;
+import java.time.LocalDate;
 
 /**
  * @author Angel Interfaz para un control de las pantallas Establece el contrato
@@ -68,5 +71,9 @@ public interface ICoordinadorNegocio {
     List<MesaDTO> consultarMesas();
     
     MesaDTO actualizarMesa(MesaDTO mesa);
+    
+    //Reportes
+    public List<ReporteComandaDTO> obtenerReporteComandas(LocalDate inicio, LocalDate fin);
+    public List<ReporteClienteFrecuenteDTO> obtenerReporteClientesFrecuentes(String nombre, int numVisitasMinima);
 }
 

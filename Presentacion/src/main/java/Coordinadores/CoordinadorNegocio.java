@@ -7,13 +7,17 @@ import Enumeradores.UnidadMedida;
 import BO.ComandaBO;
 import BO.MesaBO;
 import BO.ProductoBO;
+import BO.ReporteBO;
 import DTOs.ClienteDTO;
 import DTOs.ComandaDTO;
 import DTOs.DetallesComandaDTO;
 import DTOs.MesaDTO;
 import DTOs.ProductoDTO;
+import DTOs.ReporteClienteFrecuenteDTO;
+import DTOs.ReporteComandaDTO;
 import Enumeradores.EstadoProducto;
 import Utilerias.Constantes;
+import java.time.LocalDate;
 import java.util.List;
 
 /**
@@ -232,7 +236,13 @@ public class CoordinadorNegocio implements ICoordinadorNegocio {
     public ProductoDTO cambiarEstado(Long id, ProductoDTO.EstadoProducto estado) {
         return ProductoBO.getInstance().cambiarEstado(id, EstadoProducto.valueOf(estado.name().toUpperCase()));
     }
-
+     //reportes
+    public List<ReporteComandaDTO> obtenerReporteComandas(LocalDate inicio, LocalDate fin){
+        return ReporteBO.getInstance().obtenerReporteComandas(inicio, fin);
+    }
+    public List<ReporteClienteFrecuenteDTO> obtenerReporteClientesFrecuentes(String nombre, int numVisitasMinima){
+        return ReporteBO.getInstance().obtenerReporteClientesFrecuentes(nombre, numVisitasMinima);
+    }
     
     //Método de mesas
     @Override
@@ -250,7 +260,7 @@ public class CoordinadorNegocio implements ICoordinadorNegocio {
         return MesaBO.getInstance().actualizarMesa(mesa);
     }
   
-
+   
 
     
 }

@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
  */
 public class ReporteComandaDTO {
     private LocalDateTime fecha;
-    private String mesa;
+    private Integer mesa;
     private Double total;
     private String estado;
     private String cliente;
@@ -20,7 +20,7 @@ public class ReporteComandaDTO {
     public ReporteComandaDTO() {
     }
 
-    public ReporteComandaDTO(LocalDateTime fecha, String mesa, Double total, String estado, String cliente) {
+    public ReporteComandaDTO(LocalDateTime fecha, Integer mesa, Double total, String estado, String cliente) {
         this.fecha = fecha;
         this.mesa = mesa;
         this.total = total;
@@ -36,11 +36,11 @@ public class ReporteComandaDTO {
         this.fecha = fecha;
     }
 
-    public String getMesa() {
+    public Integer getMesa() {
         return mesa;
     }
 
-    public void setMesa(String mesa) {
+    public void setMesa(Integer mesa) {
         this.mesa = mesa;
     }
 
