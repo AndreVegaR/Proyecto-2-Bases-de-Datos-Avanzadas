@@ -88,7 +88,7 @@ public class IngredienteProductoDTO {
 
     @Override
     public String toString() {
-        return "ingredienteId=" + ingredienteId ;
+        return "ingredienteId: " + ingredienteId + "Cantidad: " + cantidad;
     }
 
    

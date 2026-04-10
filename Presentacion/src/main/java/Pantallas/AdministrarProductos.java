@@ -19,11 +19,14 @@ import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import java.awt.Image;
 import java.awt.event.MouseEvent;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Supplier;
+import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JDialog;
@@ -73,14 +76,14 @@ public class AdministrarProductos extends JFrame implements IObservador {
         JPanel panelBusqueda = new JPanel(new FlowLayout(FlowLayout.LEFT, 20, 10));
         
         //Arreglo con los botones que permitirán filtrar según su campo de la tabla
-        String[] filtros = {"Nombre", "Categoría"};
+        String[] filtros = {"Nombre", "Tipo"};
         
-        //Mapa vacío que será poblado con botones de filtrad o por un método posterior
+        //Mapa vacío que será poblado con botones de filtrar o por un método posterior
         Map<String, JButton> botonesFiltros = new HashMap<>();
         
         //Crea paneles
         JPanel panelBotones = new JPanel(new FlowLayout(FlowLayout.RIGHT, 15, 15));
-        panelBotones.add(new JLabel("Doble clic para editar un producto"));
+        panelBotones.add(new JLabel("Doble clic para ver un producto"));
         JPanel panelTabla = new JPanel(new BorderLayout());
         
         /**
@@ -144,8 +147,7 @@ public class AdministrarProductos extends JFrame implements IObservador {
                 productoSeleccionado = listaTemporal.get(indiceReal);
                 //Si le da doble click entra en el modo edicion de producto
                 if (evt.getClickCount() == 2) {
-//                    new EditarProducto(AdministrarProductos.this,productoSeleccionado,AdministrarProductos.this)
-//                        .setVisible(true);
+                    //Muestra los detalles 
                     mostrarDetalles();
                 }
             }
@@ -209,19 +211,37 @@ public class AdministrarProductos extends JFrame implements IObservador {
                 + "\nIngredientes: " + productoSeleccionado.getIngredientes()
                 + "\nTipo: " + productoSeleccionado.getTipoProducto();
 
+        //Obtenemos los bytes de la imagen seleccionada
         byte[] imagenBytes = productoSeleccionado.getImagen();
 
+        //Verificamos que no sea nulo o este vacio
         if (imagenBytes != null && imagenBytes.length > 0) {
-             // Escala la imagen para mostrarla en el diálogo
-            ImageIcon icono = new ImageIcon(imagenBytes);
-            Image img = icono.getImage().getScaledInstance(150, 150, Image.SCALE_SMOOTH);
-            ImageIcon imagen = new ImageIcon(img);
-            JOptionPane.showMessageDialog(this, info, "Detalles del producto",
-                    JOptionPane.INFORMATION_MESSAGE, imagen);
+             try {
+                //Convertimos los bytes en una imagen mediante BufferedImage
+                //ByteArrayInputStream(imagenBytes) convierte los bytes para que ImageIO lo pueda leer
+                BufferedImage bufferedImage = ImageIO.read(new ByteArrayInputStream(imagenBytes));
+                //Si no es null
+                if (bufferedImage != null) {
+                    //Le damos un tamaño a la imagen
+                    Image scaled = bufferedImage.getScaledInstance(150, 150, Image.SCALE_SMOOTH);
+                    //Creamos un icono con la imagen ya con el tamaño
+                    ImageIcon icono = new ImageIcon(scaled);
+                    //Mostramos la imagen 
+                    JOptionPane.showMessageDialog(this, info, "Detalles del producto",
+                            JOptionPane.INFORMATION_MESSAGE, icono);
+                } else {
+                    // No se pudo leer la imagen
+                    JOptionPane.showMessageDialog(this, info, "Detalles del producto",
+                            JOptionPane.INFORMATION_MESSAGE);
+                }
+            } catch (Exception ex) {
+                ex.printStackTrace();
+                JOptionPane.showMessageDialog(this, info, "Detalles del producto",
+                        JOptionPane.INFORMATION_MESSAGE);
+            }
         } else {
             JOptionPane.showMessageDialog(this, info, "Detalles del producto",
                     JOptionPane.INFORMATION_MESSAGE);
         }
-    
-}
+        }
 }

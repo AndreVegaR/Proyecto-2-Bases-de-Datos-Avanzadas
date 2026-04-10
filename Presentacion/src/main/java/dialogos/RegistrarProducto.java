@@ -12,9 +12,12 @@ import Utilerias.UtilBoton;
 import Utilerias.UtilGeneral;
 import excepciones.NegocioException;
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import Utilerias.UtilBoton;
+import java.awt.Dimension;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -60,30 +63,40 @@ public class RegistrarProducto extends JDialog{
         int tamanio = 20;
         JTextField tFNombre = UtilGeneral.crearCampoFormulario(panel, "Nombre", tamanio);
         JTextField tFPrecio = UtilGeneral.crearCampoFormulario(panel, "Precio", tamanio);
-
+        tFNombre.setAlignmentX(Component.LEFT_ALIGNMENT);
+        tFPrecio.setAlignmentX(Component.LEFT_ALIGNMENT);
         //ComboBox que contienen ENUMS 
         JComboBox<ProductoDTO.TipoProducto> comboTipo = new JComboBox<>(ProductoDTO.TipoProducto.values());
+        comboTipo.setAlignmentX(Component.LEFT_ALIGNMENT);
         panel.add(new JLabel("Tipo"));
         panel.add(comboTipo);
 
         JComboBox<ProductoDTO.EstadoProducto> comboEstado =new JComboBox<>(ProductoDTO.EstadoProducto.values());
         panel.add(new JLabel("Estado"));
+        comboEstado.setAlignmentX(Component.LEFT_ALIGNMENT);
         panel.add(comboEstado);
 
+        //Le damos un tamaño mas pequeño
+        comboTipo.setPreferredSize(new Dimension(120, 25));
+        comboEstado.setPreferredSize(new Dimension(120, 25));
+        
         //Boton para elegir la imagen
-        JButton btnImagen = new JButton("Seleccionar Imagen");
-        panel.add(btnImagen);
+        JButton btnImagen = UtilBoton.crearBoton("Seleccionar Imagen");
+        btnImagen.setAlignmentX(Component.LEFT_ALIGNMENT);
 
         //Ingredientes
         JComboBox<IngredienteDTO> comboIngredientes = new JComboBox<>();
+        comboIngredientes.setPreferredSize(new Dimension(120,25));
         JTextField tFCantidad = new JTextField(5);
+        tFCantidad.setPreferredSize(new Dimension(120,25));
         JButton btnAgregar = new JButton("Agregar ingrediente");
-
+        btnAgregar.setAlignmentX(Component.LEFT_ALIGNMENT);
         panel.add(new JLabel("Ingrediente"));
         panel.add(comboIngredientes);
         panel.add(new JLabel("Cantidad"));
         panel.add(tFCantidad);
         panel.add(btnAgregar);
+        panel.add(btnImagen);
 
         //LLENAR COMBO DESDE BD
         //Iteramos los ingredientes desde la base de datos y los agregamos al ComboBox de ingredientes

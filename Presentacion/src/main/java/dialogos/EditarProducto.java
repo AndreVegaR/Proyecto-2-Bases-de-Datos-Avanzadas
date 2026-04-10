@@ -10,6 +10,7 @@ import DTOs.IngredienteProductoDTO;
 import DTOs.ProductoDTO;
 import excepciones.NegocioException;
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -26,7 +27,8 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import observadores.IObservador;
-import utilerias.UtilNegocio;
+import Utilerias.UtilBoton;
+import java.awt.Dimension;
 
 /**
  *
@@ -55,6 +57,7 @@ public class EditarProducto extends JDialog {
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
 
         JTextField tFNombre = new JTextField(producto.getNombre());
+        
         JTextField tFPrecio = new JTextField(String.valueOf(producto.getPrecio()));
 
         //ComboBox para los tipos y estados seleccionandolos 
@@ -64,6 +67,9 @@ public class EditarProducto extends JDialog {
         JComboBox<ProductoDTO.EstadoProducto> comboEstado =new JComboBox<>(ProductoDTO.EstadoProducto.values());
         comboEstado.setSelectedItem(producto.getEstadoProducto());
         
+        //Le damos un tamaño mas pequeño
+        comboTipo.setPreferredSize(new Dimension(120, 25));
+        comboEstado.setPreferredSize(new Dimension(120, 25));
         //Ingredientes
         JComboBox<IngredienteDTO> comboIngredientes = new JComboBox<>();
         JTextField tFCantidad = new JTextField(5);
@@ -76,7 +82,7 @@ public class EditarProducto extends JDialog {
 
         panel.add(new JLabel("Nombre"));
         panel.add(tFNombre);
-
+        
         panel.add(new JLabel("Precio"));
         panel.add(tFPrecio);
 
@@ -85,17 +91,24 @@ public class EditarProducto extends JDialog {
 
         panel.add(new JLabel("Estado"));
         panel.add(comboEstado);
-        JButton btnGuardarIngrediente = new JButton("Guardar ingredientes");
+        //Para que no se pueda editar el estado
+        comboEstado.setEnabled(false);
+        
+        tFNombre.setAlignmentX(Component.LEFT_ALIGNMENT);
+        tFPrecio.setAlignmentX(Component.LEFT_ALIGNMENT);
+        
+        JButton btnGuardarIngrediente = new JButton("Guardar Ingredientes");
+        btnGuardarIngrediente.setAlignmentX(Component.LEFT_ALIGNMENT);
         JButton btnGuardar = new JButton("Guardar");
         panel.add(new JLabel("Ingrediente"));
         panel.add(comboIngredientes);
         panel.add(new JLabel("Cantidad"));
         panel.add(tFCantidad);
         panel.add(btnGuardarIngrediente);
-       
         
         //Boton para elegir la imagen
         JButton btnImagen = new JButton("Seleccionar Imagen");
+        btnImagen.setAlignmentX(Component.LEFT_ALIGNMENT);
         panel.add(btnImagen);
 
         btnGuardar.addActionListener(e -> {
@@ -107,13 +120,7 @@ public class EditarProducto extends JDialog {
                     JOptionPane.showMessageDialog(this, "Campos obligatorios");
                     return;
                 }
-                //Validamos que el nombre solo sea texto
-                try {
-                    UtilNegocio.validarNombre(nombre);
-                } catch (NegocioException ex) {
-                    JOptionPane.showMessageDialog(this, ex.getMessage());
-                    return;
-                }
+                
                 // Validamos que el precio sea un numero positivo
                 double precio;
             try {

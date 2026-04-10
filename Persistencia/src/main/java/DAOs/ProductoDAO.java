@@ -228,4 +228,22 @@ public class ProductoDAO {
         em.close();
     }
    }
+   /*
+    * METODO PARA VALIDAR QUE NO EXISTA UN PRODUCTO CON 2 NOMBRES
+    * ESTE METODO ES DIFERENTE AL OTRO POR QUE ESTE SIRVE PARA EL ACTUALIZAR PRODUCTO 
+    *@return boolean 
+    *@param String
+    */
+    public boolean existeNombreParaActualizar(String nombre, Long id) {
+    EntityManager em = ConexionBD.crearConexion();
+    try {
+        String sql = "SELECT COUNT(p) FROM Producto p WHERE p.nombre = :nombre AND p.id != :id";
+        Long contar = em.createQuery(sql,Long.class ).setParameter("nombre", nombre).setParameter("id", id).getSingleResult();
+        //Si contar es mayor que 0 es que ya existe y da True
+        //Si es igual a 0 es que no existe y da False
+        return contar > 0;
+    } finally {
+        em.close();
+    }
+}
 }

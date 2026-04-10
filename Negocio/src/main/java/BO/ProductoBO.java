@@ -57,8 +57,10 @@ public class ProductoBO {
     @param id producto
     @return producto
     */
-    public ProductoDTO actualizarProducto(ProductoDTO dto){
-            
+    public ProductoDTO actualizarProducto(ProductoDTO dto){    
+        //Creamos una lista de ingredientes para agregarselo a el producto
+        List<IngredienteProducto> nuevosIngredientes = new ArrayList<>();
+        
         //Validaciones
         UtilNegocio.esNulo(dto);
         UtilNegocio.esCadenadaVacia(dto.getNombre(), "nombre");
@@ -68,14 +70,13 @@ public class ProductoBO {
         //Convertimos a string el precio para poder usar el validador de Precio de UtilNegocio
         String precio = String.valueOf(dto.getPrecio());
         UtilNegocio.validarPrecio(precio);
-        //Buscamos a ver si existe el producto
-        
+             
         Producto producto = ProductoDAO.getInstance().buscarProductoPorId(dto.getId());
         //Validamos que no exista otro producto con el mismo nombre al momento de actualizar el producto
         //Busca en el dao a ver si hay un nombre igual al producto que le vamos a cambiar el nombre
-        if (ProductoDAO.getInstance().existeNombre(dto.getNombre()) && !producto.getNombre().equals(dto.getNombre())) {
+        if (ProductoDAO.getInstance().existeNombreParaActualizar(dto.getNombre(), dto.getId())) {
             throw new NegocioException("Ya existe un producto con ese nombre");
-         }
+        }
         if(producto == null){
             throw new NegocioException("Producto no encontrado");
         }
@@ -90,14 +91,13 @@ public class ProductoBO {
         producto.setTipo(
             TipoProducto.valueOf(dto.getTipoProducto().name())
         );
+        producto.setImagen(dto.getImagen());
         //INGREDIENTES
         /*
         En esta parte es parecida a la de agregarProducto
         Primero limpiamos la lista para que no esten los otros ingredientes
         */
          producto.getProductosIngredientes().clear();
-        //Creamos una lista de ingredientes para agregarselo a el producto
-         List<IngredienteProducto> nuevosIngredientes = new ArrayList<>();
          //Iteramos en la lista de ingredientes que tiene el producto y nos fijamos si existen
          for (IngredienteProductoDTO ipDTO : dto.getIngredientes()) {
             Ingrediente ingrediente = IngredienteDAO.getInstance().buscarPorId(ipDTO.getIngredienteId());
@@ -112,7 +112,12 @@ public class ProductoBO {
         //Agregamos a la lista la tabla intermedia de ingredientes
         nuevosIngredientes.add(ip);
        }
-         //Relacionamos producto con la nueva tabla de ingredientes
+         
+        //Validamos que no este vacia la lista
+         if(dto.getIngredientes() == null || dto.getIngredientes().isEmpty()) {
+         throw new NegocioException("Debe agregar al menos un ingrediente");
+        }
+        //Relacionamos producto con la nueva tabla de ingredientes
         producto.setProductosIngredientes(nuevosIngredientes);
 
         //Actualizamos el producto
@@ -125,6 +130,7 @@ public class ProductoBO {
         returnDTO.setPrecio(actualizado.getPrecio());
         returnDTO.setEstadoProducto(ProductoDTO.EstadoProducto.valueOf(actualizado.getEstadoProducto().name()));
         returnDTO.setTipoProducto( ProductoDTO.TipoProducto.valueOf(actualizado.getTipo().name()) );
+        returnDTO.setImagen(actualizado.getImagen());
 
         return returnDTO;
     }
@@ -228,6 +234,7 @@ public class ProductoBO {
         productoNuevo.setImagen(productoDTO.getImagen());
 
         productoNuevo.setTipo(TipoProducto.valueOf(productoDTO.getTipoProducto().name()));
+        //Por default activo
         productoNuevo.setEstado(EstadoProducto.ACTIVO);
 
         // INGREDIENTES
@@ -258,6 +265,7 @@ public class ProductoBO {
         regresarDTO.setPrecio(guardado.getPrecio());
         regresarDTO.setTipoProducto(ProductoDTO.TipoProducto.valueOf(guardado.getTipo().name()));
         regresarDTO.setEstadoProducto(ProductoDTO.EstadoProducto.valueOf(guardado.getEstadoProducto().name()));
+        regresarDTO.setImagen(guardado.getImagen());
 
         return regresarDTO;
     }
