@@ -3,8 +3,10 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -45,7 +47,9 @@ public class Cliente implements Serializable {
     @Column(name = "fecha_registro", nullable = false, updatable = false)
     private LocalDateTime fechaRegistro;
     
-    @OneToMany(mappedBy = "cliente")
+    @OneToMany(mappedBy = "cliente", 
+           cascade = {CascadeType.PERSIST, CascadeType.MERGE}, 
+           fetch = FetchType.EAGER)
     private List<Comanda> comandas = new ArrayList<>();
     
     /**
@@ -162,5 +166,20 @@ public class Cliente implements Serializable {
     public void agregarComanda(Comanda comanda) {
         comandas.add(comanda);
         comanda.setCliente(this);
+    }
+    
+    
+    
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
+        Cliente other = (Cliente) obj;
+        return id != null && id.equals(other.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return id != null ? id.hashCode() : 0;
     }
 }

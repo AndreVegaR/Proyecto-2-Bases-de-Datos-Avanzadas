@@ -83,7 +83,7 @@ public class InfoDetalle extends JDialog {
                 //Confirmación
                 int opcion = JOptionPane.showConfirmDialog(
                         InfoDetalle.this,
-                        "¿Desea registrar este cliente?",
+                        "¿Desea agrgar este producto?",
                         "Confirmar",
                         JOptionPane.YES_NO_OPTION
                 );

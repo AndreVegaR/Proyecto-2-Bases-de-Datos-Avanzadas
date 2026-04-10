@@ -2,7 +2,10 @@ package Entidades;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.List;
+import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
+import javax.persistence.PrimaryKeyJoinColumn;
+import javax.persistence.Table;
 import javax.persistence.Transient;
 
 /**
@@ -10,6 +13,9 @@ import javax.persistence.Transient;
  * Guarda sus visitas
  */
 @Entity
+@Table(name = "clientes_frecuentes")
+@PrimaryKeyJoinColumn(name = "id_cliente") 
+@DiscriminatorValue("ClienteFrecuente")
 public class ClienteFrecuente extends Cliente implements Serializable {
     private static final long serialVersionUID = 1L;
     

@@ -132,6 +132,9 @@ public class ClienteMapper {
      */
     private static ClienteFrecuenteDTO mapearEntidadDTOFrecuente(ClienteFrecuente entidad) {
         
+        //DEPURACIÓN
+        System.out.println("DEBUG MAPPER: Entidad tiene " + entidad.getComandas().size() + " comandas");
+        
         //Llama al método base y casta el resultado a un tipo específico
         ClienteFrecuenteDTO dto = new ClienteFrecuenteDTO();
         
