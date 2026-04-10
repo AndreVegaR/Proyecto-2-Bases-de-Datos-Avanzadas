@@ -16,6 +16,7 @@ public class DetallesComandaDTO {
     private double precioVenta;
     private double subtotal;
     private String comentarios;
+    private byte[] imagen;
     
     //Constructor vacío
     public DetallesComandaDTO(){}
@@ -54,6 +55,33 @@ public class DetallesComandaDTO {
         this.comentarios = comentarios;
     }
     
+    
+    
+    /**
+     * Regresa toda la información en varios renglones
+     * Se usará para mostrar la información en un diálogo por ejemplo
+     * 
+     * @return el String con la información
+     */
+    public String getInfo() {
+        String coms;
+        if (comentarios == null || comentarios.isBlank()) {
+            coms = "Sin comentarios";
+        } else {
+            coms = comentarios;
+        }
+        String info = "Información de " + producto.getNombre() + "\n"
+                      + "Cantidad: " + cantidad + "\n"
+                      + "Precio individual $" + precioVenta + "\n"
+                      + "Subtotal: $" + getSubtotal() + "\n"
+                      + "\n"
+                      + "Comentarios: \n"
+                      + coms;
+        return info;
+    }
+    
+    
+    
     //Getters y setters
     public ProductoDTO getProducto() {
         return producto;
@@ -73,9 +101,6 @@ public class DetallesComandaDTO {
 
     //El subtotal es un calculo entre el precio del producto y la cantidad
     public double getSubtotal() {
-        if (this.subtotal > 0.0) {
-            return this.subtotal;
-        }
         return precioVenta * cantidad;
     }
 
@@ -105,5 +130,13 @@ public class DetallesComandaDTO {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public byte[] getImagen() {
+        return imagen;
+    }
+
+    public void setImagen(byte[] imagen) {
+        this.imagen = imagen;
     }
 }

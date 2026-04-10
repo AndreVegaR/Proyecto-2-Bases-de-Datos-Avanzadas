@@ -4,6 +4,7 @@ import DTOs.ComandaDTO;
 import DTOs.DetallesComandaDTO;
 import Entidades.Comanda;
 import excepciones.NegocioException;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 import mappers.ComandaMapper;
@@ -74,6 +75,14 @@ public class ComandaBO {
         Comanda comandaRegistrar = ComandaMapper.mapearDTOEntidad(comanda);
         
         /**
+         * Fecha y hora de cuándo se manda a convertir en dominio para ser persistido
+         * Se hace aquí porque es lógica de negocio
+         * Se maneja en variable aparte: ¿y si por alguna razón esa regla cambia?
+         */
+        LocalDateTime fecha = LocalDateTime.now();
+        comandaRegistrar.setFechaRegistro(fecha);
+        
+        /**
          * Obtiene el número de comandas en el día de hoy
          * A ese conteo le suma 1 para crear el folio
          * Funciona así porque es consecutivo, según el orden en el mismo día
@@ -126,7 +135,6 @@ public class ComandaBO {
         /**
          * Si el estado no es "Abierta", significa que está cerrada o cancelada 
          * Entonces se manda a desocupar la mesa
-         * 
          */
         if (!ComandaMapper.ESTADO_INICIAL.equals(comandaRegresar.getEstado())) {
             MesaBO.getInstance().desocuparMesa(comandaRegresar.getMesa());

@@ -1,6 +1,8 @@
 package Entidades;
 import Enumeradores.EstadoComanda;
 import java.io.Serializable;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.CascadeType;
@@ -39,6 +41,9 @@ public class Comanda implements Serializable {
     @Column(name = "estado", nullable = false, length = 30)
     private String estado;
     
+    @Column(name = "fecha_registro")
+    private LocalDateTime fechaRegistro;
+    
     //Le pertenece a un cliente
     @ManyToOne
     @JoinColumn(name = "id_cliente", nullable = true)
@@ -63,6 +68,14 @@ public class Comanda implements Serializable {
         this.estado = estado;
         this.cliente = cliente;
         this.mesa = mesa;
+    }
+    public Comanda(double total, String folio, String estado, Cliente cliente, Mesa mesa, LocalDateTime fechaRegistro) {
+        this.total = total;
+        this.folio = folio;
+        this.estado = estado;
+        this.cliente = cliente;
+        this.mesa = mesa;
+        this.fechaRegistro = fechaRegistro;
     }
     
     //Getters y setters
@@ -120,5 +133,13 @@ public class Comanda implements Serializable {
 
     public void setDetalles(List<DetallesComanda> detalles) {
         this.detalles = detalles;
+    }
+
+    public LocalDateTime getFechaRegistro() {
+        return fechaRegistro;
+    }
+
+    public void setFechaRegistro(LocalDateTime fechaRegistro) {
+        this.fechaRegistro = fechaRegistro;
     }
 }

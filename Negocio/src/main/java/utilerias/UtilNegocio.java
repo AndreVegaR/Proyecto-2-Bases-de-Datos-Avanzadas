@@ -95,7 +95,7 @@ public class UtilNegocio {
         Field[] campos = objeto.getClass().getDeclaredFields();
         try {
             for (Field campo : campos) {
-
+                
                 if (campo.getType().equals(String.class)) {
 
                     campo.setAccessible(true);
@@ -201,7 +201,6 @@ public class UtilNegocio {
      * @return fecha formateada en String
      */
     public static String formatearFecha(LocalDateTime fecha) {
-        UtilNegocio.esNulo(fecha);
         return fecha.format(FORMATO_FECHA_HORA);
     }
 

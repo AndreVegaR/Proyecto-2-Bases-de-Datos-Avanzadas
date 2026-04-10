@@ -5,13 +5,19 @@ import BO.IngredienteBO;
 import DTOs.IngredienteDTO;
 import Enumeradores.UnidadMedida;
 import BO.ComandaBO;
+import BO.MesaBO;
 import BO.ProductoBO;
+import BO.ReporteBO;
 import DTOs.ClienteDTO;
 import DTOs.ComandaDTO;
 import DTOs.DetallesComandaDTO;
+import DTOs.MesaDTO;
 import DTOs.ProductoDTO;
+import DTOs.ReporteClienteFrecuenteDTO;
+import DTOs.ReporteComandaDTO;
 import Enumeradores.EstadoProducto;
 import Utilerias.Constantes;
+import java.time.LocalDate;
 import java.util.List;
 
 /**
@@ -23,7 +29,7 @@ import java.util.List;
 public class CoordinadorNegocio implements ICoordinadorNegocio {
 
     //El cliente seleccionado en un momento del programa (clic en registro de la tabla)
-    private ClienteDTO cliente = new ClienteDTO();
+    private ClienteDTO cliente = null;
 
     public void setCliente(ClienteDTO cliente) {
         this.cliente = cliente;
@@ -34,7 +40,7 @@ public class CoordinadorNegocio implements ICoordinadorNegocio {
     }
 
     // Ingrediente seleccionado
-    private IngredienteDTO ingrediente;
+    private IngredienteDTO ingrediente = null;;
 
     public void setIngrediente(IngredienteDTO ingrediente) {
         this.ingrediente = ingrediente;
@@ -44,8 +50,8 @@ public class CoordinadorNegocio implements ICoordinadorNegocio {
         return ingrediente;
     }
 
-    // Comanda seleccionada
-    private ComandaDTO comanda = new ComandaDTO();
+    //Comanda seleccionada
+    private ComandaDTO comanda = null;
 
     public void setComanda(ComandaDTO comanda) {
         this.comanda = comanda;
@@ -54,6 +60,43 @@ public class CoordinadorNegocio implements ICoordinadorNegocio {
     public ComandaDTO getComanda() {
         return comanda;
     }
+    
+    
+    //La mesa seleccionada en un momento del programa (clic en el registro de la tabla)
+    private MesaDTO mesa = null;
+    public void setMesa(MesaDTO detalle) {
+        this.mesa = detalle;
+    }
+    public MesaDTO getMesa(){
+        return mesa;
+    }
+    
+    
+    //Producto seleccionado en el momento
+    private ProductoDTO producto = null;
+    public ProductoDTO getProducto() {
+        return producto;
+    }
+    public void setProducto(ProductoDTO producto) {
+        this.producto = producto;
+    }
+    
+    
+    //Detalle de una comanda seleccionado en el momento
+    private DetallesComandaDTO detalle = null;
+    public DetallesComandaDTO getDetalle() {
+        return detalle;
+    }
+    public void setDetalle(DetallesComandaDTO detalle) {
+        this.detalle = detalle;
+    }
+    
+    
+    
+    
+    
+    
+    
 
     // Singleton
     private static CoordinadorNegocio instancia;
@@ -141,7 +184,7 @@ public class CoordinadorNegocio implements ICoordinadorNegocio {
     @Override
     public ComandaDTO actualizarComanda(ComandaDTO comanda) {
         ComandaDTO c = null;
-        if (this.comanda != null) { // 🔧 corregido (antes decía cliente)
+        if (this.comanda != null) {
             c = ComandaBO.getInstance().actualizarComanda(comanda);
         }
         this.comanda = null;
@@ -193,9 +236,31 @@ public class CoordinadorNegocio implements ICoordinadorNegocio {
     public ProductoDTO cambiarEstado(Long id, ProductoDTO.EstadoProducto estado) {
         return ProductoBO.getInstance().cambiarEstado(id, EstadoProducto.valueOf(estado.name().toUpperCase()));
     }
-
+     //reportes
+    public List<ReporteComandaDTO> obtenerReporteComandas(LocalDate inicio, LocalDate fin){
+        return ReporteBO.getInstance().obtenerReporteComandas(inicio, fin);
+    }
+    public List<ReporteClienteFrecuenteDTO> obtenerReporteClientesFrecuentes(String nombre, int numVisitasMinima){
+        return ReporteBO.getInstance().obtenerReporteClientesFrecuentes(nombre, numVisitasMinima);
+    }
+    
+    //Método de mesas
+    @Override
+    public MesaDTO agregarMesa(MesaDTO mesa) {
+        return MesaBO.getInstance().registrarMesa(mesa);
+    }
+    
+    @Override
+    public List<MesaDTO> consultarMesas() {
+        return MesaBO.getInstance().consultarMesas();
+    }
+    
+    @Override
+    public MesaDTO actualizarMesa(MesaDTO mesa) {
+        return MesaBO.getInstance().actualizarMesa(mesa);
+    }
   
-
+   
 
     
 }

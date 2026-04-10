@@ -5,13 +5,12 @@ import excepciones.NegocioException;
 import DTOs.ComandaDTO;
 import DTOs.DetallesComandaDTO;
 import DTOs.MesaDTO;
-import DTOs.ProductoDTO;
 import Entidades.Cliente;
 import Entidades.DetallesComanda;
 import Entidades.Mesa;
-import Entidades.Producto;
+import java.time.LocalDateTime;
 import java.util.List;
-import java.util.stream.Collectors;
+import utilerias.UtilNegocio;
 
 /**
  * Mapper que transforma una comanda de DTO a entidad y viceversa
@@ -26,9 +25,7 @@ public class ComandaMapper {
      * Reemplaza un enumerador que debe viajar entre DTO, Dominio, Negocio...
      */
     public static String ESTADO_INICIAL = "Abierta";
-    
     public static String CERRADA = "Cerrada";
-    
     public static String CANCELADA = "Cancelada";
     
     
@@ -64,9 +61,19 @@ public class ComandaMapper {
             entidad.setFolio(dto.getFolio());
         }
         
-        //Mapea el cliente
-        Cliente clienteMapeado = ClienteMapper.mapearDTOEntidad(dto.getCliente());
-        entidad.setCliente(clienteMapeado);
+        //Mapea la fecha de registro
+        String fechaString = dto.getFechaRegistro();
+        if (fechaString != null && !fechaString.isBlank()) {
+            LocalDateTime fecha = UtilNegocio.desformatearFecha(fechaString);
+            entidad.setFechaRegistro(fecha);
+        }
+        
+        //Mapea el cliente si tiene uno asignado
+        ClienteDTO c = dto.getCliente();
+        if (c != null) {
+            Cliente clienteMapeado = ClienteMapper.mapearDTOEntidad(c);
+            entidad.setCliente(clienteMapeado);
+        }
         
         //Mapea la mesa
         Mesa mesaMapeada = MesaMapper.mapearDTOEntidad(dto.getMesa());
@@ -103,9 +110,26 @@ public class ComandaMapper {
         dto.setEstado(entidad.getEstado());
         dto.setFolio(entidad.getFolio());
         
-        //Mapea el cliente
-        ClienteDTO clienteMapeado = ClienteMapper.mapearEntidadDTO(entidad.getCliente());
-        dto.setCliente(clienteMapeado);
+        /**
+         * Da formato a la fecha de una forma robusta
+         * Si la fecha de la entidad no es null, la usa para formatearla
+         * De lo contrario, asume problemas en persistencia y la asigna aquí mismo
+         */
+        LocalDateTime fecha = entidad.getFechaRegistro();
+        String fechaFormateada;
+        if (fecha != null) {
+            fechaFormateada = UtilNegocio.formatearFecha(fecha);
+        } else {
+            fechaFormateada = UtilNegocio.formatearFecha(LocalDateTime.now());
+        }
+        dto.setFechaRegistro(fechaFormateada);
+        
+        //Mapea el cliente si tiene uno asignado
+        Cliente c = entidad.getCliente();
+        if (c != null) {
+            ClienteDTO clienteMapeado = ClienteMapper.mapearEntidadDTO(c);
+            dto.setCliente(clienteMapeado);
+        }
         
         //Mapea la mesa
         MesaDTO mesaMapeada = MesaMapper.mapearEntidadDTO(entidad.getMesa());
@@ -136,7 +160,7 @@ public class ComandaMapper {
                                             entidad.setPrecioVenta(dto.getPrecioVenta());
                                             entidad.setComentarios(dto.getComentarios());
                                             entidad.setComanda(comanda);
-                                            entidad.setProducto(ProductoFalso_DTOEntidad(dto.getProducto())); //LUEGO SE REEMPLAZA POR PRODUCTO MAPPER!!!
+                                            entidad.setProducto(ProductoMapper.MapearDTOEntidad(dto.getProducto()));
                                             return entidad;
                                         })
                                         .toList();
@@ -159,7 +183,7 @@ public class ComandaMapper {
                                             dto.setSubtotal(entidad.getSubtotal());
                                             dto.setPrecioVenta(entidad.getPrecioVenta());
                                             dto.setComentarios(entidad.getComentarios());
-                                            dto.setProducto(ProductoFalso_EntidadDTO(entidad.getProducto())); //LUEGO SE REEMPLAZA POR PRODUCTO MAPPER!!!
+                                            dto.setProducto(ProductoMapper.MapearEntidadDTO(entidad.getProducto()));
                                             return dto;
                                         })
                                         .toList();
@@ -170,7 +194,8 @@ public class ComandaMapper {
     
     
     //LUEGO SE REEMPLAZA POR PRODUCTO MAPPER!!!
-    private static Producto ProductoFalso_DTOEntidad(ProductoDTO dto) {
+    /**
+     * private static Producto ProductoFalso_DTOEntidad(ProductoDTO dto) {
         Producto entidad = new Producto();
         entidad.setId(dto.getId());
         entidad.setNombre(dto.getNombre());
@@ -184,4 +209,5 @@ public class ComandaMapper {
         dto.setPrecio(100);
         return dto;
     }
+     */
 }

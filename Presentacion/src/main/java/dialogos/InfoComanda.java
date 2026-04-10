@@ -1,5 +1,7 @@
 package dialogos;
 import Coordinadores.CoordinadorNegocio;
+import Coordinadores.CoordinadorPantallas;
+import DTOs.ComandaDTO;
 import Utilerias.UtilGeneral;
 import java.awt.BorderLayout;
 import javax.swing.JDialog;
@@ -11,6 +13,8 @@ import javax.swing.JTable;
 import java.awt.Component;
 import java.util.List;
 import DTOs.DetallesComandaDTO;
+import Pantallas.AdministrarComandas;
+import Utilerias.Constantes;
 import java.awt.Font;
 
 
@@ -44,11 +48,49 @@ public class InfoComanda extends JDialog {
         panelTabla.setLayout(new javax.swing.BoxLayout(panelTabla, javax.swing.BoxLayout.Y_AXIS));
         panelTabla.setBorder(new javax.swing.border.EmptyBorder(20, 25, 20, 25));
         
-        //Crea la tabla y la agrega al panel
-        String[] camposTabla = {"Producto", "Cantidad", "Precio unitario", "Subtotal"};
+        //Crea la tabla y la agrega al panel, guarda la constante en otra variable solo por si acaso
+        String[] camposTabla = Constantes.CAMPOS_TABLA_DETALLES;
         tabla = UtilGeneral.crearTabla(camposTabla);
         JScrollPane scroll = new JScrollPane(tabla);
         panelTabla.add(scroll, BorderLayout.CENTER);
+        
+        //Evento que se activa cuando seleccionas una fila de la columna
+        tabla.addMouseListener(new java.awt.event.MouseAdapter() {
+            @Override
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                
+                //Crea el cliente desde aquí para usarlo fuera del if
+                DetallesComandaDTO detalle = null;
+                int fila = tabla.getSelectedRow();
+                if (fila != -1) {
+                    
+                    /**
+                     * Esto mantiene siempre el índice real de los registros
+                     * Por ejemplo, si selecciono el primer registro de una tabla filtrada, y sabe
+                     * que se trata en realidad de otro índice real en la lista
+                     */
+                    int indiceReal = tabla.convertRowIndexToModel(fila);
+                    
+                    //Obtiene el cliente en dicho índice y lo manda al método que muestra su info
+                    detalle = listaTemporal.get(indiceReal);
+                    
+                    //Asigna el cliente al coordinador para que sea usado
+                    CoordinadorNegocio.getInstance().setDetalle(detalle);
+                    
+                    /**
+                    * Si se cliquea dos veces, el coordinador abre el diálogo
+                    * Ese diálogo muestra una tabla con los productos de la comanda
+                    */
+                    if (evt.getClickCount() == 2) {
+                       //Se hace una final solo para usarla dentro de este lambda
+                        final DetallesComandaDTO detalleLambda = detalle;
+                        CoordinadorNegocio.getInstance().setDetalle(detalleLambda);
+                        String info = CoordinadorNegocio.getInstance().getDetalle().getInfo();
+                        UtilGeneral.dialogoAviso(InfoComanda.this, info);
+                   } 
+                }
+           }
+         });
         
         //De una vez llena la tabla para luego usar la listaTemporal
         llenarTabla();
@@ -88,6 +130,7 @@ public class InfoComanda extends JDialog {
         //Configuración final
         UtilGeneral.configurarDialogoFinal(this);
     }
+    
     
     
     /**
