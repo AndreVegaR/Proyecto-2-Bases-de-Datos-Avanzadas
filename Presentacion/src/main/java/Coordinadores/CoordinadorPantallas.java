@@ -70,6 +70,7 @@ public class CoordinadorPantallas implements ICoordinadorPantallas {
     @Override
     public void abrirDialogo(Supplier<? extends JDialog> formulario) {
         JDialog dialogo = formulario.get();
+        if(dialogo == null) return;
         dialogo.setVisible(true);
     }
 }

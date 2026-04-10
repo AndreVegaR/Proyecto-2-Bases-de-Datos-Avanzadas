@@ -7,9 +7,14 @@ package dialogos;
 import Coordinadores.CoordinadorNegocio;
 import DTOs.IngredienteDTO;
 import DTOs.ProductoDTO;
+import Utilerias.UtilBoton;
+import Utilerias.UtilGeneral;
 import excepciones.NegocioException;
 import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.Dimension;
 import java.util.List;
+import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -26,13 +31,13 @@ import observadores.IObservador;
  * @author Usuario
  */
 public class CambiarEstadoProducto extends JDialog {
-         
+
     private ProductoDTO producto;
     private IObservador observador;
-    
+
     //El ProductoDTO esta en el constructor para evitar que llegue null al BO y evitarnos problemas
     public CambiarEstadoProducto(JFrame padre, ProductoDTO producto, IObservador observador) {
-        super(padre, "Editar Producto", true);
+        super(padre, "Cambiar Estado Producto", true);
         this.producto = producto;
         this.observador = observador;
 
@@ -40,61 +45,71 @@ public class CambiarEstadoProducto extends JDialog {
 
         JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+        //Margen general para que no se vea amontonado
+        panel.setBorder(javax.swing.BorderFactory.createEmptyBorder(10, 15, 10, 15));
+        int tamanio = 20;
 
-        JTextField tFNombre = new JTextField(producto.getNombre());
-        JTextField tFPrecio = new JTextField(String.valueOf(producto.getPrecio()));
+        JTextField tFNombre = UtilGeneral.crearCampoFormulario(panel, "Nombre", tamanio);
+        //False para que no lo pueda editar
+        tFNombre.setEditable(false);
+        tFNombre.setMaximumSize(new Dimension(Integer.MAX_VALUE, 30));
+        tFNombre.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-        //ComboBox para los tipos y estados seleccionandolos 
-        JComboBox<ProductoDTO.TipoProducto> comboTipo =new JComboBox<>(ProductoDTO.TipoProducto.values());
-        comboTipo.setSelectedItem(producto.getTipoProducto());
+        JTextField tFPrecio = UtilGeneral.crearCampoFormulario(panel, "Precio", tamanio);
+        //False para que no lo pueda editar
+        tFPrecio.setEditable(false);
+        tFPrecio.setMaximumSize(new Dimension(Integer.MAX_VALUE, 30));
+        tFPrecio.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-        JComboBox<ProductoDTO.EstadoProducto> comboEstado =new JComboBox<>(ProductoDTO.EstadoProducto.values());
+        //Esto es para que al momento de editarlo aparesca los valores del Producto
+        if (producto != null) {
+            Double precio = producto.getPrecio();
+            tFNombre.setText(producto.getNombre());
+            tFPrecio.setText(String.valueOf(precio));
+        }
+
+        JComboBox<ProductoDTO.EstadoProducto> comboEstado = new JComboBox<>(ProductoDTO.EstadoProducto.values());
         comboEstado.setSelectedItem(producto.getEstadoProducto());
-        
-        //Ingredientes
-        JComboBox<IngredienteDTO> comboIngredientes = new JComboBox<>();
-        JTextField tFCantidad = new JTextField(5);
-        
-          //LLENAR COMBO DESDE BD
-        //Iteramos los ingredientes desde la base de datos y los agregamos al ComboBox de ingredientes
-        List<IngredienteDTO> ingredientes =CoordinadorNegocio.getInstance().verTodosLosIngredientes();
-        for (IngredienteDTO ing : ingredientes) {
-            comboIngredientes.addItem(ing); }
+        comboEstado.setMaximumSize(new Dimension(Integer.MAX_VALUE, 30));
+        comboEstado.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-        panel.add(new JLabel("Estado"));
+
+        //Agregamos los componentes al panel con espaciado entre ellos
+        panel.add(Box.createVerticalStrut(10));
+
+        panel.add(new JLabel("Cambiar el estado del producto seleccionado"));
+        panel.add(Box.createVerticalStrut(4));
+        panel.add(new JLabel("Estado del producto: " + producto.getNombre()));
+        panel.add(Box.createVerticalStrut(4));
         panel.add(comboEstado);
+        panel.add(Box.createVerticalStrut(10));
         JButton btnGuardar = new JButton("Guardar");
-       
-        
+
+        add(panel, BorderLayout.CENTER);
+        add(btnGuardar, BorderLayout.SOUTH);
+
+        //Boton para guardar el cambio de estado
         btnGuardar.addActionListener(e -> {
             try {
-                
-                String nombre = tFNombre.getText().trim();
-                String precioTexto = tFPrecio.getText().trim();
-                if (nombre.isEmpty() || precioTexto.isEmpty()) {
+                if (producto.getEstadoProducto() == null) {
                     JOptionPane.showMessageDialog(this, "Campos obligatorios");
                     return;
                 }
                 producto.setEstadoProducto((ProductoDTO.EstadoProducto) comboEstado.getSelectedItem());
 
                 //Llamamos al coordinador de negocio para actualizar el producto
-                CoordinadorNegocio.getInstance().cambiarEstado(producto.getId(),producto.getEstadoProducto());
-                JOptionPane.showMessageDialog(this, "Producto actualizado");
+                CoordinadorNegocio.getInstance().cambiarEstado(producto.getId(), producto.getEstadoProducto());
+                JOptionPane.showMessageDialog(this, "Estado del producto actualizado");
                 observador.notificarCambio();
                 dispose();
             } catch (NegocioException ex) {
                 JOptionPane.showMessageDialog(CambiarEstadoProducto.this, ex.getMessage());
             }
         });
-
-        add(panel, BorderLayout.CENTER);
-        add(btnGuardar, BorderLayout.SOUTH);
-
+        
+        //Tamaño mínimo y pack al final para que tome en cuenta todos los componentes
+        setMinimumSize(new Dimension(400, 500));
         pack();
         setLocationRelativeTo(padre);
-   
-    
-} 
-    
-    
+    }
 }

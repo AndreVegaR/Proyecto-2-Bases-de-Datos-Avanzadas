@@ -3,6 +3,7 @@ import java.util.List;
 /**
  *
  * @author Angel
+ * DTO DE PRODUCTO
  */
 public class ProductoDTO {
     
