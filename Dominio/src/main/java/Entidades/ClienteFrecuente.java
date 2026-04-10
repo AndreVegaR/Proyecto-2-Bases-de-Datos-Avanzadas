@@ -1,6 +1,7 @@
 package Entidades;
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.List;
 import javax.persistence.Entity;
 import javax.persistence.Transient;
 
@@ -11,10 +12,6 @@ import javax.persistence.Transient;
 @Entity
 public class ClienteFrecuente extends Cliente implements Serializable {
     private static final long serialVersionUID = 1L;
-    
-    //Atributo
-    @Transient
-    private double gastoTotal = 0;
     
     //Constructores
     /**
@@ -39,31 +36,6 @@ public class ClienteFrecuente extends Cliente implements Serializable {
     }
     
     
-    
-    //ESTO SE MOVERÁ DESPUÉS A NEGOCIO
-    /**
-     * Asigna una comanda al cliente añadiéndola a lista y actualizando gasto total
-     * 
-     * @param comanda a asignar
-     */
-    /**
-     * private void asignarComanda(Comanda comanda) {
-        if (comanda == null) {
-            throw new IllegalArgumentException("Comanda nula");
-        }
-
-        if (getComandas().contains(comanda)) {
-            throw new IllegalStateException("Comanda ya registrada al usuario");
-        }
-
-        agregarComanda(comanda);
-        gastoTotal += comanda.getTotal();
-    }
-     */
-    
-    
-    
-    
     //Getters y setters
     /**
      * Cada visita hecha representa una comanda registrada a su nombre
@@ -74,14 +46,16 @@ public class ClienteFrecuente extends Cliente implements Serializable {
         return getComandas().size();
     }
     
+    //Suma el total de todas las comandas del cliente
     public double getGastoTotal() {
+        List<Comanda> comandas = getComandas();
+        double gastoTotal = 0.0;
+        for (Comanda comanda: comandas) {
+            gastoTotal += comanda.getTotal();
+        }
         return gastoTotal;
     }
-
-    public void setGastoTotal(double gastoTotal) {
-        this.gastoTotal = gastoTotal;
-    }
-
+    
     /**
      * Como es atributo calculado, siempre obtiene el valor de la cantidad actualizada de gastoTotal
      * No se guarda en otros lugares, por lo que se ata a un valor establecido (gastoTotal)
@@ -89,6 +63,6 @@ public class ClienteFrecuente extends Cliente implements Serializable {
      * @return puntos de fidelidad, que es el gasto total del cliente dividido entre 20, casteado a int
      */
     public int getPuntosFidelidad() {
-        return (int) (gastoTotal/20);
+        return (int) (getGastoTotal()/20);
     }
 }

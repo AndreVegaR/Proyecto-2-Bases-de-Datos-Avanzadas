@@ -112,13 +112,14 @@ public class ClienteDAO {
     /**
      * Obtiene todos los clientes de cualquier tipo
      * En la tabla solo se van a mostrar los datos genéricos de los clientes
+     * Usa un fetch para obligarlo a consultar también las comandas
      *
      * @return lista de todos los clientes
      */
     public List<Cliente> consultarClientes() {
         EntityManager em = ConexionBD.crearConexion();
         try {
-            String jpql = "SELECT c FROM Cliente c";
+            String jpql = "SELECT DISTINCT c FROM Cliente c LEFT JOIN FETCH c.comandas";
             return em.createQuery(jpql, Cliente.class).getResultList();
         }
         catch (Exception e) {

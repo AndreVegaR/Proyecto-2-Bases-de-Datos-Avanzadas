@@ -82,12 +82,6 @@ public class ClienteFrecuenteDTO extends ClienteDTO{
         return "Frecuente";
     }
     
-    
-    //Getters y setters
-    public Long getId() {
-        return id;
-    }
-    
     public int getVisitas() {
         return visitas;
     }

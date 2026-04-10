@@ -3,6 +3,8 @@ import Entidades.Comanda;
 import Entidades.DetallesComanda;
 import conexion.ConexionBD;
 import excepciones.PersistenciaException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
@@ -164,8 +166,11 @@ public class ComandaDAO {
     public long contarComandasHoy() {
         EntityManager em = ConexionBD.crearConexion();
         try {
-            String jpql = "SELECT COUNT(c) FROM Comanda c WHERE c.fechaRegistro = CURRENT_DATE";
-            return em.createQuery(jpql, Long.class).getSingleResult();
+            LocalDateTime inicioHoy = LocalDate.now().atStartOfDay();
+            String jpql = "SELECT COUNT(c) FROM Comanda c WHERE c.fechaRegistro >= :inicioHoy";
+            return em.createQuery(jpql, Long.class)
+                    .setParameter("inicioHoy", inicioHoy)
+                    .getSingleResult();
         } finally {
             em.close();
         }
