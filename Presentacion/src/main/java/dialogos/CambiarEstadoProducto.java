@@ -68,58 +68,13 @@ public class CambiarEstadoProducto extends JDialog {
             tFPrecio.setText(String.valueOf(precio));
         }
 
-        //ComboBox que contienen ENUMS
-        JComboBox<ProductoDTO.TipoProducto> comboTipo = new JComboBox<>(ProductoDTO.TipoProducto.values());
-        comboTipo.setSelectedItem(producto.getTipoProducto());
-        comboTipo.setMaximumSize(new Dimension(Integer.MAX_VALUE, 30));
-        comboTipo.setAlignmentX(Component.LEFT_ALIGNMENT);
-        //False para que no lo pueda editar
-        comboTipo.setEnabled(false);
-
         JComboBox<ProductoDTO.EstadoProducto> comboEstado = new JComboBox<>(ProductoDTO.EstadoProducto.values());
         comboEstado.setSelectedItem(producto.getEstadoProducto());
         comboEstado.setMaximumSize(new Dimension(Integer.MAX_VALUE, 30));
         comboEstado.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-        //Ingredientes
-        JComboBox<IngredienteDTO> comboIngredientes = new JComboBox<>();
-        comboIngredientes.setMaximumSize(new Dimension(Integer.MAX_VALUE, 30));
-        comboIngredientes.setAlignmentX(Component.LEFT_ALIGNMENT);
-        //False para que no lo pueda editar
-        comboIngredientes.setEnabled(false);
-
-        JTextField tFCantidad = new JTextField(5);
-        tFCantidad.setEditable(false);
-        tFCantidad.setMaximumSize(new Dimension(Integer.MAX_VALUE, 30));
-        tFCantidad.setAlignmentX(Component.LEFT_ALIGNMENT);
-
-        JButton btnAgregar = new JButton("Agregar ingrediente");
-        //False para que no lo pueda editar
-        btnAgregar.setEnabled(false);
-        btnAgregar.setAlignmentX(Component.LEFT_ALIGNMENT);
-
-        //Boton para elegir la imagen
-        JButton btnImagen = UtilBoton.crearBoton("Seleccionar Imagen");
-        btnImagen.setEnabled(false);
-        btnImagen.setAlignmentX(Component.LEFT_ALIGNMENT);
 
         //Agregamos los componentes al panel con espaciado entre ellos
-        panel.add(new JLabel("Tipo"));
-        panel.add(Box.createVerticalStrut(4));
-        panel.add(comboTipo);
-        panel.add(Box.createVerticalStrut(10));
-
-        panel.add(new JLabel("Ingrediente"));
-        panel.add(Box.createVerticalStrut(4));
-        panel.add(comboIngredientes);
-        panel.add(Box.createVerticalStrut(10));
-
-        panel.add(new JLabel("Cantidad"));
-        panel.add(Box.createVerticalStrut(4));
-        panel.add(tFCantidad);
-        panel.add(Box.createVerticalStrut(10));
-
-        panel.add(btnAgregar);
         panel.add(Box.createVerticalStrut(10));
 
         panel.add(new JLabel("Cambiar el estado del producto seleccionado"));
@@ -128,9 +83,6 @@ public class CambiarEstadoProducto extends JDialog {
         panel.add(Box.createVerticalStrut(4));
         panel.add(comboEstado);
         panel.add(Box.createVerticalStrut(10));
-
-        panel.add(btnImagen);
-
         JButton btnGuardar = new JButton("Guardar");
 
         add(panel, BorderLayout.CENTER);
@@ -154,7 +106,7 @@ public class CambiarEstadoProducto extends JDialog {
                 JOptionPane.showMessageDialog(CambiarEstadoProducto.this, ex.getMessage());
             }
         });
-
+        
         //Tamaño mínimo y pack al final para que tome en cuenta todos los componentes
         setMinimumSize(new Dimension(400, 500));
         pack();

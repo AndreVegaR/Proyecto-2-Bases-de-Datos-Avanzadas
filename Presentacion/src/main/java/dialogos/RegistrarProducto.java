@@ -58,21 +58,30 @@ public class RegistrarProducto extends JDialog{
         //Panel de registro
         JPanel panel = new JPanel();
         panel.setLayout(new javax.swing.BoxLayout(panel, javax.swing.BoxLayout.Y_AXIS));
-        panel.setBorder(new javax.swing.border.EmptyBorder(20, 25, 20, 25));
+        //Margen general para que no se vea amontonado
+        panel.setBorder(javax.swing.BorderFactory.createEmptyBorder(10, 15, 10, 15));
         
         int tamanio = 20;
         JTextField tFNombre = UtilGeneral.crearCampoFormulario(panel, "Nombre", tamanio);
         JTextField tFPrecio = UtilGeneral.crearCampoFormulario(panel, "Precio", tamanio);
+        //Altura fija para que no se estire con BoxLayout
+        tFNombre.setMaximumSize(new Dimension(Integer.MAX_VALUE, 30));
         tFNombre.setAlignmentX(Component.LEFT_ALIGNMENT);
+        
+        //Altura fija para que no se estire con BoxLayout
+        tFPrecio.setMaximumSize(new Dimension(Integer.MAX_VALUE, 30));
         tFPrecio.setAlignmentX(Component.LEFT_ALIGNMENT);
+
         //ComboBox que contienen ENUMS 
         JComboBox<ProductoDTO.TipoProducto> comboTipo = new JComboBox<>(ProductoDTO.TipoProducto.values());
+        comboTipo.setMaximumSize(new Dimension(Integer.MAX_VALUE, 30));
         comboTipo.setAlignmentX(Component.LEFT_ALIGNMENT);
         panel.add(new JLabel("Tipo"));
         panel.add(comboTipo);
 
         JComboBox<ProductoDTO.EstadoProducto> comboEstado =new JComboBox<>(ProductoDTO.EstadoProducto.values());
         panel.add(new JLabel("Estado"));
+        comboEstado.setMaximumSize(new Dimension(Integer.MAX_VALUE, 30));
         comboEstado.setAlignmentX(Component.LEFT_ALIGNMENT);
         panel.add(comboEstado);
 
@@ -81,14 +90,18 @@ public class RegistrarProducto extends JDialog{
         comboEstado.setPreferredSize(new Dimension(120, 25));
         
         //Boton para elegir la imagen
-        JButton btnImagen = UtilBoton.crearBoton("Seleccionar Imagen");
+        JButton btnImagen = new JButton("Seleccionar Imagen");
         btnImagen.setAlignmentX(Component.LEFT_ALIGNMENT);
 
         //Ingredientes
         JComboBox<IngredienteDTO> comboIngredientes = new JComboBox<>();
-        comboIngredientes.setPreferredSize(new Dimension(120,25));
+        comboIngredientes.setMaximumSize(new Dimension(Integer.MAX_VALUE, 30));
+        comboIngredientes.setAlignmentX(Component.LEFT_ALIGNMENT);
+        
         JTextField tFCantidad = new JTextField(5);
-        tFCantidad.setPreferredSize(new Dimension(120,25));
+        tFCantidad.setMaximumSize(new Dimension(Integer.MAX_VALUE, 30));
+        tFCantidad.setAlignmentX(Component.LEFT_ALIGNMENT);
+        
         JButton btnAgregar = new JButton("Agregar ingrediente");
         btnAgregar.setAlignmentX(Component.LEFT_ALIGNMENT);
         panel.add(new JLabel("Ingrediente"));
@@ -210,6 +223,8 @@ public class RegistrarProducto extends JDialog{
             }
         });
 
+          //Tamaño mínimo y pack al final para que tome en cuenta todos los componentes
+        setMinimumSize(new Dimension(400, 500));
         pack();
         setLocationRelativeTo(padre);
     }
