@@ -69,6 +69,7 @@ public class AdministrarProductos extends JFrame implements IObservador {
     private List<ProductoDTO> listaTemporal = new ArrayList<>();
     //Atributo de producto para moverse entre pantallas
     private ProductoDTO productoSeleccionado;
+    
 
     public AdministrarProductos() {
 
@@ -92,6 +93,7 @@ public class AdministrarProductos extends JFrame implements IObservador {
          * Importante: debe coincidir con el orden del método mapearTabla
          */
         String[] columnas = {"ID", "Nombre", "Precio", "Estado", "Tipo","Ingredientes"};
+        
         
         /**
          * Mapa para guardar los botones interiores
@@ -177,7 +179,7 @@ public class AdministrarProductos extends JFrame implements IObservador {
        
     
     /**
-     * Muestra los atributos base de los clientes en la tabla directo de la BD
+     * Muestra los atributos base de los productos en la tabla directo de la BD
      */
     private void mapearTabla() {
         UtilGeneral.registrarTabla(tabla, listaTemporal, (ProductoDTO p) -> new Object[]{
@@ -194,7 +196,7 @@ public class AdministrarProductos extends JFrame implements IObservador {
     
     /**
      * Método de la IObservador
-     * Escucha el llamado el formulario de registrar o actualizar cliente
+     * Escucha el llamado el formulario de registrar o actualizar producto
      * Entonces cuando se haga el procedimiennto automáticamnete se refleja en la tabla
      */
     @Override
@@ -244,4 +246,5 @@ public class AdministrarProductos extends JFrame implements IObservador {
                     JOptionPane.INFORMATION_MESSAGE);
         }
         }
+       
 }

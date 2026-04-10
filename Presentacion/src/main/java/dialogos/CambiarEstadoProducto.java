@@ -52,6 +52,13 @@ public class CambiarEstadoProducto extends JDialog {
         JTextField tFPrecio = UtilGeneral.crearCampoFormulario(panel, "Precio", tamanio);
         //False para que no lo pueda editar
         tFPrecio.setEditable(false);
+        
+        //Esto es para que al momento de editarlo aparesca los valores del Producto
+           if(producto != null){
+            Double precio = producto.getPrecio();
+            tFNombre.setText(producto.getNombre());
+            tFPrecio.setText(String.valueOf(precio));
+        }
         tFNombre.setAlignmentX(Component.LEFT_ALIGNMENT);
         tFPrecio.setAlignmentX(Component.LEFT_ALIGNMENT);
         //ComboBox que contienen ENUMS 
@@ -87,6 +94,7 @@ public class CambiarEstadoProducto extends JDialog {
         btnAgregar.setEnabled(false);
         btnAgregar.setAlignmentX(Component.LEFT_ALIGNMENT);
         panel.add(new JLabel("Ingrediente"));
+        
         panel.add(comboIngredientes);
         panel.add(new JLabel("Cantidad"));
         panel.add(tFCantidad);
