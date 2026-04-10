@@ -65,6 +65,13 @@ public class AdministrarClientes extends JFrame implements IObservador {
         panelBotones.add(new JLabel("Doble clic para desplegar información específica"));
         JPanel panelTabla = new JPanel(new BorderLayout());
         
+        //Crea y agrega el botón encargado de generar reportes
+        JButton botonReportes = UtilBoton.crearBoton("Generar reporte");
+        panelBotones.add(botonReportes);
+        botonReportes.addActionListener(e -> {
+            System.out.println("Soy una prueba"); 
+        });
+        
         /**
          * Arreglo de Strings con los campos de la tabla
          * Será pasado a un próximo método para automatizar la creación de la tabla
@@ -213,7 +220,7 @@ public class AdministrarClientes extends JFrame implements IObservador {
         * -Remueve del panel cada coincidencia
         * -Al final recarga el panel
         */
-       String[] botonesEliminar = {"registrar", "eliminar", "actualizar"};
+       String[] botonesEliminar = {"registrar", "eliminar", "actualizar", "generar reporte"};
        UtilLogica.esconderBotones(panelBotones, mapaBotones, botonesEliminar);
 
        //Crea el botón de seleccionar cliente y le da lógica
@@ -224,8 +231,14 @@ public class AdministrarClientes extends JFrame implements IObservador {
             if (CoordinadorNegocio.getInstance().getCliente() == null) {
                 UtilGeneral.dialogoAviso(AdministrarClientes.this, "Seleccione un cliente primero");
             } else {
-                //Si hay un observador, es avisado de que se eligió el cliente
+                //Si hay un observador, es avisado de que se eligió el cliente y se asigna a la comanda
                 CoordinadorPantallas.getInstance().navegar(AdministrarClientes.this, RegistrarComanda::new);
+                if (CoordinadorNegocio.getInstance().getComanda() != null) {
+                    ClienteDTO cliente = CoordinadorNegocio.getInstance().getCliente();
+                    if (cliente != null) {
+                        CoordinadorNegocio.getInstance().getComanda().setCliente(cliente);
+                    }
+                }
             }
 
        });
@@ -241,6 +254,14 @@ public class AdministrarClientes extends JFrame implements IObservador {
      */
     public void llenarTabla() {
         List<ClienteDTO> clientes = CoordinadorNegocio.getInstance().consultarClientes();
+        
+        for(ClienteDTO c : clientes) {
+        if(c instanceof ClienteFrecuenteDTO) {
+             System.out.println("DTO Recibido: " + c.getNombres() + " - Info: " + c.getInfoAdicional());
+        }
+    }
+        
+        
         listaTemporal = clientes;
         mapearTabla(); 
     }
@@ -280,7 +301,7 @@ public class AdministrarClientes extends JFrame implements IObservador {
         listaFalsa.add(cliente);
         
         //POR AHORA LO REEMPLAZA ESTO ES SOLO PARA PRUEBAS
-        listaTemporal = listaFalsa;
+        //listaTemporal = listaFalsa;
         
         
         mapearTabla();

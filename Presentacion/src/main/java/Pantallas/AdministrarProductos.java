@@ -6,16 +6,21 @@ package Pantallas;
 
 import Coordinadores.CoordinadorNegocio;
 import Coordinadores.CoordinadorPantallas;
+import DTOs.DetallesComandaDTO;
 import DTOs.IngredienteDTO;
 import DTOs.IngredienteProductoDTO;
 import DTOs.ProductoDTO;
 import Utilerias.Constantes;
+import Utilerias.UtilBoton;
 import Utilerias.UtilBuild;
 import Utilerias.UtilGeneral;
+import Utilerias.UtilLogica;
 import dialogos.CambiarEstadoProducto;
 import dialogos.EditarProducto;
+import dialogos.InfoDetalle;
 import dialogos.RegistrarProducto;
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.FlowLayout;
 import java.awt.Image;
 import java.awt.event.MouseEvent;
@@ -126,14 +131,39 @@ public class AdministrarProductos extends JFrame implements IObservador {
                                                               mapaBotones, //Mapa con los botones
                                                               dialogos, //Lista con los JDialog a abrir
                                                               columnaActiva); //Arreglo que contiene el índice para filtrar
-                                                             
+
+        /**
+         * Pregunta al coordinador si la sesión es de administrador o no
+         * En caso de que no lo sea, activa el método que configura la perspectiva de un mesero
+         * Limitándole bastante las funcionalidades, solo puede seleccionar productos
+         * Una vez seleccionado, regresará a la pantalla de RegistrarComanda
+         */
+        if (!CoordinadorPantallas.getInstance().esAdministrador()) {
+            configurarPerspectivaMesero(panelBotones, mapaBotones);
+            
+            //Recupera el panel de regresar para removerlo de las opciones
+            JButton botonReg = recuperarBoton(panelBotones, "regresar");
+            panelBotones.remove(botonReg);
+            panelBotones.revalidate();
+            panelBotones.repaint();
+            
+            //Crea otro boton regresar para usarlo
+            JButton botonRegresarNuevo = UtilBoton.crearBotonNavegar("Regresar", AdministrarProductos.this, RegistrarComanda::new);
+            panelBotones.add(botonRegresarNuevo);
+            
+            //Reconfigura y dedibuja el panel
+            panelBotones.revalidate();
+            panelBotones.repaint();
+        }
+        
+        
         
         //Evento que se activa cuando seleccionas una fila de la columna
         //Sirve para seleccionar el producto y poder editarlo o cambiarle el estado
         tabla.addMouseListener(new java.awt.event.MouseAdapter() {
          @Override
          public void mouseClicked(MouseEvent evt) {
-             //Obtenemos la fila de la tabla que selecciono el usuario
+            //Obtenemos la fila de la tabla que selecciono el usuario
             int fila = tabla.getSelectedRow();
             //Si selecciono al menos una fila pasa el if
             if (fila != -1) {    
@@ -142,10 +172,11 @@ public class AdministrarProductos extends JFrame implements IObservador {
                 int indiceReal = tabla.convertRowIndexToModel(fila);
                 //Obtenemos el objeto completo
                 productoSeleccionado = listaTemporal.get(indiceReal);
+                CoordinadorNegocio.getInstance().setProducto(productoSeleccionado);
                 //Si le da doble click entra en el modo edicion de producto
                 if (evt.getClickCount() == 2) {
 //                    new EditarProducto(AdministrarProductos.this,productoSeleccionado,AdministrarProductos.this)
-//                        .setVisible(true);
+//                        .setVisible(true);d
                     mostrarDetalles();
                 }
             }
@@ -161,6 +192,78 @@ public class AdministrarProductos extends JFrame implements IObservador {
         //Llena la tabla cada vez que se entre a la pantalla
         llenarTabla();
     }
+    
+    
+    
+    
+    
+    
+    /**
+     * Busca un botón en específicio de un panel por si se necesita y lo rescata
+     * 
+     * @param panel a buscar
+     * @param texto del botóna recuperar
+     * @return el botón recuperado
+     */
+    private JButton recuperarBoton(JPanel panel, String textoBoton) {
+        for (Component componente: panel.getComponents()) {
+            if (componente instanceof JButton boton && boton.getText().equalsIgnoreCase(textoBoton)) {
+                return boton;
+            }
+        } 
+        return null;
+    }
+    
+    
+    
+    /**
+     * Configura la perspectiva del mesero en esta pantalla
+     * Un mesero que accede a esta pantalla solo está seleccionando un producto, nada más
+     * Una vez seleccionado, regresará a la pantalla de RegistrarComanda
+     * El método existe para no ensuciar el constructor
+     * 
+     * @param panelBotones donde se van a remover los botones
+     * @param mapaBotones que se van a remover
+     */
+    private void configurarPerspectivaMesero(JPanel panelBotones, Map<String, JButton> mapaBotones) {
+       
+        /**
+        * Estas dos líneas se encargan de desaparecer de la interfaz botones del CRUD
+        * El método ensamblarPantallaAdministrar asume todo el CRUD, pero a veces no se ocupa
+        * Un administrador no registra comandas, y las comandas no pueden ser eliminadas
+        * Entonces el método esconderBotones se encarga de extirparlos:
+        * -Busca coincidencias entre el arreglo y el mapa de botones
+        * -Remueve del panel cada coincidencia
+        * -Al final recarga el panel
+        */
+       String[] botonesEliminar = {"registrar", "eliminar", "actualizar"};
+       UtilLogica.esconderBotones(panelBotones, mapaBotones, botonesEliminar);
+
+       //Crea el botón de seleccionar producto y le da lógica
+       JButton botonSeleccionarProducto= UtilBoton.crearBoton("Seleccionar producto");
+       botonSeleccionarProducto.addActionListener(e -> {
+
+            //Obliga a elegir primero un cliente validando si el producto guardado es null
+            if (CoordinadorNegocio.getInstance().getProducto() == null) {
+                UtilGeneral.dialogoAviso(AdministrarProductos.this, "Seleccione un producto primero");
+            } else {
+                //Recupera el cliente guardado del coordinador
+                ProductoDTO producto = CoordinadorNegocio.getInstance().getProducto();
+                
+                //Crea un detalles comanda con los datos del producto
+                DetallesComandaDTO detalle = new DetallesComandaDTO();
+                detalle.setPrecioVenta(producto.getPrecio());
+                detalle.setProducto(producto);
+                detalle.setImagen(producto.getImagen());
+                CoordinadorNegocio.getInstance().setDetalle(detalle);
+                
+                //Abre el diálogo para información extra (cantidad y comentarios)
+                CoordinadorPantallas.getInstance().abrirDialogo(() -> new InfoDetalle(AdministrarProductos.this));
+            }
+       });
+       panelBotones.add(botonSeleccionarProducto);
+    }
+    
     
     
     /**

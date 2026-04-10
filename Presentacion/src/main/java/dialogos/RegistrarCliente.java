@@ -1,7 +1,10 @@
 package dialogos;
 import Coordinadores.CoordinadorNegocio;
+import Coordinadores.CoordinadorPantallas;
 import DTOs.ClienteDTO;
 import DTOs.ClienteFrecuenteDTO;
+import Pantallas.AdministrarProductos;
+import Pantallas.RegistrarComanda;
 import Utilerias.Constantes;
 import Utilerias.UtilBoton;
 import Utilerias.UtilGeneral;
@@ -17,6 +20,8 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import observadores.IObservador;
 import excepciones.NegocioException;
+import java.util.Arrays;
+import java.util.List;
 import javax.swing.JComboBox;
 
 /**
@@ -52,7 +57,11 @@ public class RegistrarCliente extends JDialog {
         JButton botonAceptar = UtilBoton.crearBoton("Registrar");
         panelInferior.add(botonAceptar);
         
-        //Crea un Combobox
+        /**
+         * Crea un combobox para elegir el tipo de cliente
+         * Por defecto es un cliente frecuente
+         * Se basa en el arreglo TIPOS_CLIENTES para definirlos
+         */
         JComboBox<String> comboClientes = new JComboBox<>(Constantes.TIPOS_CLIENTES);
         comboClientes.setSelectedIndex(0);
         panelInferior.add(comboClientes);
@@ -117,6 +126,9 @@ public class RegistrarCliente extends JDialog {
                     if (RegistrarCliente.this.observador != null) {
                         RegistrarCliente.this.observador.notificarCambio();
                     }
+                    
+                    //Regresa a la pantalla original
+                    RegistrarCliente.this.dispose();
                 }
             }
         });
@@ -131,7 +143,6 @@ public class RegistrarCliente extends JDialog {
     /**
      * Fábrica especializada en dar un tipo de cliente
      * Compara el String resultado de la opción elegida de un combobox
-     * Ese String lo compara con los elementos del arreglo TIPOS_CLIENTES
      * Y usa el constructor copia para pasar todos los atributos del base al nuevo
      * 
      * @param tipoCliente a crear

@@ -10,7 +10,7 @@ import mappers.MesaMapper;
  */
 public class Constantes {
     
-    public static final boolean TEST_MODE = true;
+    public static final boolean TEST_MODE = false;
     
     //Colores centralizados
     public static final Color COLOR_BOTONES = new Color(37, 99, 235);

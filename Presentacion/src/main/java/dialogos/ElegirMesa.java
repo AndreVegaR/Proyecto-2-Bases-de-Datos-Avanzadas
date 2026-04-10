@@ -12,9 +12,16 @@ import observadores.IObservador;
 
 public class ElegirMesa extends JDialog {
 
-    public ElegirMesa(Frame padre) {
+    //Observador
+    private IObservador observador;
+    
+    //Panel como atributo para usarlo fuera del constructor
+    JPanel panelMesas;
+    
+    public ElegirMesa(Frame padre, IObservador observador) {
         super(padre, "Selección de Mesas", true);
-
+        this.observador = observador;
+        
         //Configuración inicial
         int anchoVentana = 800;
         int altoVentana = 600;
@@ -24,12 +31,12 @@ public class ElegirMesa extends JDialog {
 
         //Estblece padding
         int espacioBotones = 15;
-        int paddingFrame = espacioBotones * 2;
+        int padding = espacioBotones * 2;
 
         //Configura el panel
-        JPanel panelMesas = new JPanel();
+        panelMesas = new JPanel();
         panelMesas.setLayout(new GridLayout(4, 5, espacioBotones, espacioBotones));
-        panelMesas.setBorder(new EmptyBorder(paddingFrame, paddingFrame, paddingFrame, paddingFrame));
+        panelMesas.setBorder(new EmptyBorder(padding, padding, padding, padding));
         
         /**
          * Obtiene todas las mesas registradas del coordinador
@@ -39,20 +46,26 @@ public class ElegirMesa extends JDialog {
         List<MesaDTO> mesas = CoordinadorNegocio.getInstance().consultarMesas();
         for (MesaDTO mesa: mesas) {
             JButton boton = UtilBoton.crearBoton("Mesa " + mesa.getNumero());
-            panelMesas.add(boton);
+            
+            //DEPURACION
+            System.out.println("Mesa " + mesa.getNumero() + " estado: " + mesa.getEstadoMesa());
+            
             
             /**
              * Le pregunta el estado de la mesa al DTO
              * Entonces cambian el color y la lógica según el tipo
              */
             if (mesa.getEstadoMesa().equals(Constantes.ESTADO_INICIAL_MESA)) {
-                logicaMesaDisponible(boton, mesa, panelMesas);
+                logicaMesaDisponible(boton, mesa);
             } else {
                 logicaMesaOcupada(boton, mesa);
             }
             
             //Le añade hover a la mesa
             UtilBoton.asignarHoverBoton(boton, mesa);
+            panelMesas.revalidate();
+            panelMesas.repaint();
+            panelMesas.add(boton);
         }
         
         //Agrega al diálogo
@@ -68,20 +81,18 @@ public class ElegirMesa extends JDialog {
      * Encapsula la lógica de ocupar una mesa
      * Evita ensuciar de más al diálogo
      * También llama al observador para disparar su acción
+     * Al final cierra el diálogo
      * 
      * @param boton
      * @param mesa
-     * @param panelMesas 
      */
-    private void logicaMesaDisponible(JButton boton, MesaDTO mesa, JPanel panelMesas) {
+    private void logicaMesaDisponible(JButton boton, MesaDTO mesa) {
         boton.setBackground(Constantes.COLOR_MESA_DISPONIBLE);
         final MesaDTO m = mesa;
         boton.addActionListener(e -> {
-            boton.setBackground(Constantes.COLOR_MESA_OCUPADA);
-            m.setEstadoMesa(Constantes.ESTADO_MESA_OCUPADA);
-            CoordinadorNegocio.getInstance().actualizarMesa(m);
             CoordinadorNegocio.getInstance().setMesa(m);
-            //notificarCambio(panelMesas);
+            observador.notificarCambio();
+            this.dispose();
         });
     }
     

@@ -7,7 +7,6 @@ import Enumeradores.UnidadMedida;
 import BO.ComandaBO;
 import BO.MesaBO;
 import BO.ProductoBO;
-import BO.ReporteBO;
 import DTOs.ClienteDTO;
 import DTOs.ComandaDTO;
 import DTOs.DetallesComandaDTO;
@@ -19,6 +18,7 @@ import Enumeradores.EstadoProducto;
 import Utilerias.Constantes;
 import java.time.LocalDate;
 import java.util.List;
+import mappers.ComandaMapper;
 
 /**
  * @author Angel Coordinador que unifica lógica de negocio solo redirigiendo el
@@ -64,12 +64,24 @@ public class CoordinadorNegocio implements ICoordinadorNegocio {
     
     //La mesa seleccionada en un momento del programa (clic en el registro de la tabla)
     private MesaDTO mesa = null;
-    public void setMesa(MesaDTO detalle) {
-        this.mesa = detalle;
-    }
     public MesaDTO getMesa(){
         return mesa;
     }
+    public void setMesa(MesaDTO mesa) {
+        //No hace nada si es null
+        if (mesa == null) {
+            return;
+        }
+
+        //No hace nada si son la misma
+        if (this.mesa != null && this.mesa.getId().equals(mesa.getId())) {
+            return;
+        }
+        
+        //Asigna la mesa en el coordinador
+        this.mesa = mesa;
+    }
+ 
     
     
     //Producto seleccionado en el momento
@@ -90,10 +102,21 @@ public class CoordinadorNegocio implements ICoordinadorNegocio {
     public void setDetalle(DetallesComandaDTO detalle) {
         this.detalle = detalle;
     }
-    
-    
-    
-    
+    public boolean esNuevaComanda() {
+        return comanda == null || comanda.getId() == null || comanda.getId() == 0;
+    }
+    public boolean comandaAbierta() {
+        if (comanda == null) {
+            return false;
+        }
+        if (comanda.getEstado() == null) {
+            return true;
+        }
+        if (comanda.getEstado() != null) {
+            return ComandaMapper.ESTADO_INICIAL.equals(comanda.getEstado());
+        }
+        return false;
+    }
     
     
     
@@ -198,11 +221,8 @@ public class CoordinadorNegocio implements ICoordinadorNegocio {
 
     @Override
     public List<DetallesComandaDTO> consultarDetalles() {
-        if (Constantes.TEST_MODE) {
-            return comanda.getDetalles();
-        }
         if (comanda != null) {
-            return ComandaBO.getInstance().consultarDetalles(comanda.getId());
+            return comanda.getDetalles();
         }
         return null;
     }
@@ -236,13 +256,7 @@ public class CoordinadorNegocio implements ICoordinadorNegocio {
     public ProductoDTO cambiarEstado(Long id, ProductoDTO.EstadoProducto estado) {
         return ProductoBO.getInstance().cambiarEstado(id, EstadoProducto.valueOf(estado.name().toUpperCase()));
     }
-     //reportes
-    public List<ReporteComandaDTO> obtenerReporteComandas(LocalDate inicio, LocalDate fin){
-        return ReporteBO.getInstance().obtenerReporteComandas(inicio, fin);
-    }
-    public List<ReporteClienteFrecuenteDTO> obtenerReporteClientesFrecuentes(String nombre, int numVisitasMinima){
-        return ReporteBO.getInstance().obtenerReporteClientesFrecuentes(nombre, numVisitasMinima);
-    }
+
     
     //Método de mesas
     @Override
@@ -259,8 +273,12 @@ public class CoordinadorNegocio implements ICoordinadorNegocio {
     public MesaDTO actualizarMesa(MesaDTO mesa) {
         return MesaBO.getInstance().actualizarMesa(mesa);
     }
-  
-   
 
-    
+    public List<ReporteComandaDTO> obtenerReporteComandas(LocalDate inicio, LocalDate fin) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    public List<ReporteClienteFrecuenteDTO> obtenerReporteClientesFrecuentes(String nombre, int numVisitasMinima) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
 }

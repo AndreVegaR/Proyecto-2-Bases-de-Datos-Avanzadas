@@ -13,9 +13,25 @@ import javax.swing.JTable;
 import java.awt.Component;
 import java.util.List;
 import DTOs.DetallesComandaDTO;
+import DTOs.MesaDTO;
 import Pantallas.AdministrarComandas;
+import Pantallas.RegistrarComanda;
+import Principal.MenuEmpleados;
 import Utilerias.Constantes;
+import Utilerias.UtilBoton;
 import java.awt.Font;
+import java.awt.Image;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JOptionPane;
+import mappers.ComandaMapper;
+import javax.swing.BoxLayout;
+import javax.swing.Box;
+import javax.swing.BorderFactory;
+import javax.swing.JLabel;
+import java.awt.Component;
+import java.awt.Font;
+import java.awt.Dimension;
 
 
 /**
@@ -82,11 +98,26 @@ public class InfoComanda extends JDialog {
                     * Ese diálogo muestra una tabla con los productos de la comanda
                     */
                     if (evt.getClickCount() == 2) {
-                       //Se hace una final solo para usarla dentro de este lambda
+                        
+                        //Se hace una final solo para usarla dentro de este lambda
                         final DetallesComandaDTO detalleLambda = detalle;
                         CoordinadorNegocio.getInstance().setDetalle(detalleLambda);
                         String info = CoordinadorNegocio.getInstance().getDetalle().getInfo();
-                        UtilGeneral.dialogoAviso(InfoComanda.this, info);
+                        
+                        //Obtiene en bytes la imagen del producto del detalle
+                        byte[] bytes = detalleLambda.getProducto().getImagen();
+                        
+                        //Como es opcional, valida que exista la foto antes de procesarla
+                        if (bytes != null && bytes.length > 0) {
+                            ImageIcon imagen = UtilGeneral.procesarImagen(bytes);
+                            JOptionPane.showMessageDialog(InfoComanda.this, 
+                                                                        info, 
+                                                                        "Detalles del producto", 
+                                                                        JOptionPane.INFORMATION_MESSAGE, 
+                                                                        imagen);
+                        } else {
+                            UtilGeneral.dialogoAviso(InfoComanda.this, info);
+                        }
                    } 
                 }
            }
@@ -102,8 +133,44 @@ public class InfoComanda extends JDialog {
         
         //Contenido del resumen inferior
         double total = CoordinadorNegocio.getInstance().getComanda().getTotal();
-        String folio = CoordinadorNegocio.getInstance().getComanda().getFolio();
         int productos = listaTemporal.size();
+        String folio;
+        
+        //Botón que registra o actualiza una comanda
+        JButton botonCambios = null;
+        
+        /**
+         * Si la comanda actual se va a registrar:
+         * -Indica que no existe folio pues aún no hay registro
+         * -El botón se encarga de registrar
+         */
+        if (CoordinadorNegocio.getInstance().esNuevaComanda()) {
+            folio = "Aún sin registrar";
+            botonCambios = UtilBoton.crearBotonNavegar("Registrar", frame, MenuEmpleados::new);
+            botonCambios.addActionListener(e -> {
+                ComandaDTO comanda = CoordinadorNegocio.getInstance().getComanda();
+                comanda.setMesa(CoordinadorNegocio.getInstance().getMesa());
+                CoordinadorNegocio.getInstance().registrarComanda(comanda);
+            });
+        } 
+        
+        /**
+         * Si la comanda actual se va a actualizar:
+         * -Guarda el folio de la comanda
+         * -El botón se encarga de actualizar
+         */
+        else {
+            folio = CoordinadorNegocio.getInstance().getComanda().getFolio();
+            
+            //Da la posibilidad de actualizar la comanda siempre y cuando esté abierta
+            if (CoordinadorNegocio.getInstance().comandaAbierta()) {
+                botonCambios = UtilBoton.crearBotonNavegar("Actualizar", frame, RegistrarComanda::new);
+                botonCambios.addActionListener(e -> {
+                    ComandaDTO comanda = CoordinadorNegocio.getInstance().getComanda();
+                    CoordinadorNegocio.getInstance().actualizarComanda(comanda);
+                });
+            }
+        }
         
         //Crea los labels
         JLabel labelFolio = new JLabel("Folio: " + folio);
@@ -113,15 +180,34 @@ public class InfoComanda extends JDialog {
         JLabel labelCantidad = new JLabel("Cantidad de productos: " + productos);
         labelCantidad.setFont(new Font("Arial", Font.BOLD, 14));
         
-        //Ordena los labels
+        //Crea el panel
+        panelInferior.setLayout(new BoxLayout(panelInferior, BoxLayout.Y_AXIS));
+        panelInferior.setBorder(BorderFactory.createEmptyBorder(15, 20, 15, 20));
+
+        //Alinea los labels
         labelFolio.setAlignmentX(Component.CENTER_ALIGNMENT);
         labelTotal.setAlignmentX(Component.CENTER_ALIGNMENT);
         labelCantidad.setAlignmentX(Component.CENTER_ALIGNMENT);
-        
-        //Agrega al panel inferior
+
+        //Agrega los labels
         panelInferior.add(labelFolio);
+        panelInferior.add(Box.createVerticalStrut(5));
         panelInferior.add(labelTotal);
+        panelInferior.add(Box.createVerticalStrut(5));
         panelInferior.add(labelCantidad);
+
+        //Agrega un pequeño espacio al botón
+        panelInferior.add(Box.createVerticalStrut(15)); 
+
+        //Si el botón existe, lo agrega al panel
+        if (botonCambios != null) {
+            botonCambios.setAlignmentX(Component.CENTER_ALIGNMENT);
+            panelInferior.add(botonCambios);
+        }
+        
+        //Redibuja el panel
+        panelInferior.revalidate();
+        panelInferior.repaint();
         
         //Agrega al diálogo
         add(panelTabla, BorderLayout.NORTH);
