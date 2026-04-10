@@ -1,5 +1,6 @@
 package DTOs;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,6 +18,7 @@ public class ComandaDTO {
     private String comentarios;
     private MesaDTO mesa;
     private ClienteDTO cliente;
+    private String fechaRegistro;
     private List<DetallesComandaDTO> detalles = new ArrayList<>();
 
     //Constructores
@@ -35,6 +37,15 @@ public class ComandaDTO {
         this.comentarios = comentarios;
         this.mesa = mesa;
         this.cliente = cliente;
+    }
+    public ComandaDTO(double total, String folio, String estado, String comentarios, MesaDTO mesa, ClienteDTO cliente, String fechaRegistro) {
+        this.total = total;
+        this.folio = folio;
+        this.estado = estado;
+        this.comentarios = comentarios;
+        this.mesa = mesa;
+        this.cliente = cliente;
+        this.fechaRegistro = fechaRegistro;
     }
     
     //Getters y setters
@@ -104,5 +115,13 @@ public class ComandaDTO {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public String getFechaRegistro() {
+        return fechaRegistro;
+    }
+
+    public void setFechaRegistro(String fechaRegistro) {
+        this.fechaRegistro = fechaRegistro;
     }
 }

@@ -117,14 +117,18 @@ public class MesaDAO {
     
     /**
      * Consulta todas las mesas registradas
+     * clear() y setHint() borran caché
      *
      * @return lista de todos las mesas
      */
     public List<Mesa> consultarMesas() {
         EntityManager em = ConexionBD.crearConexion();
         try {
+            em.clear();
             String jpql = "SELECT m FROM Mesa m";
-            return em.createQuery(jpql, Mesa.class).getResultList();
+            return em.createQuery(jpql, Mesa.class)
+                    .setHint("javax.persistence.cache.storeMode", "REFRESH")
+                    .getResultList();
         }
         catch (Exception e) {
             throw new PersistenciaException("Error al consultar los clientes: " + e.getMessage());

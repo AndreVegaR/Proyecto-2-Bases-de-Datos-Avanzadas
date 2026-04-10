@@ -42,28 +42,17 @@ public class ClienteFrecuenteDTO extends ClienteDTO{
         super(id, nombres, apellidoPaterno, apellidoMaterno, telefono, fechaRegistro, correo);
     }
     
-    
-    /**
-     * Constructor de copia:
-     * Le pasas un cliente base y ya mapea todos los atributos repetidos
-     * 
-     * @param cliente que le copiará sus atributos
-     */
-    public ClienteFrecuenteDTO(ClienteDTO cliente) {
-        this.setId(cliente.getId());
-        this.setNombres(cliente.getNombres());
-        this.setApellidoPaterno(cliente.getApellidoPaterno());
-        this.setApellidoMaterno(cliente.getApellidoMaterno());
-        this.setTelefono(cliente.getTelefono());
-        this.setCorreo(cliente.getCorreo());
-    }
-    
     /**
      * Constructor vacío
      */
     public ClienteFrecuenteDTO() {
         super();
         
+    }
+    
+    //Para que use el constructor espejo
+    public ClienteFrecuenteDTO(ClienteDTO cliente) {
+        super(cliente);
     }
     
     /**

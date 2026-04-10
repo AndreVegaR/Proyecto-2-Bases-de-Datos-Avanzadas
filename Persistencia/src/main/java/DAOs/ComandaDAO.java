@@ -164,7 +164,7 @@ public class ComandaDAO {
     public long contarComandasHoy() {
         EntityManager em = ConexionBD.crearConexion();
         try {
-            String jpql = "SELECT COUNT(c) FROM Comanda c WHERE c.fecha = CURRENT_DATE";
+            String jpql = "SELECT COUNT(c) FROM Comanda c WHERE c.fechaRegistro = CURRENT_DATE";
             return em.createQuery(jpql, Long.class).getSingleResult();
         } finally {
             em.close();

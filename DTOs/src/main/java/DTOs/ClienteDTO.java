@@ -37,6 +37,23 @@ public class ClienteDTO {
     }
     
     /**
+     * Constructor de copia:
+     * Le pasas un cliente base y ya mapea todos los atributos repetidos
+     * Se define aquí aunque suene redundante (con un clienteDTO creas otro clienteDTO)
+     * Pero eso es para que cualquier tipo de cliente tenga acceso a este constructor
+     * 
+     * @param cliente que le copiará sus atributos
+     */
+    public ClienteDTO(ClienteDTO cliente) {
+        this.setId(cliente.getId());
+        this.setNombres(cliente.getNombres());
+        this.setApellidoPaterno(cliente.getApellidoPaterno());
+        this.setApellidoMaterno(cliente.getApellidoMaterno());
+        this.setTelefono(cliente.getTelefono());
+        this.setCorreo(cliente.getCorreo());
+    }
+    
+    /**
      * Regresa toda la información en varios renglones
      * Se usará para mostrar la información en un diálogo por ejemplo
      * Las demás clases van a sobreescribir ese método

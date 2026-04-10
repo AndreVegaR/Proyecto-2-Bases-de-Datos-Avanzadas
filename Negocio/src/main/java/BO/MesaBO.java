@@ -115,7 +115,7 @@ public class MesaBO {
      * 
      * @param mesa a ocupar
      */
-    public static void ocuparMesa(MesaDTO mesa) {
+    public void ocuparMesa(MesaDTO mesa) {
         mesa.setEstadoMesa(OCUPADA);
         MesaDAO.getInstance().actualizarEstado(mesa.getId(), mesa.getEstadoMesa());
     }
@@ -127,7 +127,7 @@ public class MesaBO {
      * 
      * @param mesa 
      */
-    public static void desocuparMesa(MesaDTO mesa) {
+    public void desocuparMesa(MesaDTO mesa) {
         mesa.setEstadoMesa(DISPONIBLE);
         MesaDAO.getInstance().actualizarEstado(mesa.getId(), mesa.getEstadoMesa());
     }
