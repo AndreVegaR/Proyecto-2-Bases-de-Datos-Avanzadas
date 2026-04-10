@@ -5,7 +5,7 @@
 package Utilerias;
 
 /**
- * Utilería para generar repprtes PDF usando JasperReports
+ * Utilería para generar reportes PDF usando JasperReports
  * 
  */
 public class GenerarPDF {
