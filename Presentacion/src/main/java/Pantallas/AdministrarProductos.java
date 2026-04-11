@@ -39,139 +39,143 @@ import observadores.IObservador;
 
 /**
  *
- * @author Angel Menu para admistrar los productos
+ * @author Angel
+ * Menu para admistrar los productos
  */
 public class AdministrarProductos extends JFrame implements IObservador {
 
     //True por default
-    public static final boolean TEST_MODE = false;
-
+       public static final boolean TEST_MODE = false;
+    
     //Se instancia como atributo para usarlo en métodos fuera del constructor
     private JTable tabla;
-
+    
     /**
-     * Arreglo que contiene solo un elemento: el índice del botón que filtra en
-     * la búsqueda Se implementa así porque los addActionListeners usan
-     * variables final Como una variable final no puede cambiar, se guarda en un
-     * arreglo Entonces el arreglo en sí nunca cambia en sí; solo cambia su
-     * contenido Este movimiento no es ilegal para Java y permite el flujo
-     * perfectamente
+     * Arreglo que contiene solo un elemento: el índice del botón que filtra en la búsqueda
+     * Se implementa así porque los addActionListeners usan variables final
+     * Como una variable final no puede cambiar, se guarda en un arreglo
+     * Entonces el arreglo en sí nunca cambia en sí; solo cambia su contenido
+     * Este movimiento no es ilegal para Java y permite el flujo perfectamente
      */
     final int[] columnaActiva = {-1};
-
+    
     /**
      * Atributo en donde se almacena en memoria la lista de todos las comandas
-     * Esto para poder manipular estos registros (para obtener uno en específico
-     * por índice como ejemplo) De esta forma no se tiene que llamar cada vez al
-     * BO y gastar recursos en consultas SQL Mejor todo se consulta localmente
+     * Esto para poder manipular estos registros (para obtener uno en específico por índice como ejemplo)
+     * De esta forma no se tiene que llamar cada vez al BO y gastar recursos en consultas SQL
+     * Mejor todo se consulta localmente
      */
     //Lista para guardar los productos desde el metodo de llenarTabla
     private List<ProductoDTO> listaTemporal = new ArrayList<>();
     //Atributo de producto para moverse entre pantallas
     private ProductoDTO productoSeleccionado;
+    
 
     public AdministrarProductos() {
 
         //Crea el panel de búsqueda
         JPanel panelBusqueda = new JPanel(new FlowLayout(FlowLayout.LEFT, 20, 10));
-
+        
         //Arreglo con los botones que permitirán filtrar según su campo de la tabla
         String[] filtros = {"Nombre", "Tipo"};
-
+        
         //Mapa vacío que será poblado con botones de filtrar o por un método posterior
         Map<String, JButton> botonesFiltros = new HashMap<>();
-
+        
         //Crea paneles
         JPanel panelBotones = new JPanel(new FlowLayout(FlowLayout.RIGHT, 15, 15));
         panelBotones.add(new JLabel("Doble clic para ver un producto"));
         JPanel panelTabla = new JPanel(new BorderLayout());
-
+        
         /**
-         * Arreglo de Strings con los campos de la tabla Será pasado a un
-         * próximo método para automatizar la creación de la tabla Importante:
-         * debe coincidir con el orden del método mapearTabla
+         * Arreglo de Strings con los campos de la tabla
+         * Será pasado a un próximo método para automatizar la creación de la tabla
+         * Importante: debe coincidir con el orden del método mapearTabla
          */
-        String[] columnas = {"ID", "Nombre", "Precio", "Estado", "Tipo", "Ingredientes"};
-
+        String[] columnas = {"ID", "Nombre", "Precio", "Estado", "Tipo","Ingredientes"};
+        
+        
         /**
-         * Mapa para guardar los botones interiores Es básicamente un
-         * diccionario de Python pero en Java Este en específico tiene esta
-         * estructura llave-valor: el mensaje del botón y el botón Se crea vacío
-         * para ser pasado a un próximo método que loe va a llenar Una vez
-         * lleno, serán fácilmente accesibles
+         * Mapa para guardar los botones interiores
+         * Es básicamente un diccionario de Python pero en Java
+         * Este en específico tiene esta estructura llave-valor: el mensaje del botón y el botón
+         * Se crea vacío para ser pasado a un próximo método que loe va a llenar
+         * Una vez lleno, serán fácilmente accesibles
          */
         Map<String, JButton> mapaBotones = new HashMap<>();
-
+        
         //ArrayList de suppliers que guarda los diálogos que se quieren abrir del CRUD
         //La lógica es la misma siempre, solo se cambian las clases que extienden de JDialog
         ArrayList<Supplier<? extends JDialog>> dialogos = new ArrayList<>();
-        dialogos.add(() -> new RegistrarProducto(this, this));
+        dialogos.add(() -> new RegistrarProducto(this,this)); 
         dialogos.add(() -> {
-            if (tabla.getSelectedRow() == -1) {
-                JOptionPane.showMessageDialog(this, "Seleccione un producto primero");
+            if(productoSeleccionado == null){
+                JOptionPane.showMessageDialog(this,"Seleccione un producto primero");
                 return null;
             }
-            return new EditarProducto(this, productoSeleccionado, this);
+            return new EditarProducto(this,productoSeleccionado,this);
         });
-
+                
         dialogos.add(() -> {
-            if (tabla.getSelectedRow() == -1) {
-                JOptionPane.showMessageDialog(this, "Seleccione un producto primero");
+           if(productoSeleccionado == null){
+                JOptionPane.showMessageDialog(this,"Seleccione un producto primero");
                 return null;
             }
-            return new CambiarEstadoProducto(this, productoSeleccionado, this);
+            return  new CambiarEstadoProducto(this,productoSeleccionado,this);
         });
-
+               
+        
         /**
          * Este método crea y configura toda la pantalla de administrar x cosa
-         * Llama a un método de UtilBuild al cual le pasas los datos previamente
-         * configurados Regresa una pantalla poblada, funcional y fácilmente
-         * escalable Sirve para el molde base: pantalla, CRUD, búsqueda Regresa
-         * la tabla para inyectarle la lógica de mouseClicked Puedes acceder a
-         * los botones creados usando el mapa que fue llenado Se le pueden
-         * agregar otros botones de forma fácil
+         * Llama a un método de UtilBuild al cual le pasas los datos previamente configurados
+         * Regresa una pantalla poblada, funcional y fácilmente escalable
+         * Sirve para el molde base: pantalla, CRUD, búsqueda
+         * Regresa la tabla para inyectarle la lógica de mouseClicked
+         * Puedes acceder a los botones creados usando el mapa que fue llenado
+         * Se le pueden agregar otros botones de forma fácil
          */
         tabla = UtilBuild.ensamblarPantallaAdministrar("Administrar productos", //Título de la ventana
-                this, //Frame actual
-                panelBusqueda, //Panel de opciones de búsqueda
-                panelBotones, //Panel de botones
-                panelTabla,//Panel de la tabla
-                filtros, //Arreglo con filtros
-                botonesFiltros, //Mapa de botones que indican los filtros
-                columnas, //Campos que tendrá la tabla
-                mapaBotones, //Mapa con los botones
-                dialogos, //Lista con los JDialog a abrir
-                columnaActiva); //Arreglo que contiene el índice para filtrar
-
+                                                              this, //Frame actual
+                                                              panelBusqueda, //Panel de opciones de búsqueda
+                                                              panelBotones, //Panel de botones
+                                                              panelTabla,//Panel de la tabla
+                                                              filtros, //Arreglo con filtros
+                                                              botonesFiltros, //Mapa de botones que indican los filtros
+                                                              columnas, //Campos que tendrá la tabla
+                                                              mapaBotones, //Mapa con los botones
+                                                              dialogos, //Lista con los JDialog a abrir
+                                                              columnaActiva); //Arreglo que contiene el índice para filtrar
+                                                             
+        
         JButton botonCambiarEstado = mapaBotones.get("eliminar");
-        if (botonCambiarEstado != null) {
+        if(botonCambiarEstado != null){
             botonCambiarEstado.setText("Cambiar estado");
             mapaBotones.remove("eliminar");
-            mapaBotones.put("Cambiar estado", botonCambiarEstado);
+            mapaBotones.put("Cambiar estado",botonCambiarEstado);
         }
         //Evento que se activa cuando seleccionas una fila de la columna
         //Sirve para seleccionar el producto y poder editarlo o cambiarle el estado
         tabla.addMouseListener(new java.awt.event.MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent evt) {
-                //Obtenemos la fila de la tabla que selecciono el usuario
-                int fila = tabla.getSelectedRow();
-                //Si selecciono al menos una fila pasa el if
-                if (fila != -1) {
-                    //Convierte el índice de la fila seleccionada en la tabla 
-                    //al índice real en la lista de datos ya que la tabla puede estar ordenada o filtrada y los índices pueden cambiar
-                    int indiceReal = tabla.convertRowIndexToModel(fila);
-                    //Obtenemos el objeto completo
-                    productoSeleccionado = listaTemporal.get(indiceReal);
-                    //Si le da doble click entra en el modo edicion de producto
-                    if (evt.getClickCount() == 2) {
-                        //Muestra los detalles 
-                        mostrarDetalles();
-                    }
+         @Override
+         public void mouseClicked(MouseEvent evt) {
+             //Obtenemos la fila de la tabla que selecciono el usuario
+            int fila = tabla.getSelectedRow();
+            //Si selecciono al menos una fila pasa el if
+            if (fila != -1) {    
+                //Convierte el índice de la fila seleccionada en la tabla 
+                //al índice real en la lista de datos ya que la tabla puede estar ordenada o filtrada y los índices pueden cambiar
+                int indiceReal = tabla.convertRowIndexToModel(fila);
+                //Obtenemos el objeto completo
+                productoSeleccionado = listaTemporal.get(indiceReal);
+                //Si le da doble click entra en el modo edicion de producto
+                if (evt.getClickCount() == 2) {
+                    //Muestra los detalles 
+                    mostrarDetalles();
                 }
             }
-        });
-
+        }
+    });
+        
         //Inyecta la lógica de refrescar la tabla al botón Refrescar
         JButton botonRefrescar = mapaBotones.get(Constantes.OPCIONES_CRUD_MINUS[0]);
         botonRefrescar.addActionListener(e -> {
@@ -181,43 +185,46 @@ public class AdministrarProductos extends JFrame implements IObservador {
         //Llena la tabla cada vez que se entre a la pantalla
         llenarTabla();
     }
-
+    
+    
     /**
-     * Llena la tabla con registros de cada producto También se guardan en el
-     * atributo local de listaTemporal De esta forma podemos acceder a su
-     * contenido sin tener que conectarnos cada vez
+     * Llena la tabla con registros de cada producto
+     * También se guardan en el atributo local de listaTemporal
+     * De esta forma podemos acceder a su contenido sin tener que conectarnos cada vez
      */
     public void llenarTabla() {
-        listaTemporal = CoordinadorNegocio.getInstance().verTodos();
-        mapearTabla();
+      listaTemporal = CoordinadorNegocio.getInstance().verTodos();
+      mapearTabla();
     }
-
+       
+    
     /**
      * Muestra los atributos base de los productos en la tabla directo de la BD
      */
     private void mapearTabla() {
         UtilGeneral.registrarTabla(tabla, listaTemporal, (ProductoDTO p) -> new Object[]{
-            p.getId(),
-            p.getNombre(),
-            p.getPrecio(),
-            p.getEstadoProducto(),
-            p.getTipoProducto(),
-            //Si existe ingredientes los usa si no usa Sin ingredientes
-            (p.getIngredientes() != null) ? p.getIngredientes().toString() : "Sin ingredientes"
+          p.getId(),
+          p.getNombre(),
+          p.getPrecio(),
+          p.getEstadoProducto(),
+          p.getTipoProducto(),
+          //Si existe ingredientes los usa si no usa Sin ingredientes
+         (p.getIngredientes() != null)? p.getIngredientes().toString()  : "Sin ingredientes"
         });
     }
-
+       
+    
     /**
-     * Método de la IObservador Escucha el llamado el formulario de registrar o
-     * actualizar producto Entonces cuando se haga el procedimiennto
-     * automáticamnete se refleja en la tabla
+     * Método de la IObservador
+     * Escucha el llamado el formulario de registrar o actualizar producto
+     * Entonces cuando se haga el procedimiennto automáticamnete se refleja en la tabla
      */
     @Override
     public void notificarCambio() {
         llenarTabla();
     }
-
-    private void mostrarDetalles() {
+    
+       private void mostrarDetalles() {
 
         String info = "ID: " + productoSeleccionado.getId()
                 + "\nNombre: " + productoSeleccionado.getNombre()
@@ -231,7 +238,7 @@ public class AdministrarProductos extends JFrame implements IObservador {
 
         //Verificamos que no sea nulo o este vacio
         if (imagenBytes != null && imagenBytes.length > 0) {
-            try {
+             try {
                 //Convertimos los bytes en una imagen mediante BufferedImage
                 //ByteArrayInputStream(imagenBytes) convierte los bytes para que ImageIO lo pueda leer
                 BufferedImage bufferedImage = ImageIO.read(new ByteArrayInputStream(imagenBytes));
@@ -258,6 +265,6 @@ public class AdministrarProductos extends JFrame implements IObservador {
             JOptionPane.showMessageDialog(this, info, "Detalles del producto",
                     JOptionPane.INFORMATION_MESSAGE);
         }
-    }
-
+        }
+       
 }
