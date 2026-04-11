@@ -7,6 +7,7 @@ import DTOs.DetallesComandaDTO;
 import DTOs.MesaDTO;
 import DTOs.ProductoDTO;
 import Utilerias.Constantes;
+import Utilerias.UtilBoton;
 import Utilerias.UtilBuild;
 import Utilerias.UtilGeneral;
 import Utilerias.UtilLogica;
@@ -37,7 +38,7 @@ import observadores.IObservador;
 //ESTE OBSERVADOR ES TEMPORAL PUEDA QUE SE VAYA O NO YA DEPENDE
 public class AdministrarComandas extends JFrame implements IObservador {
     
-    public static final boolean TEST_MODE = true;
+    public static final boolean TEST_MODE = false;
     
     //Se instancia como atributo para usarlo en métodos fuera del constructor
     private JTable tabla;
@@ -74,6 +75,13 @@ public class AdministrarComandas extends JFrame implements IObservador {
         JPanel panelBotones = new JPanel(new FlowLayout(FlowLayout.RIGHT, 15, 15));
         panelBotones.add(new JLabel("Doble clic para desplegar información específica"));
         JPanel panelTabla = new JPanel(new BorderLayout());
+        
+        //Crea y agrega el botón encargado de generar reportes
+        JButton botonReportes = UtilBoton.crearBoton("Generar reporte");
+        panelBotones.add(botonReportes);
+        botonReportes.addActionListener(e -> {
+            System.out.println("Soy una prueba"); 
+        });
         
         /**
          * Arreglo de Strings con los campos de la tabla
@@ -159,12 +167,12 @@ public class AdministrarComandas extends JFrame implements IObservador {
                     * Ese diálogo muestra una tabla con los productos de la comanda
                     */
                    if (evt.getClickCount() == 2) {
-                       //Se hace una final solo para usarla dentro de este lambda
-                       final ComandaDTO comandaLambda = comanda;
-                       CoordinadorNegocio.getInstance().setComanda(comanda);
-                       CoordinadorPantallas.getInstance().abrirDialogo(() -> {
-                            CoordinadorNegocio.getInstance().setComanda(comandaLambda);
-                            return new InfoComanda(AdministrarComandas.this);
+                        //Se hace una final solo para usarla dentro de este lambda
+                        final ComandaDTO comandaLambda = comanda;
+                        CoordinadorNegocio.getInstance().setComanda(comanda);
+                        CoordinadorPantallas.getInstance().abrirDialogo(() -> {
+                             CoordinadorNegocio.getInstance().setComanda(comandaLambda);
+                             return new InfoComanda(AdministrarComandas.this);
                         });
                    }
                 }

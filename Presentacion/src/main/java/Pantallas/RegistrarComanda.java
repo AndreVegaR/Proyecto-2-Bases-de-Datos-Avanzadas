@@ -2,14 +2,20 @@ package Pantallas;
 import Coordinadores.CoordinadorNegocio;
 import Coordinadores.CoordinadorPantallas;
 import DTOs.ClienteDTO;
+import DTOs.ComandaDTO;
+import DTOs.DetallesComandaDTO;
 import DTOs.MesaDTO;
 import Principal.MenuPrincipal;
 import Utilerias.Constantes;
 import Utilerias.UtilBoton;
 import Utilerias.UtilGeneral;
 import dialogos.ElegirMesa;
+import dialogos.InfoComanda;
 import javax.swing.*;
 import java.awt.*;
+import java.util.ArrayList;
+import java.util.List;
+import observadores.IObservador;
 
 /**
  * Registra una comanda en el sistema
@@ -20,14 +26,35 @@ import java.awt.*;
  * -Se muestra un resumen al final
  * @author Andre
  */
-public class RegistrarComanda extends JFrame {
+public class RegistrarComanda extends JFrame implements IObservador {
 
     //Atributos para ser usados fuera del constructor
     JTable tabla;
     JLabel labelCliente = new JLabel(Constantes.SIN_CLIENTE);
     JLabel labelMesa = new JLabel("Sin mesa");
     
+    /**
+     * Atributo en donde se almacena en memoria la lista de todos los productos
+     * Esto para poder manipular estos registros (para obtener uno en específico por índice como ejemplo)
+     * De esta forma no se tiene que llamar cada vez al BO y gastar recursos en consultas SQL
+     * Mejor todo se consulta localmente
+     */
+    private List<DetallesComandaDTO> listaTemporal;
+    
+    
     public RegistrarComanda() {
+        
+        /**
+         * Crea una comandaDTO para irla asignando al coordinador
+         * A esta referencia se le agregan los detalles
+         * Si se cancela, se vuelve null
+         * Si la referencia actual es null, crea una comanda nueva
+         * Si no es null, significa que se está en medio de una comanda
+         */
+        if (CoordinadorNegocio.getInstance().getComanda() == null) {
+            ComandaDTO comanda = new ComandaDTO(); 
+            CoordinadorNegocio.getInstance().setComanda(comanda);
+        }
         
         //Actualiza cada vez que se llega a esta pantalla
         actualizarLabels();
@@ -46,7 +73,7 @@ public class RegistrarComanda extends JFrame {
         
         //Botones que buscan clientes y mesas
         JButton botonBuscarClientes = UtilBoton.crearBotonNavegar("Administrar clientes", this, AdministrarClientes::new);
-        JButton botonElegirMesa = UtilBoton.crearBotonDialogo("Elegir mesa", () -> new ElegirMesa(this));
+        JButton botonElegirMesa = UtilBoton.crearBotonDialogo("Elegir mesa", () -> new ElegirMesa(this, this));
         panelBusqueda.add(botonBuscarClientes);
         panelBusqueda.add(botonElegirMesa);
         
@@ -88,9 +115,8 @@ public class RegistrarComanda extends JFrame {
             }
         });
         
-        
-        JButton btnBuscarProducto = UtilBoton.crearBoton("Seleccionar Producto");
-        //JButton btnBuscarProducto = UtilBoton.crearBotonNavegar("Buscar Producto", this, AdministrarProductos::new);
+        //Botón para navegar a los productos
+        JButton btnBuscarProducto = UtilBoton.crearBotonNavegar("Buscar Producto", this, AdministrarProductos::new);
         
         /**
          * Crea y configura el botón de continuar
@@ -101,8 +127,13 @@ public class RegistrarComanda extends JFrame {
         btnContinuar.addActionListener(e -> {
             if (CoordinadorNegocio.getInstance().getMesa() == null) {
                 UtilGeneral.dialogoAviso(RegistrarComanda.this, "Elija una mesa primero");
+                return;
             }
-            //CoordinadorPanallas.getInstance().navegar(RegistrarComanda.this, ResumenComanda::new);
+            if (listaTemporal.isEmpty()) {
+                UtilGeneral.dialogoAviso(RegistrarComanda.this, "Debe haber al menos un producto");
+                return;
+            }
+            CoordinadorPantallas.getInstance().abrirDialogo(() -> new InfoComanda(RegistrarComanda.this));
         });
         
         //Agrega al panel de botones
@@ -114,6 +145,42 @@ public class RegistrarComanda extends JFrame {
         add(panelBusqueda, BorderLayout.NORTH);
         add(panelTabla, BorderLayout.CENTER);
         add(panelOpciones, BorderLayout.SOUTH);
+        
+        //De una vez llena la tabla para luego usar la listaTemporal
+        llenarTabla();
+    }
+    
+    
+    
+    /**
+     * Llena la tabla con registros de cada cliente
+     * También se guardan en el atributo local de listaTemporal
+     * De esta forma podemos acceder a su contenido sin tener que conectarnos cada vez
+     */
+    public void llenarTabla() {
+        if (!CoordinadorNegocio.getInstance().esNuevaComanda()) {
+            listaTemporal = CoordinadorNegocio.getInstance().consultarDetalles();
+        } else {
+            listaTemporal = CoordinadorNegocio.getInstance().getComanda().getDetalles();
+            if (listaTemporal == null) {
+                listaTemporal = new ArrayList<>();
+            }
+        }
+        mapearTabla();
+    }
+    
+    
+    
+    /**
+     * Muestra los detalles de la comanda en la tabla directo de la BD
+     */
+    private void mapearTabla() {
+        UtilGeneral.registrarTabla(tabla, listaTemporal, (DetallesComandaDTO d) -> new Object[]{
+            d.getProducto().getNombre(),
+            d.getCantidad(),
+            d.getPrecioVenta(),
+            d.getSubtotal()
+        });
     }
     
     
@@ -140,5 +207,12 @@ public class RegistrarComanda extends JFrame {
             int numero = mesa.getNumero();
             labelMesa.setText("Mesa " + numero);
         }
-    } 
+    }
+    
+    
+    
+    @Override
+    public void notificarCambio() {
+        actualizarLabels();
+    }
 }

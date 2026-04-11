@@ -236,4 +236,19 @@ public class UtilGeneral {
         dialogo.setLocationRelativeTo(null);
     }
     
+    
+    
+    /**
+     * Procesa (reescala) una imagen de forma centralizada
+     * Toma los bytes y con ciertos parámetros los transforma
+     * Regresa la imagen lista
+     * 
+     * @param bytes de la imagen
+     * @return la imagen lista para mostrar
+     */
+    public static ImageIcon procesarImagen(byte[] bytes) {
+        ImageIcon iconoOriginal = new ImageIcon(bytes);
+        Image imagen = iconoOriginal.getImage().getScaledInstance(150, 150, Image.SCALE_SMOOTH);
+        return new ImageIcon(imagen);
+    }
 }

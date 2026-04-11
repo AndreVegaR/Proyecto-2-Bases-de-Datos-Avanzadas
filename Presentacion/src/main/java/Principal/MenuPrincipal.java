@@ -24,15 +24,14 @@ import Pantallas.AdministrarProductos;
 public class MenuPrincipal extends JFrame {
 
     public MenuPrincipal() {
+        UtilGeneral.configurarFrame("Restaurante", this);
         
         //Reinicia referencias por si acaso
         CoordinadorNegocio.getInstance().setCliente(null);
         CoordinadorNegocio.getInstance().setMesa(null);
         CoordinadorNegocio.getInstance().setComanda(null);
-        //CoordinadorNegocio.getInstance().setProducto(null);
+        CoordinadorNegocio.getInstance().setProducto(null);
         
-        UtilGeneral.configurarFrame("Restaurante", this);
-
         //Panel de título
         JPanel panelTitulo = new JPanel(new BorderLayout());
         panelTitulo.setOpaque(false);
@@ -85,7 +84,6 @@ public class MenuPrincipal extends JFrame {
             agregarPanel(panelCentral, UtilBoton.crearBotonNavegar("Administrar productos", this, AdministrarProductos::new));
             agregarPanel(panelCentral, UtilBoton.crearBotonNavegar("Administrar ingredientes", this, AdministrarIngredientes::new));
             agregarPanel(panelCentral, UtilBoton.crearBotonNavegar("Administrar clientes", this, AdministrarClientes::new));
-            agregarPanel(panelCentral, UtilBoton.crearBoton("Reporte de comandas"));
         } else {
             agregarPanel(panelCentral, UtilBoton.crearBotonNavegar("Registrar comanda", this, RegistrarComanda::new));
         }
@@ -114,9 +112,8 @@ public class MenuPrincipal extends JFrame {
      */
     private void agregarPanel(JPanel panel, JButton boton) {
         boton.setAlignmentX(Component.CENTER_ALIGNMENT);
-        // Ajusta el 320 para que los botones sean más o menos anchos
         boton.setMaximumSize(new Dimension(320, 50)); 
         panel.add(boton);
-        panel.add(Box.createRigidArea(new Dimension(0, 15))); // Espacio vertical entre botones
+        panel.add(Box.createRigidArea(new Dimension(0, 15)));
     }
 }

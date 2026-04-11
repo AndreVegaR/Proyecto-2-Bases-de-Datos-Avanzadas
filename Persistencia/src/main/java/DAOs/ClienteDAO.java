@@ -3,6 +3,8 @@ import Entidades.Cliente;
 import java.util.List;
 import conexion.ConexionBD;
 import excepciones.PersistenciaException;
+import java.util.LinkedHashSet;
+import java.util.Set;
 import javax.persistence.EntityManager;
 
 /**
@@ -119,8 +121,21 @@ public class ClienteDAO {
     public List<Cliente> consultarClientes() {
         EntityManager em = ConexionBD.crearConexion();
         try {
+            em.clear();
             String jpql = "SELECT DISTINCT c FROM Cliente c LEFT JOIN FETCH c.comandas";
-            return em.createQuery(jpql, Cliente.class).getResultList();
+            List<Cliente> resultado = em.createQuery(jpql, Cliente.class)
+                                    .setHint("javax.persistence.cache.storeMode", "REFRESH")
+                                    .getResultList();
+            
+            //elimina duplicados
+            Set<Cliente> sinDuplicados = new LinkedHashSet<>(resultado);
+            
+            //Carga manual
+            for (Cliente c : sinDuplicados) {
+                c.getComandas().size();
+            }
+            
+            return resultado;
         }
         catch (Exception e) {
             throw new PersistenciaException("Error al consultar los clientes: " + e.getMessage());
