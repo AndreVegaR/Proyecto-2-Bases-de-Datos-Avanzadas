@@ -1,0 +1,109 @@
+<!-- Created with Jaspersoft Studio version 7.0.3.final using JasperReports Library version 7.0.3-41034ca841d452f3305ba55b9042260aaa1ab5dd  -->
+<jasperReport name="reporteComandas" language="java" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="596d702b-e21c-472e-8606-5cca42938081">
+	<parameter name="PERIODO" class="java.lang.String"/>
+	<parameter name="TOTAL_VENTAS" class="java.lang.String"/>
+	<query language="sql"><![CDATA[]]></query>
+	<field name="fecha" class="java.lang.String"/>
+	<field name="hora" class="java.lang.String"/>
+	<field name="mesa" class="java.lang.String"/>
+	<field name="cliente" class="java.lang.String"/>
+	<field name="estado" class="java.lang.String"/>
+	<field name="total" class="java.lang.String"/>
+	<background splitType="Stretch"/>
+	<title height="96" splitType="Stretch">
+		<element kind="staticText" uuid="3f88b16d-56f5-4c10-8671-07054fad5d65" x="0" y="0" width="535" height="35" fontSize="19.0" hTextAlign="Center">
+			<text><![CDATA[Reporte de Comandas]]></text>
+			<property name="com.jaspersoft.studio.unit.x" value="px"/>
+			<property name="com.jaspersoft.studio.unit.y" value="px"/>
+			<property name="com.jaspersoft.studio.unit.width" value="px"/>
+			<property name="com.jaspersoft.studio.unit.height" value="px"/>
+		</element>
+		<element kind="textField" uuid="f5cbb3e6-3fa8-4d1d-93a5-4aacd4189a17" x="0" y="38" width="535" height="20" hTextAlign="Center">
+			<expression><![CDATA[$P{PERIODO}]]></expression>
+			<property name="com.jaspersoft.studio.unit.x" value="px"/>
+			<property name="com.jaspersoft.studio.unit.y" value="px"/>
+			<property name="com.jaspersoft.studio.unit.width" value="px"/>
+			<property name="com.jaspersoft.studio.unit.height" value="px"/>
+		</element>
+		<element kind="textField" uuid="31d436ed-cc94-4dfc-a397-f50ce5260cce" x="0" y="56" width="535" height="20" hTextAlign="Left">
+			<expression><![CDATA["Total ventas: " + $P{TOTAL_VENTAS}]]></expression>
+			<property name="com.jaspersoft.studio.unit.x" value="px"/>
+			<property name="com.jaspersoft.studio.unit.y" value="px"/>
+			<property name="com.jaspersoft.studio.unit.width" value="px"/>
+			<property name="com.jaspersoft.studio.unit.height" value="px"/>
+		</element>
+		<property name="com.jaspersoft.studio.unit.height" value="px"/>
+	</title>
+	<columnHeader height="61" splitType="Stretch">
+		<element kind="staticText" uuid="d5bd895b-9ccb-4530-a247-39599c14af09" mode="Opaque" x="0" y="8" width="80" height="30" forecolor="#FFFFFF" backcolor="#1A52C4" fontSize="12.0" hTextAlign="Center" vTextAlign="Middle">
+			<text><![CDATA[Fecha]]></text>
+			<property name="com.jaspersoft.studio.unit.x" value="px"/>
+			<property name="com.jaspersoft.studio.unit.width" value="px"/>
+		</element>
+		<element kind="staticText" uuid="0545fbb9-635a-4f39-8661-91bdeb1cabe8" mode="Opaque" x="80" y="8" width="60" height="30" forecolor="#FFFFFF" backcolor="#1A52C4" fontSize="12.0" hTextAlign="Center" vTextAlign="Middle">
+			<text><![CDATA[Hora]]></text>
+			<property name="com.jaspersoft.studio.unit.x" value="px"/>
+			<property name="com.jaspersoft.studio.unit.width" value="px"/>
+		</element>
+		<element kind="staticText" uuid="74567a04-80dd-4388-a7df-6f86c5c218b1" mode="Opaque" x="140" y="8" width="50" height="30" forecolor="#FFFFFF" backcolor="#1A52C4" fontSize="12.0" hTextAlign="Center" vTextAlign="Middle">
+			<text><![CDATA[Mesa]]></text>
+			<property name="com.jaspersoft.studio.unit.x" value="px"/>
+			<property name="com.jaspersoft.studio.unit.width" value="px"/>
+		</element>
+		<element kind="staticText" uuid="5da67dba-4e4d-41d8-b834-856f798a63cb" mode="Opaque" x="190" y="8" width="150" height="30" forecolor="#FFFFFF" backcolor="#1A52C4" fontSize="12.0" hTextAlign="Center" vTextAlign="Middle">
+			<text><![CDATA[Cliente]]></text>
+			<property name="com.jaspersoft.studio.unit.x" value="px"/>
+			<property name="com.jaspersoft.studio.unit.width" value="px"/>
+		</element>
+		<element kind="staticText" uuid="b1c0e371-9292-4ae7-9602-2a40e44e709b" mode="Opaque" x="340" y="8" width="100" height="30" forecolor="#FFFFFF" backcolor="#1A52C4" fontSize="12.0" hTextAlign="Center" vTextAlign="Middle">
+			<text><![CDATA[Estado]]></text>
+			<property name="com.jaspersoft.studio.unit.x" value="px"/>
+			<property name="com.jaspersoft.studio.unit.width" value="px"/>
+		</element>
+		<element kind="staticText" uuid="f74c8829-fd8c-4c33-9453-8f9660cb3eb0" mode="Opaque" x="440" y="8" width="95" height="30" forecolor="#FFFFFF" backcolor="#1A52C4" fontSize="12.0" hTextAlign="Center" vTextAlign="Middle">
+			<text><![CDATA[Total]]></text>
+			<property name="com.jaspersoft.studio.unit.x" value="px"/>
+			<property name="com.jaspersoft.studio.unit.width" value="px"/>
+		</element>
+	</columnHeader>
+	<detail>
+		<band height="126" splitType="Stretch">
+			<element kind="textField" uuid="2f9440be-9163-443c-aa8b-f0c226c6ba08" x="0" y="1" width="80" height="20">
+				<expression><![CDATA[$F{fecha}]]></expression>
+				<property name="com.jaspersoft.studio.unit.x" value="px"/>
+				<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				<property name="com.jaspersoft.studio.unit.height" value="px"/>
+			</element>
+			<element kind="textField" uuid="6f055ea5-9812-456c-8f2d-e337bd38d754" x="80" y="1" width="60" height="20" hTextAlign="Center">
+				<expression><![CDATA[$F{hora}]]></expression>
+				<property name="com.jaspersoft.studio.unit.x" value="px"/>
+				<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				<property name="com.jaspersoft.studio.unit.height" value="px"/>
+			</element>
+			<element kind="textField" uuid="94c22941-d630-4049-879e-798410716772" x="140" y="1" width="50" height="20" hTextAlign="Center">
+				<expression><![CDATA[$F{mesa}]]></expression>
+				<property name="com.jaspersoft.studio.unit.x" value="px"/>
+				<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				<property name="com.jaspersoft.studio.unit.height" value="px"/>
+			</element>
+			<element kind="textField" uuid="7c02bdd8-7ae1-4959-907d-10040b330861" x="190" y="0" width="150" height="20">
+				<expression><![CDATA[$F{cliente}]]></expression>
+				<property name="com.jaspersoft.studio.unit.x" value="px"/>
+				<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				<property name="com.jaspersoft.studio.unit.height" value="px"/>
+			</element>
+			<element kind="textField" uuid="217effae-ef8b-4743-818f-f69b02e3fabb" x="340" y="0" width="100" height="20" hTextAlign="Center">
+				<expression><![CDATA[$F{estado}]]></expression>
+				<property name="com.jaspersoft.studio.unit.height" value="px"/>
+			</element>
+			<element kind="textField" uuid="b2aa1184-cf42-4b73-ab38-5a80345055a0" x="440" y="0" width="95" height="20" hTextAlign="Center">
+				<expression><![CDATA[$F{total}]]></expression>
+				<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				<property name="com.jaspersoft.studio.unit.height" value="px"/>
+			</element>
+		</band>
+	</detail>
+	<columnFooter height="45" splitType="Stretch"/>
+	<pageFooter height="54" splitType="Stretch"/>
+	<summary height="42" splitType="Stretch"/>
+</jasperReport>

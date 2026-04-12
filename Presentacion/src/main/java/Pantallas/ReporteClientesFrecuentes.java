@@ -43,8 +43,11 @@ public class ReporteClientesFrecuentes extends JFrame{
     private JTable tabla;
     private List<ReporteClienteFrecuenteDTO> listaTemporal = new ArrayList<>();
     private JTextField campoBusqueda;
+    //Spinner para definir el número mínimo de visitas del cliente.
     private JSpinner spinnerVisitas;
-
+    /**
+     * Construye la pantalla de reporte de clientes frecuentes e inicializa todos sus componentes
+     */
     public ReporteClientesFrecuentes() {
         UtilGeneral.configurarFrame("Reporte de Clientes Frecuentes", this);
 
@@ -101,7 +104,9 @@ public class ReporteClientesFrecuentes extends JFrame{
         add(scroll, BorderLayout.CENTER);
         add(panelInferior, BorderLayout.SOUTH);
     }
-
+    /**
+     *Consulta el reporte de clientes frecuentes a través de CoordinadorNegocio usando los filtros ingresados
+     */
     private void cargarTabla() {
         String nombre = campoBusqueda.getText().trim();
         if (nombre.isBlank()) nombre = null;
@@ -125,7 +130,9 @@ public class ReporteClientesFrecuentes extends JFrame{
             });
         }
     }
-
+    /**
+     *  Exporta a PDF los datos actualmente cargados en listaTemporal.
+     */
     private void generarPDF() {
         if (listaTemporal.isEmpty()) {
             UtilGeneral.dialogoAviso(this, "No hay datos. Realiza una búsqueda primero.");

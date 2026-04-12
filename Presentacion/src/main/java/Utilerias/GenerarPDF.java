@@ -3,9 +3,12 @@ package Utilerias;
 
 import DTOs.ReporteClienteFrecuenteDTO;
 import DTOs.ReporteComandaDTO;
-import net.sf.jasperreports.engine.*;
+import net.sf.jasperreports.engine.JasperCompileManager;
+import net.sf.jasperreports.engine.JasperFillManager;
+import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.data.JRMapCollectionDataSource;
-import net.sf.jasperreports.engine.export.JRPdfExporter;
+import net.sf.jasperreports.pdf.JRPdfExporter;
 import net.sf.jasperreports.export.SimpleExporterInput;
 import net.sf.jasperreports.export.SimpleOutputStreamExporterOutput;
 import java.io.InputStream;
@@ -18,17 +21,21 @@ import java.util.Map;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileNameExtensionFilter;
-
 /**
  * Genera reportes en PDF usando JasperReports.
  * @author Jazmin
  */
 public class GenerarPDF {
-
+    //formatear fecha y hora
     private static final DateTimeFormatter FMT_FECHA = DateTimeFormatter.ofPattern("dd/MM/yyyy");
     private static final DateTimeFormatter FMT_HORA  = DateTimeFormatter.ofPattern("HH:mm");
     private static final DateTimeFormatter FMT_DT    = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
-
+    /**
+     * Genera el reporte de comandas en un archivo PDF elegido por el usuario
+     * @param lista lista de DTOs con los datos de cada comanda
+     * @param inicio fecha inicio del periodo filtrado
+     * @param fin fecha fin del periodo filtrado
+     */
     public static void generarReporteComandas(List<ReporteComandaDTO> lista,
             LocalDate inicio, LocalDate fin) {
 
@@ -64,6 +71,10 @@ public class GenerarPDF {
         exportar("/reporteComandas.jrxml", filas, parametros, ruta);
     }
 
+    /**
+     * Genera el reporte de clientes frecuentes en un archivo PDF elegido por el usuario
+     * @param lista lista de DTOs con los datos de cada cliente frecuente
+     */
    public static void generarReporteClientesFrecuentes(List<ReporteClienteFrecuenteDTO> lista) {
 
         String ruta = elegirRuta("ReporteClientesFrecuentes");
@@ -87,12 +98,16 @@ public class GenerarPDF {
 
         exportar("/reporteClientesFrecuentes.jrxml", filas, parametros, ruta);
     }
- 
-    private static String elegirRuta(String nombreSugerido) {
+   /**
+    * Abre un diálogo de guardado de archivo para que le usuario elija la ubicación y el nombre del PDF
+    * @param nombre nombre del archivo
+    * @return ruta del archivo de destino, incluyendo la extensión .pdf
+    */
+    private static String elegirRuta(String nombre) {
         JFileChooser chooser = new JFileChooser();
         chooser.setDialogTitle("Guardar reporte PDF");
         chooser.setFileFilter(new FileNameExtensionFilter("Archivo PDF (*.pdf)", "pdf"));
-        chooser.setSelectedFile(new java.io.File(System.getProperty("user.home"), nombreSugerido + ".pdf"));
+        chooser.setSelectedFile(new java.io.File(System.getProperty("user.home"), nombre + ".pdf"));
 
         if (chooser.showSaveDialog(null) != JFileChooser.APPROVE_OPTION) return null;
 

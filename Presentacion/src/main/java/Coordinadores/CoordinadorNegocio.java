@@ -7,6 +7,7 @@ import Enumeradores.UnidadMedida;
 import BO.ComandaBO;
 import BO.MesaBO;
 import BO.ProductoBO;
+import BO.ReporteBO;
 import DTOs.ClienteDTO;
 import DTOs.ComandaDTO;
 import DTOs.DetallesComandaDTO;
@@ -275,10 +276,10 @@ public class CoordinadorNegocio implements ICoordinadorNegocio {
     }
 
     public List<ReporteComandaDTO> obtenerReporteComandas(LocalDate inicio, LocalDate fin) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        return ReporteBO.getInstance().obtenerReporteComandas(inicio, fin);
     }
 
     public List<ReporteClienteFrecuenteDTO> obtenerReporteClientesFrecuentes(String nombre, int numVisitasMinima) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        return ReporteBO.getInstance().obtenerReporteClientesFrecuentes(nombre, numVisitasMinima);
     }
 }

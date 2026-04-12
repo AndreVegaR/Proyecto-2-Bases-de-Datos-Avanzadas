@@ -80,7 +80,8 @@ public class AdministrarComandas extends JFrame implements IObservador {
         JButton botonReportes = UtilBoton.crearBoton("Generar reporte");
         panelBotones.add(botonReportes);
         botonReportes.addActionListener(e -> {
-            System.out.println("Soy una prueba"); 
+            this.dispose();
+            new ReporteComandas().setVisible(true);
         });
         
         /**

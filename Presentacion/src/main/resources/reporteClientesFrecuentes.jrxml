@@ -1,0 +1,74 @@
+<!-- Created with Jaspersoft Studio version 7.0.3.final using JasperReports Library version 7.0.3-41034ca841d452f3305ba55b9042260aaa1ab5dd  -->
+<jasperReport name="reporteClientesFrecuentes" language="java" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="82b4ea76-5a55-4414-ad18-3ac8c9ddd88a">
+	<parameter name="FECHA_GENERACION" class="java.lang.String"/>
+	<query language="sql"><![CDATA[]]></query>
+	<field name="nombre" class="java.lang.String"/>
+	<field name="visitas" class="java.lang.String"/>
+	<field name="totalGastado" class="java.lang.String"/>
+	<field name="ultimaComanda" class="java.lang.String"/>
+	<background splitType="Stretch"/>
+	<title height="70" splitType="Stretch">
+		<element kind="staticText" uuid="2a762eed-49b4-46e9-9308-998c531e257f" stretchType="ElementGroupHeight" x="140" y="-1" width="290" height="40" fontSize="19.0" hTextAlign="Center">
+			<text><![CDATA[Reporte de Clientes Frecuentes]]></text>
+		</element>
+		<element kind="textField" uuid="94f7624f-b108-4b40-9ea8-c5281d30edf1" x="180" y="30" width="210" height="30" fontSize="12.0" hTextAlign="Center">
+			<expression><![CDATA["Generado el: " + $P{FECHA_GENERACION}]]></expression>
+		</element>
+		<property name="com.jaspersoft.studio.unit.height" value="px"/>
+	</title>
+	<columnHeader height="48" splitType="Stretch">
+		<element kind="staticText" uuid="2377e26b-466a-473e-a1f1-2193e9cd600d" key="" mode="Opaque" x="0" y="0" width="160" height="25" forecolor="#FFFFFF" backcolor="#1A52C4" fontSize="13.0" hTextAlign="Center" vTextAlign="Middle">
+			<text><![CDATA[Nombre]]></text>
+			<property name="com.jaspersoft.studio.unit.x" value="px"/>
+			<property name="com.jaspersoft.studio.unit.y" value="px"/>
+			<property name="com.jaspersoft.studio.unit.width" value="px"/>
+			<property name="com.jaspersoft.studio.unit.height" value="px"/>
+		</element>
+		<element kind="staticText" uuid="f589fa95-05f9-479c-9a7b-70d659426004" mode="Opaque" x="160" y="0" width="100" height="25" forecolor="#FFFFFF" backcolor="#1A52C4" fontSize="13.0" hTextAlign="Center" vTextAlign="Middle">
+			<text><![CDATA[Visitas]]></text>
+			<property name="com.jaspersoft.studio.unit.x" value="px"/>
+			<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
+			<property name="com.jaspersoft.studio.unit.height" value="px"/>
+		</element>
+		<element kind="staticText" uuid="835ad745-2521-4e72-b2e6-c11b91edcf20" mode="Opaque" x="260" y="0" width="130" height="25" forecolor="#FFFFFF" backcolor="#1A52C4" fontSize="13.0" hTextAlign="Center" vTextAlign="Middle">
+			<text><![CDATA[Total gastado]]></text>
+			<property name="com.jaspersoft.studio.unit.x" value="px"/>
+			<property name="com.jaspersoft.studio.unit.width" value="px"/>
+			<property name="com.jaspersoft.studio.unit.height" value="px"/>
+		</element>
+		<element kind="staticText" uuid="135bb1ad-b22d-4709-9838-2e3160620772" mode="Opaque" x="390" y="0" width="145" height="25" forecolor="#FFFFFF" backcolor="#1A52C4" fontSize="13.0" hTextAlign="Center" vTextAlign="Middle">
+			<text><![CDATA[Última Comanda]]></text>
+			<property name="com.jaspersoft.studio.unit.x" value="px"/>
+			<property name="com.jaspersoft.studio.unit.width" value="px"/>
+			<property name="com.jaspersoft.studio.unit.height" value="px"/>
+		</element>
+		<property name="com.jaspersoft.studio.unit.height" value="px"/>
+	</columnHeader>
+	<detail>
+		<band height="44" splitType="Stretch">
+			<element kind="textField" uuid="6e318e26-206f-4b3a-8a9c-332d307a4fae" x="0" y="10" width="160" height="30" hTextAlign="Left">
+				<expression><![CDATA[$F{nombre}
+]]></expression>
+				<property name="com.jaspersoft.studio.unit.width" value="px"/>
+			</element>
+			<element kind="textField" uuid="c6ce2b51-2470-40d8-af7a-8bb80e03d230" x="160" y="10" width="100" height="30" hTextAlign="Center">
+				<expression><![CDATA[$F{visitas}]]></expression>
+				<property name="com.jaspersoft.studio.unit.x" value="px"/>
+			</element>
+			<element kind="textField" uuid="1bf67cbd-3941-4dfc-b35f-0720315f1f43" x="260" y="10" width="130" height="30" hTextAlign="Center">
+				<expression><![CDATA[$F{totalGastado}]]></expression>
+				<property name="com.jaspersoft.studio.unit.x" value="px"/>
+				<property name="com.jaspersoft.studio.unit.width" value="px"/>
+			</element>
+			<element kind="textField" uuid="26832f94-7883-4f81-ab4e-4025a70ef31e" x="390" y="10" width="145" height="30" hTextAlign="Center">
+				<expression><![CDATA[$F{ultimaComanda}]]></expression>
+				<property name="com.jaspersoft.studio.unit.x" value="px"/>
+				<property name="com.jaspersoft.studio.unit.width" value="px"/>
+			</element>
+			<property name="com.jaspersoft.studio.unit.height" value="px"/>
+		</band>
+	</detail>
+	<columnFooter height="45" splitType="Stretch"/>
+	<pageFooter height="54" splitType="Stretch"/>
+	<summary height="42" splitType="Stretch"/>
+</jasperReport>
