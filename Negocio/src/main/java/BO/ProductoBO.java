@@ -64,6 +64,9 @@ public class ProductoBO {
         //Validaciones
         UtilNegocio.esNulo(dto);
         UtilNegocio.esCadenadaVacia(dto.getNombre(), "nombre");
+        UtilNegocio.esCadenadaVacia(dto.getDescripcion(), "descripcion");
+        UtilNegocio.esNulo(dto.getDescripcion());
+        UtilNegocio.validarDescripcion(dto.getDescripcion());
         UtilNegocio.validarNombre(dto.getNombre());
         UtilNegocio.esNulo(dto.getEstadoProducto());
         UtilNegocio.esNulo(dto.getTipoProducto());
@@ -92,6 +95,7 @@ public class ProductoBO {
             TipoProducto.valueOf(dto.getTipoProducto().name())
         );
         producto.setImagen(dto.getImagen());
+        producto.setDescripcion(dto.getDescripcion());
         //INGREDIENTES
         /*
         En esta parte es parecida a la de agregarProducto
@@ -131,6 +135,7 @@ public class ProductoBO {
         returnDTO.setEstadoProducto(ProductoDTO.EstadoProducto.valueOf(actualizado.getEstadoProducto().name()));
         returnDTO.setTipoProducto( ProductoDTO.TipoProducto.valueOf(actualizado.getTipo().name()) );
         returnDTO.setImagen(actualizado.getImagen());
+        returnDTO.setDescripcion(actualizado.getDescripcion());
 
         return returnDTO;
     }
@@ -160,6 +165,7 @@ public class ProductoBO {
             dto.setEstadoProducto(
                 ProductoDTO.EstadoProducto.valueOf(producto.getEstadoProducto().name())
             );
+            dto.setDescripcion(producto.getDescripcion());
               //MAPEO DE INGREDIENTES
         List<IngredienteProductoDTO> listaIngredientes = producto.getProductosIngredientes().stream().map(ip -> {
             IngredienteProductoDTO ipDTO = new IngredienteProductoDTO();
@@ -167,7 +173,7 @@ public class ProductoBO {
             ipDTO.setCantidad(ip.getCantidad());
             return ipDTO;
         }) .collect(Collectors.toList());
-
+        
             dto.setIngredientes(listaIngredientes);
             dto.setImagen(producto.getImagen());
             return dto;
@@ -206,7 +212,6 @@ public class ProductoBO {
     y visceversa
     Al final se regresa un ProductoDTO mapeado
     */
-    
     public ProductoDTO agregarProducto(ProductoDTO productoDTO){
        
         List<IngredienteProductoDTO> ingredientesDTO = productoDTO.getIngredientes();
@@ -214,8 +219,11 @@ public class ProductoBO {
         // VALIDACIONES
         UtilNegocio.esCadenadaVacia(productoDTO.getNombre(), "nombre");
         UtilNegocio.esNulo(productoDTO.getPrecio());
+        UtilNegocio.esCadenadaVacia(productoDTO.getDescripcion(), "descripcion");
+        UtilNegocio.esNulo(productoDTO.getDescripcion());
         UtilNegocio.validarNombre(productoDTO.getNombre());
         UtilNegocio.esNulo(productoDTO.getTipoProducto());
+        UtilNegocio.validarDescripcion(productoDTO.getDescripcion());
         //Convertimos a string el precio para poder usar el validador de Precio de UtilNegocio
         String precio = String.valueOf(productoDTO.getPrecio());
         UtilNegocio.validarPrecio(precio);
@@ -236,6 +244,7 @@ public class ProductoBO {
         productoNuevo.setTipo(TipoProducto.valueOf(productoDTO.getTipoProducto().name()));
         //Por default activo
         productoNuevo.setEstado(EstadoProducto.ACTIVO);
+        productoNuevo.setDescripcion(productoDTO.getDescripcion());
 
         // INGREDIENTES
         for (IngredienteProductoDTO dto : ingredientesDTO) {
@@ -248,6 +257,7 @@ public class ProductoBO {
             if (ingrediente == null) {
                 throw new NegocioException("Ingrediente no encontrado");
             }
+       
             //Si existe creamos la tabla intermedia y le damos los valores del dto
             IngredienteProducto ip = new IngredienteProducto();
             ip.setCantidad(dto.getCantidad());
@@ -266,6 +276,7 @@ public class ProductoBO {
         regresarDTO.setTipoProducto(ProductoDTO.TipoProducto.valueOf(guardado.getTipo().name()));
         regresarDTO.setEstadoProducto(ProductoDTO.EstadoProducto.valueOf(guardado.getEstadoProducto().name()));
         regresarDTO.setImagen(guardado.getImagen());
+        regresarDTO.setDescripcion(guardado.getDescripcion());
 
         return regresarDTO;
     }

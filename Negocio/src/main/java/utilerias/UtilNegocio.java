@@ -19,7 +19,7 @@ public class UtilNegocio {
     private static String POSITIVO = "debe ser un número positivo";
 
     // Regex para validar que el nombre contenga al menos una letra
-    private static final String REGEX_NOMBRE = ".*[a-zA-ZáéíóúÁÉÍÓÚñÑ].*";
+    private static final String REGEX_NOMBRE = ".[a-zA-ZáéíóúÁÉÍÓÚñÑ].";
 
     /**
      * Valida que un nombre contenga al menos una letra
@@ -29,6 +29,17 @@ public class UtilNegocio {
     public static void validarNombre(String nombre) {
         if (!nombre.matches(REGEX_NOMBRE)) {
             throw new NegocioException("El nombre debe contener al menos una letra");
+        }
+    }
+    
+     /**
+     * Valida que una descripción contenga al menos una letra
+     *
+     * @param descripcion a validar
+     */
+    public static void validarDescripcion(String nombre) {
+        if (!nombre.matches(REGEX_NOMBRE)) {
+            throw new NegocioException("La descripción contener al menos una letra");
         }
     }
 
