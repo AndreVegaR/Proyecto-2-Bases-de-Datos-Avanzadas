@@ -67,6 +67,7 @@ public class ComandaDAO {
             em.getTransaction().begin();
             em.persist(comanda);
             em.getTransaction().commit();
+            System.out.println("DAO: Persistencia exitosa. ID generado: " + comanda.getId());
             return comanda;
         } catch (Exception e) {
             if (em.getTransaction().isActive()) {
@@ -212,14 +213,30 @@ public class ComandaDAO {
      * @return los detalles
      */
     public List<DetallesComanda> consultarDetallesComanda(Long idComanda) {
+        System.out.println("DAO: Ejecutando Query para ID: " + idComanda);
         EntityManager em = ConexionBD.crearConexion();
         try {
-            String jpql = "SELECT d FROM DetalleComanda d WHERE d.comanda.id = :idComanda";
+            String jpql = "SELECT d FROM DetallesComanda d JOIN FETCH d.producto WHERE d.comanda.id = :idComanda";
             TypedQuery<DetallesComanda> query = em.createQuery(jpql, DetallesComanda.class);
             query.setParameter("idComanda", idComanda);
             return query.getResultList();
         } finally {
             em.close();
+        }
+    }
+    
+    
+    public void eliminarDetallesDeComanda(Long idComanda) {
+        EntityManager em = ConexionBD.crearConexion();
+        try {
+            em.getTransaction().begin();
+            int eliminados = em.createQuery("DELETE FROM DetallesComanda d WHERE d.comanda.id = :id")
+                              .setParameter("id", idComanda)
+                              .executeUpdate();
+            em.getTransaction().commit();
+        } catch (Exception e) {
+            if (em.getTransaction().isActive()) em.getTransaction().rollback();
+            e.printStackTrace();
         }
     }
 }

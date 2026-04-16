@@ -23,6 +23,7 @@ public class ProductoMapper {
         productoNuevo.setNombre(dto.getNombre());
         productoNuevo.setPrecio(dto.getPrecio());
         productoNuevo.setImagen(dto.getImagen());
+        productoNuevo.setDescripcion(dto.getDescripcion());
         productoNuevo.setEstado(Enumeradores.EstadoProducto.valueOf(dto.getEstadoProducto().name()));
         productoNuevo.setTipo(Enumeradores.TipoProducto.valueOf(dto.getTipoProducto().name()));
         return productoNuevo;
@@ -33,6 +34,7 @@ public class ProductoMapper {
         regresarDTO.setId(pr.getId());
         regresarDTO.setNombre(pr.getNombre());
         regresarDTO.setPrecio(pr.getPrecio());
+        regresarDTO.setDescripcion(pr.getDescripcion());
         regresarDTO.setTipoProducto(ProductoDTO.TipoProducto.valueOf(pr.getTipo().name()));
         regresarDTO.setEstadoProducto(ProductoDTO.EstadoProducto.valueOf(pr.getEstadoProducto().name()));
         regresarDTO.setImagen(pr.getImagen());

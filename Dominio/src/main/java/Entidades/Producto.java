@@ -44,6 +44,9 @@ public class Producto {
     @Enumerated(EnumType.STRING)  
     @Column(name = "tipo_producto",nullable = false)
     private TipoProducto tipoProducto;
+    
+    @Column(name = "descripcion", length = 100)
+    private String descripcion;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "estado", nullable = false)
@@ -146,7 +149,12 @@ public class Producto {
     public void setImagen(byte[] imagen) {
         this.imagen = imagen;
     }
-    
-    
-    
+
+    public String getDescripcion() {
+        return descripcion;
+    }
+
+    public void setDescripcion(String descripcion) {
+        this.descripcion = descripcion;
+    }
 }

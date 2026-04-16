@@ -3,6 +3,7 @@ import DAOs.ComandaDAO;
 import DTOs.ComandaDTO;
 import DTOs.DetallesComandaDTO;
 import Entidades.Comanda;
+import Entidades.DetallesComanda;
 import excepciones.NegocioException;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -94,11 +95,21 @@ public class ComandaBO {
         String folio = UtilNegocio.crearFolio(conteo);
         comandaRegistrar.setFolio(folio);
         
+        if (comandaRegistrar.getDetalles() != null) {
+            for (DetallesComanda detalle : comandaRegistrar.getDetalles()) {
+                detalle.setComanda(comandaRegistrar); 
+            }
+        }
+        
         //La manda al DAO para persistir
         Comanda comandaRegistrada = ComandaDAO.getInstance().registrarComanda(comandaRegistrar);
         
+        List<DetallesComandaDTO> detallesReales = this.consultarDetalles(comandaRegistrada.getId());
+        
         //Regresa la entidad casteada
         ComandaDTO comandaRegresar = ComandaMapper.mapearEntidadDTO(comandaRegistrada);
+        
+        comandaRegresar.setDetalles(detallesReales);
         
         //Asigna la mesa
         MesaBO.getInstance().ocuparMesa(comandaRegresar.getMesa());
@@ -117,30 +128,37 @@ public class ComandaBO {
      */
     public ComandaDTO actualizarComanda(ComandaDTO comanda) {
         
-        //Excepciones
+
         UtilNegocio.esNulo(comanda);
         if (comanda.getDetalles() == null || comanda.getDetalles().isEmpty()) {
             throw new NegocioException("No se puede actualizar una comanda sin productos");
         }
-        
-        //Mapea la comanda
-        Comanda comandaActualizar = ComandaMapper.mapearDTOEntidad(comanda);
-        
-        //La manda a actualizar
-        Comanda comandaActualizada = ComandaDAO.getInstance().actualizarComanda(comandaActualizar);
-        
-        //Regresa en DTO
-        ComandaDTO comandaRegresar = ComandaMapper.mapearEntidadDTO(comandaActualizada);
-        
-        /**
-         * Si el estado no es "Abierta", significa que está cerrada o cancelada 
-         * Entonces se manda a desocupar la mesa
-         */
+
+        Comanda comandaBD = ComandaDAO.getInstance().consultarComanda(comanda.getId());
+        if (comandaBD == null) {
+            throw new NegocioException("La comanda no existe");
+        }
+
+
+        ComandaDAO.getInstance().eliminarDetallesDeComanda(comanda.getId());
+
+        comandaBD.getDetalles().clear();
+
+        comandaBD.setTotal(comanda.getTotal());
+        comandaBD.setEstado(comanda.getEstado());
+
+        List<DetallesComanda> detallesNuevos = ComandaMapper.mapearDTOEntidadDetalles(comanda.getDetalles(), comandaBD);
+
+        comandaBD.getDetalles().addAll(detallesNuevos);
+
+        Comanda actualizada = ComandaDAO.getInstance().actualizarComanda(comandaBD);
+
+        ComandaDTO comandaRegresar = ComandaMapper.mapearEntidadDTO(actualizada);
+
         if (!ComandaMapper.ESTADO_INICIAL.equals(comandaRegresar.getEstado())) {
             MesaBO.getInstance().desocuparMesa(comandaRegresar.getMesa());
         }
 
-        //Regresa la comanda
         return comandaRegresar;
     }   
     
@@ -178,14 +196,8 @@ public class ComandaBO {
      */
     public List<DetallesComandaDTO> consultarDetalles(Long id) {
         UtilNegocio.esNumeroPositivo(id, "ID");
-        
-        //Comprueba que exista esa comanda
-        ComandaDTO comanda = consultarComanda(id);
-        if (comanda == null) {
-            throw new NegocioException("No existe esa comanda");
-        }
-        
+        List<Entidades.DetallesComanda> entidades = ComandaDAO.getInstance().consultarDetallesComanda(id);
         //Regresa la lista de sus detalles
-        return comanda.getDetalles();
+        return ComandaMapper.mapearEntidadDTODetalles(entidades);
     }
 }

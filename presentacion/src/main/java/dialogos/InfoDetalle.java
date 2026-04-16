@@ -18,6 +18,8 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import observadores.IObservador;
 import excepciones.NegocioException;
+import java.util.ArrayList;
+import java.util.List;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JTextArea;
@@ -45,14 +47,12 @@ public class InfoDetalle extends JDialog {
         //Campos de texto
         int tamanio = 20;
         JTextField tfCantidad = UtilGeneral.crearCampoFormulario(panel, "Cantidad", tamanio);
-        JLabel labelComentarios = new JLabel("Comentarios opcionales");
         JTextArea areaComentarios = new JTextArea(5, tamanio);
         
         //Panel inferior
         JPanel panelInferior = new JPanel(new FlowLayout(FlowLayout.RIGHT, 15, 15));
         JButton botonAceptar = UtilBoton.crearBoton("Seleccionar producto");
         panelInferior.add(botonAceptar);
-        panelInferior.add(labelComentarios);
         panelInferior.add(areaComentarios);
 
         //Agrega todo al JDialog
@@ -66,12 +66,26 @@ public class InfoDetalle extends JDialog {
                 //Extre valores
                 String cantidadString = tfCantidad.getText().trim();
                 
-                //Valida la cantidad
-                int cantidad = 0;
+                //Valida que el campo haya sido llenado
                 if (cantidadString.isBlank()) {
                     UtilGeneral.dialogoAviso(InfoDetalle.this, "Seleccione la cantidad de productos");
-                } else {
+                    return;
+                }
+                
+                //Valida que sea un número
+                int cantidad = 0;
+                try {
                     cantidad = Integer.parseInt(cantidadString);
+                } catch (NumberFormatException ex) {
+                    UtilGeneral.dialogoAviso(InfoDetalle.this, "La cantidad debe ser un número entero");
+                    return;
+                }
+                
+                //Valida que sea un entero positivo
+                cantidad = Integer.parseInt(cantidadString);
+                if (cantidad < 1) {
+                    UtilGeneral.dialogoAviso(InfoDetalle.this, "Introduzca un número positivo");
+                    return;
                 }
                 
                 //Obtiene los comentarios
@@ -95,17 +109,16 @@ public class InfoDetalle extends JDialog {
                         CoordinadorNegocio.getInstance().getDetalle().setComentarios(comentarios);
                     }
                     
-                    /**
+                   /**
                     * Agrega el DTO a la comanda actual
-                    * Tiene un encadenamiento de métodos:
-                    * .getInstance(): instancia
-                    * .getComanda(): comanda
-                    * .getDetalles(): la la lista de detalles de la comanda
-                    * .add(detalle): a la lista le añade el detalle creado
                     */
                    if (CoordinadorNegocio.getInstance().getComanda() != null) {
-                       DetallesComandaDTO detalle = CoordinadorNegocio.getInstance().getDetalle();
-                       CoordinadorNegocio.getInstance().getComanda().getDetalles().add(detalle);
+                        DetallesComandaDTO detalle = CoordinadorNegocio.getInstance().getDetalle();
+                        detalle.setCantidad(cantidad);
+                        detalle.setComentarios(comentarios);
+                        List<DetallesComandaDTO> importados = new ArrayList<>();
+                        importados.add(detalle);
+                        CoordinadorNegocio.getInstance().setDetallesImportados(importados);
                    }
                    
                    //Cierra el diálogo

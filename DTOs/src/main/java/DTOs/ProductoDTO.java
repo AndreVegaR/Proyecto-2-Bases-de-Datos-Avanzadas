@@ -13,6 +13,7 @@ public class ProductoDTO {
     private EstadoProducto estadoProducto;
     private double precio;
     private byte[] imagen;
+    private String descripcion;
     
     // Lista de ingredientes con cantidad
     private List<IngredienteProductoDTO> ingredientes;
@@ -109,7 +110,12 @@ public class ProductoDTO {
     public String toString() {
         return "ProductoDTO{" + "id=" + id + ", nombre=" + nombre + ", tipoProducto=" + tipoProducto + ", estadoProducto=" + estadoProducto + ", precio=" + precio + ", imagen=" + imagen + ", ingredientes=" + ingredientes + '}';
     }
-    
-    
-    
+
+    public String getDescripcion() {
+        return descripcion;
+    }
+
+    public void setDescripcion(String descripcion) {
+        this.descripcion = descripcion;
+    }
 }

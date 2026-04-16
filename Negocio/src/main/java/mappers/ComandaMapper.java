@@ -135,8 +135,17 @@ public class ComandaMapper {
         MesaDTO mesaMapeada = MesaMapper.mapearEntidadDTO(entidad.getMesa());
         dto.setMesa(mesaMapeada);
         
+        System.out.println("LOG DE EMERGENCIA ");
+        if (entidad.getDetalles() == null) {
+            System.out.println("ALERTA: La Entidad Comanda llegó al mapper con la lista de detalles en NULL");
+        } else {
+            System.out.println("INFO: La Entidad Comanda tiene " + entidad.getDetalles().size() + " detalles (antes de mapear)");
+        }
+        
         //Mapea los detalles
         List<DetallesComandaDTO> detallesMapeados = mapearEntidadDTODetalles(entidad.getDetalles());
+        
+        
         dto.setDetalles(detallesMapeados);
         
         //Regresa el DTO
@@ -152,7 +161,10 @@ public class ComandaMapper {
      * @param dtos de los detalles
      * @return los detalles en entidad
      */
-    private static List<DetallesComanda> mapearDTOEntidadDetalles(List<DetallesComandaDTO> dtos, Comanda comanda) {
+    public static List<DetallesComanda> mapearDTOEntidadDetalles(List<DetallesComandaDTO> dtos, Comanda comanda) {
+        if (dtos == null || dtos.isEmpty()) {
+            return new java.util.ArrayList<>();
+        }
         List<DetallesComanda> entidades = dtos.stream().map(dto -> {
                                             DetallesComanda entidad = new DetallesComanda();
                                             entidad.setCantidad(dto.getCantidad());
@@ -176,18 +188,36 @@ public class ComandaMapper {
      * @param entidades de los detalles
      * @return los detalles en dto
      */
-    private static List<DetallesComandaDTO> mapearEntidadDTODetalles(List<DetallesComanda> entidades) {
-        List<DetallesComandaDTO> dtos = entidades.stream().map(entidad -> {
-                                            DetallesComandaDTO dto = new DetallesComandaDTO();
-                                            dto.setCantidad(entidad.getCantidad());
-                                            dto.setSubtotal(entidad.getSubtotal());
-                                            dto.setPrecioVenta(entidad.getPrecioVenta());
-                                            dto.setComentarios(entidad.getComentarios());
-                                            dto.setProducto(ProductoMapper.MapearEntidadDTO(entidad.getProducto()));
-                                            return dto;
-                                        })
-                                        .toList();
-        return dtos;
+    public static List<DetallesComandaDTO> mapearEntidadDTODetalles(List<DetallesComanda> entidades) {
+        if (entidades == null || entidades.isEmpty()) {
+            System.out.println("DEBUG MAPPER: La lista de entidades llegó NULL o VACÍA");
+            return new java.util.ArrayList<>();
+        }
+
+        List<DetallesComandaDTO> dtos = new java.util.ArrayList<>();
+
+        for (DetallesComanda entidad : entidades) {
+            try {
+                DetallesComandaDTO dto = new DetallesComandaDTO();
+                dto.setCantidad(entidad.getCantidad());
+                dto.setSubtotal(entidad.getSubtotal());
+                dto.setPrecioVenta(entidad.getPrecioVenta());
+                dto.setComentarios(entidad.getComentarios());
+
+                // 2. Punto crítico: El Producto
+                if (entidad.getProducto() != null) {
+                    dto.setProducto(ProductoMapper.MapearEntidadDTO(entidad.getProducto()));
+                } else {
+                    System.out.println("DEBUG MAPPER: Un detalle no tiene producto asignado");
+                }
+
+                dtos.add(dto);
+            } catch (Exception e) {
+                System.out.println("DEBUG MAPPER: Error mapeando un detalle individual: " + e.getMessage());
+            }
+        }
+
+    return dtos;
     }
     
     

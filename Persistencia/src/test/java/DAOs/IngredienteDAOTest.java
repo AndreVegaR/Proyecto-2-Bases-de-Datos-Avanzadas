@@ -116,14 +116,14 @@ class IngredienteDAOTest {
     
     @Test
     void testElimiarIngredienteInexistente(){
-        Ingrediente eliminado = ingredienteDAO.eliminarIngrediente(99L);
+        Ingrediente eliminado = ingredienteDAO.eliminarIngrediente(Long.MAX_VALUE);
         assertNull(eliminado);
     }
 
     @Test
     void testActualizarStockIngredienteInexistente() {
         assertThrows(PersistenciaException.class, () -> {
-            ingredienteDAO.actualizarStock(88L, 15.0);
+            ingredienteDAO.actualizarStock(Long.MAX_VALUE, 15.0);
         });
     }
 
