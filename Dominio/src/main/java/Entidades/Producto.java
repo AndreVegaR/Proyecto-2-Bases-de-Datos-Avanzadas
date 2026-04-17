@@ -45,7 +45,7 @@ public class Producto {
     @Column(name = "tipo_producto",nullable = false)
     private TipoProducto tipoProducto;
     
-    @Column(name = "descripcion", length = 100)
+    @Column(name = "descripcion", nullable = false)
     private String descripcion;
 
     @Enumerated(EnumType.STRING)
@@ -81,6 +81,17 @@ public class Producto {
         this.tipoProducto = tipoProducto;
         this.imagen = imagen;
     }
+
+    public Producto(Long id, String nombre, double precio, TipoProducto tipoProducto, String descripcion, byte[] imagen) {
+        this.id = id;
+        this.nombre = nombre;
+        this.precio = precio;
+        this.tipoProducto = tipoProducto;
+        this.descripcion = descripcion;
+        this.imagen = imagen;
+    }
+    
+    
     
     
     public Producto() {

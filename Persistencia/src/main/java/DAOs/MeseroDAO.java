@@ -1,7 +1,11 @@
 package DAOs;
+import Entidades.Cliente;
 import Entidades.Mesero;
 import conexion.ConexionBD;
 import excepciones.PersistenciaException;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
 import javax.persistence.EntityManager;
 
 /**
@@ -38,8 +42,30 @@ public class MeseroDAO {
             if (em.getTransaction().isActive()) {
                 em.getTransaction().rollback();
             }
-            throw new PersistenciaException("Error al registrar al cliente: " + e.getMessage());
+            throw new PersistenciaException("Error al registrar al mesero: " + e.getMessage());
         } finally {
+            em.close();
+        }
+    }
+    
+    
+    
+    /**
+     * Trae todos los meseros de la BD
+     * 
+     * @return los meseros
+     */
+    public List<Mesero> consultarMeseros() {
+        EntityManager em = ConexionBD.crearConexion();
+        try {
+            em.clear();
+            String jpql = "SELECT m FROM Mesero";
+            return em.createQuery(jpql, Mesero.class).getResultList(); 
+        }
+        catch (Exception e) {
+            throw new PersistenciaException("Error al consultar los meseros: " + e.getMessage());
+        }
+        finally {
             em.close();
         }
     }

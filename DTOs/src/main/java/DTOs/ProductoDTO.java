@@ -30,6 +30,20 @@ public class ProductoDTO {
         this.ingredientes = ingredientes;
     }
 
+    
+    public ProductoDTO(Long id, String nombre, TipoProducto tipoProducto, EstadoProducto estadoProducto, double precio, byte[] imagen, String descripcion, List<IngredienteProductoDTO> ingredientes) {
+        this.id = id;
+        this.nombre = nombre;
+        this.tipoProducto = tipoProducto;
+        this.estadoProducto = estadoProducto;
+        this.precio = precio;
+        this.imagen = imagen;
+        this.descripcion = descripcion;
+        this.ingredientes = ingredientes;
+    }
+    
+    
+
     // Getters y Setters
     public Long getId() {
         return id;

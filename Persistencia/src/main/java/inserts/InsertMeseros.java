@@ -1,4 +1,4 @@
-package insertMeseros;
+package inserts;
 import DAOs.MeseroDAO;
 import Entidades.Mesero;
 import conexion.ConexionBD;
@@ -40,5 +40,5 @@ public class InsertMeseros {
         
         //Cierra la conexión
         em.close();
-    }
+    } 
 }
