@@ -47,9 +47,12 @@ public class Cliente implements Serializable {
     @Column(name = "fecha_registro", nullable = false, updatable = false)
     private LocalDateTime fechaRegistro;
     
-    @OneToMany(mappedBy = "cliente", 
-           cascade = {CascadeType.PERSIST, CascadeType.MERGE}, 
-           fetch = FetchType.EAGER)
+    @OneToMany(
+    mappedBy = "cliente", 
+    fetch = FetchType.LAZY,
+    cascade = CascadeType.REMOVE,
+    orphanRemoval = true
+)   
     private List<Comanda> comandas = new ArrayList<>();
     
     /**
