@@ -83,6 +83,7 @@ public class ReporteDAO {
         } finally {
             ent.close();
         }
+        
     }
 
     

@@ -270,7 +270,7 @@ public class AdministrarProductos extends JFrame implements IObservador {
         * -Remueve del panel cada coincidencia
         * -Al final recarga el panel
         */
-       String[] botonesEliminar = {"registrar", "eliminar", "actualizar"};
+       String[] botonesEliminar = {"registrar", "Cambiar estado", "actualizar"};
        UtilLogica.esconderBotones(panelBotones, mapaBotones, botonesEliminar);
 
        //Crea el botón de seleccionar producto y le da lógica

@@ -5,9 +5,11 @@
 package dialogos;
 
 import Coordinadores.CoordinadorNegocio;
+import Coordinadores.CoordinadorPantallas;
 import DTOs.IngredienteDTO;
 import DTOs.IngredienteProductoDTO;
 import DTOs.ProductoDTO;
+import Pantallas.AdministrarIngredientes;
 import Utilerias.UtilBoton;
 import Utilerias.UtilGeneral;
 import excepciones.NegocioException;
@@ -64,6 +66,7 @@ public class RegistrarProducto extends JDialog{
         int tamanio = 20;
         JTextField tFNombre = UtilGeneral.crearCampoFormulario(panel, "Nombre", tamanio);
         JTextField tFPrecio = UtilGeneral.crearCampoFormulario(panel, "Precio", tamanio);
+        JTextField tFDescripcion = UtilGeneral.crearCampoFormulario(panel, "Descripcion", tamanio);
         //Altura fija para que no se estire con BoxLayout
         tFNombre.setMaximumSize(new Dimension(Integer.MAX_VALUE, 30));
         tFNombre.setAlignmentX(Component.LEFT_ALIGNMENT);
@@ -71,6 +74,10 @@ public class RegistrarProducto extends JDialog{
         //Altura fija para que no se estire con BoxLayout
         tFPrecio.setMaximumSize(new Dimension(Integer.MAX_VALUE, 30));
         tFPrecio.setAlignmentX(Component.LEFT_ALIGNMENT);
+        
+        //Altura fija para que no se estire con BoxLayout
+        tFDescripcion.setMaximumSize(new Dimension(Integer.MAX_VALUE,30));
+        tFDescripcion.setAlignmentX(Component.LEFT_ALIGNMENT);
 
         //ComboBox que contienen ENUMS 
         JComboBox<ProductoDTO.TipoProducto> comboTipo = new JComboBox<>(ProductoDTO.TipoProducto.values());
@@ -92,31 +99,12 @@ public class RegistrarProducto extends JDialog{
         //Boton para elegir la imagen
         JButton btnImagen = new JButton("Seleccionar Imagen");
         btnImagen.setAlignmentX(Component.LEFT_ALIGNMENT);
-
-        //Ingredientes
-        JComboBox<IngredienteDTO> comboIngredientes = new JComboBox<>();
-        comboIngredientes.setMaximumSize(new Dimension(Integer.MAX_VALUE, 30));
-        comboIngredientes.setAlignmentX(Component.LEFT_ALIGNMENT);
-        
-        JTextField tFCantidad = new JTextField(5);
-        tFCantidad.setMaximumSize(new Dimension(Integer.MAX_VALUE, 30));
-        tFCantidad.setAlignmentX(Component.LEFT_ALIGNMENT);
         
         JButton btnAgregar = new JButton("Agregar ingrediente");
         btnAgregar.setAlignmentX(Component.LEFT_ALIGNMENT);
-        panel.add(new JLabel("Ingrediente"));
-        panel.add(comboIngredientes);
-        panel.add(new JLabel("Cantidad"));
-        panel.add(tFCantidad);
         panel.add(btnAgregar);
         panel.add(btnImagen);
 
-        //LLENAR COMBO DESDE BD
-        //Iteramos los ingredientes desde la base de datos y los agregamos al ComboBox de ingredientes
-        List<IngredienteDTO> ingredientes =CoordinadorNegocio.getInstance().verTodosLosIngredientes();
-        for (IngredienteDTO ing : ingredientes) {
-            comboIngredientes.addItem(ing);
-        }
 
         // PANEL INFERIOR
         JPanel panelInferior = new JPanel(new FlowLayout(FlowLayout.RIGHT));
@@ -147,26 +135,16 @@ public class RegistrarProducto extends JDialog{
         //Boton para agregar ingrediente
         btnAgregar.addActionListener(e -> {
             try {
-                //Convertimos lo seleccionado en el combobox en un IngredienteDTO
-                IngredienteDTO seleccionado =(IngredienteDTO) comboIngredientes.getSelectedItem();
-                //Parseamos el string a double 
-                double cantidad = Double.parseDouble(tFCantidad.getText());
-                
-                //Creamos la tabla intermedia mediante los ingredientes seleccionados y los relacionamos
-                IngredienteProductoDTO ip = new IngredienteProductoDTO();
-                //Set al ingrediente del dto seleccionado
-                ip.setIngredienteId(seleccionado.getId());
-                //Set de la cantidad seleccionada
-                ip.setCantidad(cantidad);
-                //Agregamos a la lista el ingrediente
-                listaIngredientes.add(ip);
-
-                JOptionPane.showMessageDialog(this, "Ingrediente agregado");
-
-                tFCantidad.setText("");
-
+                //Activamos el booleano para que en administrar ingredientes se modifique
+                CoordinadorNegocio.getInstance().setAdministrarIngrediente(true);
+                //Le damos valor al dialog
+                CoordinadorPantallas.getInstance().setDialogActual(this);
+                //Lo ocultamos sin cerrarlo
+                this.setVisible(false);
+                //Navegamos de este dialog al frame de administrarIngredientes
+                CoordinadorPantallas.getInstance().navegarA_Frame(this, AdministrarIngredientes::new);
             } catch (Exception ex) {
-                JOptionPane.showMessageDialog(this, "Cantidad inválida");
+                JOptionPane.showMessageDialog(this, "Error al abrir la ventana de ingredientes");
             }
         });
 
@@ -175,12 +153,13 @@ public class RegistrarProducto extends JDialog{
             try {
                 String nombre = tFNombre.getText().trim();
                 String precioTexto = tFPrecio.getText().trim();
+                String descripcion = tFDescripcion.getText().trim();
 
-                if (nombre.isEmpty() || precioTexto.isEmpty()) {
+                if (nombre.isEmpty() || precioTexto.isEmpty() ||descripcion.isEmpty() ) {
                     JOptionPane.showMessageDialog(this, "Campos obligatorios");
                     return;
                 }
-                
+     
                 // Validamos que el precio sea un numero positivo
                 double precio;
             try {
@@ -202,14 +181,22 @@ public class RegistrarProducto extends JDialog{
                 producto.setEstadoProducto((ProductoDTO.EstadoProducto) comboEstado.getSelectedItem());
                 //Este set es mediante el boton de agregar imagen
                 producto.setImagen(imagenSeleccionada);
-
-                //Le damos al producto la lista de ingredientes que fueron agregados
-                producto.setIngredientes(listaIngredientes);
                 
+                //Seteamos la descripcion
+                producto.setDescripcion(descripcion);
+                //Obtenemos la lista de ingredientes
+                List<IngredienteProductoDTO> ingredientes = CoordinadorNegocio.getInstance().getListaIngredientes();
+                //Si la lista no esta vacía agregamos los ingredientes
+                if (!ingredientes.isEmpty()) {
+                    producto.setIngredientes(ingredientes);
+                }
+                     
                 //Registramos el producto
                 CoordinadorNegocio.getInstance().registrarProducto(producto);
-
                 JOptionPane.showMessageDialog(this, "Producto registrado");
+           
+                //Limpiamos la lista de ingredientes 
+                CoordinadorNegocio.getInstance().limpiarIngredientes();
 
                 if (observador != null) {
                     observador.notificarCambio();
@@ -229,5 +216,3 @@ public class RegistrarProducto extends JDialog{
         setLocationRelativeTo(padre);
     }
 }
-
-

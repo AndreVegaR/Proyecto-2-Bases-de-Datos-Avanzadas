@@ -11,6 +11,7 @@ import BO.ReporteBO;
 import DTOs.ClienteDTO;
 import DTOs.ComandaDTO;
 import DTOs.DetallesComandaDTO;
+import DTOs.IngredienteProductoDTO;
 import DTOs.MesaDTO;
 import DTOs.ProductoDTO;
 import DTOs.ReporteClienteFrecuenteDTO;
@@ -18,7 +19,9 @@ import DTOs.ReporteComandaDTO;
 import Enumeradores.EstadoProducto;
 import Utilerias.Constantes;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
+import mappers.ComandaMapper;
 import mappers.ComandaMapper;
 
 /**
@@ -29,6 +32,37 @@ import mappers.ComandaMapper;
  */
 public class CoordinadorNegocio implements ICoordinadorNegocio {
 
+    private boolean administrarIngrediente = false;
+    public boolean isAdministrarIngrediente() {
+        return administrarIngrediente;
+    }
+    
+    public void setAdministrarIngrediente(boolean administrarIngrediente) {
+        this.administrarIngrediente = administrarIngrediente;
+    }
+    
+     //Lista de ingredienteProducto 
+    private List<IngredienteProductoDTO> listaIngredientes = new ArrayList<>();
+
+    //Metodo para agregar un ingrediente a la lista de ingredientes
+     public void agregarIngrediente(IngredienteProductoDTO ip) {
+        listaIngredientes.add(ip);
+    }
+    
+    //Obtener la lista de ingredientes guardados
+    public List<IngredienteProductoDTO>  getListaIngredientes() {
+        return listaIngredientes;
+    }
+    //Esto sirve para limpiar la lista despues de guardarla
+    public void limpiarIngredientes() {
+        listaIngredientes.clear();
+    }
+    
+    
+    public boolean administrandoProductos = false;
+    
+    public boolean comandaNoActualizable = false;
+     
     //El cliente seleccionado en un momento del programa (clic en registro de la tabla)
     private ClienteDTO cliente = null;
 
@@ -118,9 +152,19 @@ public class CoordinadorNegocio implements ICoordinadorNegocio {
         }
         return false;
     }
+    public boolean actualizandoComanda() {
+        return ComandaMapper.ESTADO_INICIAL.equals(comanda.getEstado());
+    }
     
     
-    
+    private boolean botonContinuarSeleccionado = false;
+    public boolean botonContinuarFueSeleccionado() {
+        return botonContinuarSeleccionado;
+    }
+    public void seSeleccionoContinuar(boolean estado) {
+        botonContinuarSeleccionado = estado;
+    }
+
 
     // Singleton
     private static CoordinadorNegocio instancia;
@@ -220,13 +264,33 @@ public class CoordinadorNegocio implements ICoordinadorNegocio {
         return ComandaBO.getInstance().consultarComandas();
     }
 
+    //Está hecho para evitar lazy-loading, o sea que por hueva el JPA no cargue la lista jaja
     @Override
     public List<DetallesComandaDTO> consultarDetalles() {
-        if (comanda != null) {
-            return comanda.getDetalles();
+        if (comanda == null) return new ArrayList<>();
+        if (comanda.getId() != null && comanda.getId() > 0) {
+            List<DetallesComandaDTO> detallesDB = ComandaBO.getInstance().consultarDetalles(comanda.getId());
+            comanda.setDetalles(detallesDB);
         }
-        return null;
+        return (comanda.getDetalles() != null) ? comanda.getDetalles() : new ArrayList<>();
     }
+    
+    
+    
+    //Ya a este punto hice otros métodos para pasar correctamente de un diálogo a un frame con los detalles ya no se me ocurre otra cosa ????? por que son cuadrados 
+    private List<DetallesComandaDTO> detallesImportados;
+    public void setDetallesImportados(List<DetallesComandaDTO> detalles) {
+        this.detallesImportados = detalles;
+    }
+    public List<DetallesComandaDTO> getDetallesImportados() {
+        return this.detallesImportados;
+    }
+    
+    //Parche ya a lo ahí se va
+    public boolean botonContinuarPresionado = false;
+
+    
+    
 
     @Override
     public List<ProductoDTO> verTodos() {

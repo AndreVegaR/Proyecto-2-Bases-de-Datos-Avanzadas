@@ -17,6 +17,7 @@ import DTOs.MesaDTO;
 import Pantallas.AdministrarComandas;
 import Pantallas.RegistrarComanda;
 import Principal.MenuEmpleados;
+import Principal.MenuPrincipal;
 import Utilerias.Constantes;
 import Utilerias.UtilBoton;
 import java.awt.Font;
@@ -32,6 +33,9 @@ import javax.swing.JLabel;
 import java.awt.Component;
 import java.awt.Font;
 import java.awt.Dimension;
+import java.util.ArrayList;
+import javax.swing.table.DefaultTableModel;
+import observadores.IObservador;
 
 
 /**
@@ -45,6 +49,9 @@ public class InfoComanda extends JDialog {
     //Se instancia como atributo para usarlo en métodos fuera del constructor
     private JTable tabla;
     
+    //Observador
+    private IObservador observador;
+    
     /**
      * Atributo en donde se almacena en memoria la lista de todos los productos
      * Esto para poder manipular estos registros (para obtener uno en específico por índice como ejemplo)
@@ -53,8 +60,13 @@ public class InfoComanda extends JDialog {
      */
     private List<DetallesComandaDTO> listaTemporal;
     
-    public InfoComanda(JFrame frame) {
+    public InfoComanda(JFrame frame, IObservador observador) {
         super(frame, "Información de la comanda", true);
+        this.observador = observador;
+        
+        System.out.println("ID Comanda en Coordinador: " + 
+        (CoordinadorNegocio.getInstance().getComanda() != null ? 
+        CoordinadorNegocio.getInstance().getComanda().getId() : "¡ES NULL!"));
         
         //Configuración inicial
         UtilGeneral.configurarDialogoInicio(this, false);
@@ -124,7 +136,14 @@ public class InfoComanda extends JDialog {
          });
         
         //De una vez llena la tabla para luego usar la listaTemporal
-        llenarTabla();
+        List<DetallesComandaDTO> importados = CoordinadorNegocio.getInstance().getDetallesImportados();
+        if (importados != null && !importados.isEmpty()) {
+            this.listaTemporal = importados;
+            mapearTabla(); 
+            CoordinadorNegocio.getInstance().setDetallesImportados(null); 
+        } else {
+            llenarTabla();
+        }
 
         //Crea un panel para el total de la comanda
         JPanel panelInferior = new JPanel();
@@ -132,8 +151,11 @@ public class InfoComanda extends JDialog {
         panelInferior.setBorder(new javax.swing.border.EmptyBorder(10, 25, 20, 25));
         
         //Contenido del resumen inferior
-        double total = CoordinadorNegocio.getInstance().getComanda().getTotal();
-        int productos = listaTemporal.size();
+        double total = 0;
+        int productos = (listaTemporal != null) ? listaTemporal.size() : 0;
+        if (listaTemporal != null) {
+            for (DetallesComandaDTO d : listaTemporal) total += d.getSubtotal();
+        }
         String folio;
         
         //Botón que registra o actualiza una comanda
@@ -144,13 +166,17 @@ public class InfoComanda extends JDialog {
          * -Indica que no existe folio pues aún no hay registro
          * -El botón se encarga de registrar
          */
-        if (CoordinadorNegocio.getInstance().esNuevaComanda()) {
+        if (CoordinadorNegocio.getInstance().esNuevaComanda() && !CoordinadorNegocio.getInstance().actualizandoComanda()) {
             folio = "Aún sin registrar";
             botonCambios = UtilBoton.crearBotonNavegar("Registrar", frame, MenuEmpleados::new);
             botonCambios.addActionListener(e -> {
                 ComandaDTO comanda = CoordinadorNegocio.getInstance().getComanda();
+                comanda.setDetalles(this.listaTemporal);
                 comanda.setMesa(CoordinadorNegocio.getInstance().getMesa());
                 CoordinadorNegocio.getInstance().registrarComanda(comanda);
+                CoordinadorNegocio.getInstance().setMesa(null);
+                CoordinadorNegocio.getInstance().setCliente(null);
+                observador.notificarCambio();
             });
         } 
         
@@ -162,13 +188,49 @@ public class InfoComanda extends JDialog {
         else {
             folio = CoordinadorNegocio.getInstance().getComanda().getFolio();
             
-            //Da la posibilidad de actualizar la comanda siempre y cuando esté abierta
-            if (CoordinadorNegocio.getInstance().comandaAbierta()) {
-                botonCambios = UtilBoton.crearBotonNavegar("Actualizar", frame, RegistrarComanda::new);
+            //Si se está actualizando, lo actualiza en la BD
+            if (CoordinadorNegocio.getInstance().actualizandoComanda() && !CoordinadorPantallas.getInstance().esAdministrador()) {
+                botonCambios = UtilBoton.crearBoton("Actualizar");
                 botonCambios.addActionListener(e -> {
-                    ComandaDTO comanda = CoordinadorNegocio.getInstance().getComanda();
-                    CoordinadorNegocio.getInstance().actualizarComanda(comanda);
+                    long startTime = System.currentTimeMillis();
+
+                    try {
+                        List<DetallesComandaDTO> listaParaExportar = new ArrayList<>(this.listaTemporal);
+                        CoordinadorNegocio.getInstance().setDetallesImportados(listaParaExportar);
+
+
+                        if (CoordinadorNegocio.getInstance().botonContinuarPresionado) {
+  
+                            ComandaDTO comanda = CoordinadorNegocio.getInstance().getComanda();
+                            if (comanda != null) {
+                                comanda.setDetalles(listaParaExportar);
+
+                                CoordinadorNegocio.getInstance().actualizarComanda(comanda);
+
+                                // Limpieza total del Singleton
+                                CoordinadorNegocio.getInstance().setComanda(null);
+                                CoordinadorNegocio.getInstance().setDetallesImportados(null);
+                                CoordinadorNegocio.getInstance().setMesa(null);
+
+                                CoordinadorPantallas.getInstance().navegar(frame, MenuPrincipal::new);
+                                CoordinadorNegocio.getInstance().botonContinuarPresionado = false;
+                                this.dispose();
+                            }
+                        } else {
+                            CoordinadorPantallas.getInstance().navegar(frame, RegistrarComanda::new);
+                            this.dispose();
+                        }
+
+                    } catch (Exception ex) {
+                        System.err.println("[ERROR] Fallo en el flujo del botón Actualizar");
+                        ex.printStackTrace();
+                    }
                 });
+            }
+            else {
+                if (CoordinadorNegocio.getInstance().comandaAbierta() && !CoordinadorPantallas.getInstance().esAdministrador()) {
+                    botonCambios = UtilBoton.crearBotonNavegar("Editar Productos", frame, RegistrarComanda::new);
+                }
             }
         }
         
@@ -225,9 +287,12 @@ public class InfoComanda extends JDialog {
      * De esta forma podemos acceder a su contenido sin tener que conectarnos cada vez
      */
     public void llenarTabla() {
+        CoordinadorNegocio.getInstance().setDetallesImportados(new ArrayList<>());
         List<DetallesComandaDTO> detalles = CoordinadorNegocio.getInstance().consultarDetalles();
         listaTemporal = detalles;
+        limpiarTabla();
         mapearTabla(); 
+        System.out.println("[DEBUG VISTA] Registros que llegaron al llenarTabla: " + detalles.size());
     }
     
     
@@ -242,5 +307,11 @@ public class InfoComanda extends JDialog {
             d.getPrecioVenta(),
             d.getSubtotal()
         });
+    }
+    
+    //No pues limpia la tabla ☕
+    private void limpiarTabla() {
+        DefaultTableModel modelo = (DefaultTableModel) tabla.getModel();
+        modelo.setRowCount(0); 
     }
 }

@@ -179,6 +179,19 @@ public class AdministrarClientes extends JFrame implements IObservador {
 
         //Llena la tabla cada vez que se entre a la pantalla
         llenarTabla();
+        
+        
+        
+        
+        /**
+         * Aquí empiza el parche para buscar clientes
+         * Primero, descarta el panel original, muy alterado para ser rescatado
+         * Redibuja el frame
+         */
+        remove(panelBusqueda);
+        panelBotones.revalidate();
+        panelBotones.repaint();
+        
     }
     
     
@@ -266,51 +279,6 @@ public class AdministrarClientes extends JFrame implements IObservador {
         listaTemporal = clientes;
         mapearTabla(); 
     }
-    
-    
-    
-    /**
-     * SOLO ES TEMPORAL, método para probar sin conectarse
-     * @return 
-     */
-    public List<ClienteDTO> llenarTablaFalsa() {
-        List<ClienteDTO> listaFalsa = new ArrayList<>();
-        
-        String[] nombres = {"Andre", "Angel", "Jazmin", "Maye", "Quiñones", "Domitsu"};
-        
-        Long contador = 0L;
-        
-        for (String nombre: nombres) {
-            contador++;
-            ClienteFrecuenteDTO cliente = new ClienteFrecuenteDTO();
-            cliente.setNombres(nombre);
-            cliente.setApellidoPaterno("");
-            cliente.setApellidoMaterno("");
-            cliente.setTelefono("1234566");
-            cliente.setCorreo(nombre + "@gmail.com");
-            cliente.setId(contador);
-            listaFalsa.add(cliente);
-        }
-        
-        ClienteFrecuenteDTO cliente = new ClienteFrecuenteDTO();
-        cliente.setNombres("menchaca");
-        cliente.setApellidoPaterno("");
-        cliente.setApellidoMaterno("");
-        cliente.setTelefono("999999");
-        cliente.setCorreo("correoinsano@hotmail.com");
-        cliente.setId(20L);
-        listaFalsa.add(cliente);
-        
-        //POR AHORA LO REEMPLAZA ESTO ES SOLO PARA PRUEBAS
-        //listaTemporal = listaFalsa;
-        
-        
-        mapearTabla();
-        
-        return listaFalsa;
-    }
-    
-    
     
     /**
      * Muestra los atributos base de los clientes en la tabla directo de la BD

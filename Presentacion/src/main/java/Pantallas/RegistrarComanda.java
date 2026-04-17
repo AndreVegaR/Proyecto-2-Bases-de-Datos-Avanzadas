@@ -1,4 +1,5 @@
 package Pantallas;
+import BO.ComandaBO;
 import Coordinadores.CoordinadorNegocio;
 import Coordinadores.CoordinadorPantallas;
 import DTOs.ClienteDTO;
@@ -15,6 +16,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
+import javax.swing.table.DefaultTableModel;
 import observadores.IObservador;
 
 /**
@@ -27,11 +29,14 @@ import observadores.IObservador;
  * @author Andre
  */
 public class RegistrarComanda extends JFrame implements IObservador {
-
+    private static String SIN_MESA = "Sin mesa";
+    
     //Atributos para ser usados fuera del constructor
     JTable tabla;
     JLabel labelCliente = new JLabel(Constantes.SIN_CLIENTE);
-    JLabel labelMesa = new JLabel("Sin mesa");
+    JLabel labelMesa = new JLabel(SIN_MESA);
+    
+    private long ultimoLlenado = 0;
     
     /**
      * Atributo en donde se almacena en memoria la lista de todos los productos
@@ -43,17 +48,33 @@ public class RegistrarComanda extends JFrame implements IObservador {
     
     
     public RegistrarComanda() {
+        ComandaDTO com = CoordinadorNegocio.getInstance().getComanda();
         
-        /**
-         * Crea una comandaDTO para irla asignando al coordinador
-         * A esta referencia se le agregan los detalles
-         * Si se cancela, se vuelve null
-         * Si la referencia actual es null, crea una comanda nueva
-         * Si no es null, significa que se está en medio de una comanda
-         */
-        if (CoordinadorNegocio.getInstance().getComanda() == null) {
-            ComandaDTO comanda = new ComandaDTO(); 
-            CoordinadorNegocio.getInstance().setComanda(comanda);
+        if (com == null) {
+            com = new ComandaDTO();
+            CoordinadorNegocio.getInstance().setComanda(com);
+        }
+        
+        ClienteDTO cli = com.getCliente();
+        MesaDTO mes = com.getMesa();
+        
+        if (cli != null) {
+            labelCliente.setText(cli.getNombres() + " " + cli.getApellidoPaterno() + " " + cli.getApellidoMaterno());
+        }
+        
+        String txt = "";
+        if (mes != null && CoordinadorNegocio.getInstance().actualizandoComanda()) {
+            txt = "Mesa " + mes.getNumero();
+        } else {
+            txt = SIN_MESA;
+            if (!CoordinadorNegocio.getInstance().actualizandoComanda()) {
+                CoordinadorNegocio.getInstance().setMesa(null);
+            }
+        }
+        labelMesa.setText(txt);
+        
+        if (!CoordinadorNegocio.getInstance().actualizandoComanda()) {
+            labelMesa.setText(SIN_MESA);
         }
         
         //Actualiza cada vez que se llega a esta pantalla
@@ -90,6 +111,50 @@ public class RegistrarComanda extends JFrame implements IObservador {
         JScrollPane scroll = new JScrollPane(tabla);
         panelTabla.add(scroll, BorderLayout.CENTER);
         
+        //Evento que se activa cuando seleccionas una fila de la columna
+        tabla.addMouseListener(new java.awt.event.MouseAdapter() {
+            @Override
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                
+                //Crea el cliente desde aquí para usarlo fuera del if
+                DetallesComandaDTO detalle = null;
+                int fila = tabla.getSelectedRow();
+                if (fila != -1) {
+                    
+                    /**
+                     * Esto mantiene siempre el índice real de los registros
+                     * Por ejemplo, si selecciono el primer registro de una tabla filtrada, y sabe
+                     * que se trata en realidad de otro índice real en la lista
+                     */
+                    int indiceReal = tabla.convertRowIndexToModel(fila);
+                    
+                    //Obtiene el detalle en dicho índice y lo manda al método que muestra su info
+                    detalle = listaTemporal.get(indiceReal);
+                    
+                    //Asigna el cliente al coordinador para que sea usado
+                    CoordinadorNegocio.getInstance().setDetalle(detalle);
+                }
+           }
+         });
+        
+        ComandaDTO comandaActual = CoordinadorNegocio.getInstance().getComanda();
+        if (comandaActual.getDetalles() == null) {
+            comandaActual.setDetalles(new ArrayList<>());
+        }
+        this.listaTemporal = new ArrayList<>(comandaActual.getDetalles());
+        List<DetallesComandaDTO> nuevos = CoordinadorNegocio.getInstance().getDetallesImportados();
+        if (nuevos != null) {
+            for (DetallesComandaDTO n : nuevos) {
+                if (!this.listaTemporal.contains(n)) {
+                    this.listaTemporal.add(n);
+                }
+            }
+            CoordinadorNegocio.getInstance().setDetallesImportados(null);
+        }
+        comandaActual.setDetalles(this.listaTemporal);
+        llenarTabla();
+        
+        
         //Panel de opcioens inferiores
         JPanel panelOpciones = new JPanel(new FlowLayout(FlowLayout.RIGHT, 20, 20));
         panelOpciones.setBackground(new Color(242, 243, 244)); 
@@ -112,11 +177,48 @@ public class RegistrarComanda extends JFrame implements IObservador {
             //Si sí quiere salir, regresa al menú principal
             if (respuesta == JOptionPane.YES_OPTION) {
                 CoordinadorPantallas.getInstance().navegar(RegistrarComanda.this, MenuPrincipal::new);
+                CoordinadorNegocio.getInstance().setMesa(null);
+                CoordinadorNegocio.getInstance().setComanda(null);
+                CoordinadorNegocio.getInstance().setCliente(null);
             }
         });
         
         //Botón para navegar a los productos
         JButton btnBuscarProducto = UtilBoton.crearBotonNavegar("Buscar Producto", this, AdministrarProductos::new);
+        
+        //Botón para eliminar un detalle de la comanda
+        JButton btnEliminarProducto = UtilBoton.crearBoton("Eliminar producto");
+        btnEliminarProducto.addActionListener(e -> {
+            int filaSeleccionada = tabla.getSelectedRow();
+
+            //Si no se ha elegido nada
+            if (filaSeleccionada == -1) {
+                JOptionPane.showMessageDialog(this, "Seleccione un producto para eliminar");
+                return;
+            }
+
+            //Confirmación
+            int respuesta = JOptionPane.showConfirmDialog(this, 
+                    "¿Estás seguro de eliminar este producto de la lista?", 
+                    "Confirmar eliminación", JOptionPane.YES_NO_OPTION);
+
+            //Elimina el producto de la lista directamente
+            if (respuesta == JOptionPane.YES_OPTION) {
+                try {
+                    int indiceReal = tabla.convertRowIndexToModel(filaSeleccionada);
+                    this.listaTemporal.remove(indiceReal);
+                    llenarTabla();
+                    CoordinadorNegocio.getInstance().setDetalle(null);
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(this, "Error al eliminar: " + ex.getMessage());
+                }
+            }
+        });
+        
+        //Si se está actualizando no se puede cambiar al cliente
+        if (CoordinadorNegocio.getInstance().actualizandoComanda()) {
+            panelBusqueda.remove(botonBuscarClientes);
+        }
         
         /**
          * Crea y configura el botón de continuar
@@ -133,21 +235,22 @@ public class RegistrarComanda extends JFrame implements IObservador {
                 UtilGeneral.dialogoAviso(RegistrarComanda.this, "Debe haber al menos un producto");
                 return;
             }
-            CoordinadorPantallas.getInstance().abrirDialogo(() -> new InfoComanda(RegistrarComanda.this));
+            CoordinadorNegocio.getInstance().botonContinuarPresionado = true; //se hace true esta cosa
+            CoordinadorNegocio.getInstance().setDetallesImportados(new ArrayList<>(this.listaTemporal));
+            CoordinadorPantallas.getInstance().abrirDialogo(() -> new InfoComanda(RegistrarComanda.this, RegistrarComanda.this));
         });
         
         //Agrega al panel de botones
         panelOpciones.add(btnRegresar);
         panelOpciones.add(btnBuscarProducto);
+        panelOpciones.add(btnEliminarProducto);
         panelOpciones.add(btnContinuar);
+        
         
         //Agrega todo al frame
         add(panelBusqueda, BorderLayout.NORTH);
         add(panelTabla, BorderLayout.CENTER);
         add(panelOpciones, BorderLayout.SOUTH);
-        
-        //De una vez llena la tabla para luego usar la listaTemporal
-        llenarTabla();
     }
     
     
@@ -158,29 +261,37 @@ public class RegistrarComanda extends JFrame implements IObservador {
      * De esta forma podemos acceder a su contenido sin tener que conectarnos cada vez
      */
     public void llenarTabla() {
-        if (!CoordinadorNegocio.getInstance().esNuevaComanda()) {
-            listaTemporal = CoordinadorNegocio.getInstance().consultarDetalles();
-        } else {
-            listaTemporal = CoordinadorNegocio.getInstance().getComanda().getDetalles();
-            if (listaTemporal == null) {
-                listaTemporal = new ArrayList<>();
-            }
+        if (System.currentTimeMillis() - ultimoLlenado < 500) return; 
+        ultimoLlenado = System.currentTimeMillis();
+
+        // Si por alguna razón la lista es nula, la inicializamos
+        if (this.listaTemporal == null) {
+            this.listaTemporal = new ArrayList<>();
         }
+        limpiarTabla();
         mapearTabla();
+
+        System.out.println("[DEBUG VISTA] Filas en tabla: " + listaTemporal.size());
     }
+
+
     
-    
-    
-    /**
-     * Muestra los detalles de la comanda en la tabla directo de la BD
-     */
     private void mapearTabla() {
-        UtilGeneral.registrarTabla(tabla, listaTemporal, (DetallesComandaDTO d) -> new Object[]{
-            d.getProducto().getNombre(),
-            d.getCantidad(),
-            d.getPrecioVenta(),
-            d.getSubtotal()
-        });
+        DefaultTableModel modelo = (DefaultTableModel) tabla.getModel();
+        modelo.setRowCount(0);
+        System.out.println("[DEBUG CRÍTICO] Limpiando tabla. Filas actuales: " + modelo.getRowCount());
+
+        for (int i = 0; i < listaTemporal.size(); i++) {
+            System.out.println("[DEBUG CRÍTICO] Dibujando fila #" + (i+1) + " de " + listaTemporal.size());
+            DetallesComandaDTO d = listaTemporal.get(i);
+            modelo.addRow(new Object[]{
+                d.getProducto().getNombre(),
+                d.getCantidad(),
+                d.getPrecioVenta(),
+                d.getSubtotal()
+            });
+        }
+        System.out.println("[DEBUG CRÍTICO] Total filas en modelo tras mapeo: " + modelo.getRowCount());
     }
     
     
@@ -200,7 +311,7 @@ public class RegistrarComanda extends JFrame implements IObservador {
         else {
             labelCliente.setText(Constantes.SIN_CLIENTE);
         }
-        
+         
         //Cambia el label de la mesa
         MesaDTO mesa = CoordinadorNegocio.getInstance().getMesa();
         if (mesa != null) {
@@ -210,9 +321,14 @@ public class RegistrarComanda extends JFrame implements IObservador {
     }
     
     
-    
     @Override
     public void notificarCambio() {
         actualizarLabels();
+    }
+    
+    //No pues limpia la tabla ☕
+    private void limpiarTabla() {
+        DefaultTableModel modelo = (DefaultTableModel) tabla.getModel();
+        modelo.setRowCount(0); 
     }
 }

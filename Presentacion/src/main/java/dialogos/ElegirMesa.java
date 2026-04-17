@@ -28,7 +28,6 @@ public class ElegirMesa extends JDialog {
         setSize(anchoVentana, altoVentana);
         setResizable(false);
         
-
         //Estblece padding
         int espacioBotones = 15;
         int padding = espacioBotones * 2;
@@ -47,15 +46,24 @@ public class ElegirMesa extends JDialog {
         for (MesaDTO mesa: mesas) {
             JButton boton = UtilBoton.crearBoton("Mesa " + mesa.getNumero());
             
-            //DEPURACION
-            System.out.println("Mesa " + mesa.getNumero() + " estado: " + mesa.getEstadoMesa());
+            //Saca en una variable aparte si la comanda se está registrando y así evitar nullPointerExceptions
+            MesaDTO m = CoordinadorNegocio.getInstance().getComanda().getMesa();
+            boolean actualizandoComanda = false;
+            if (m != null) {
+                actualizandoComanda = mesa.getId().equals(m.getId());
+            }
             
+            //
+            
+            //
+            
+            //
             
             /**
              * Le pregunta el estado de la mesa al DTO
              * Entonces cambian el color y la lógica según el tipo
              */
-            if (mesa.getEstadoMesa().equals(Constantes.ESTADO_INICIAL_MESA)) {
+            if (mesa.getEstadoMesa().equals(Constantes.ESTADO_INICIAL_MESA) || actualizandoComanda) {
                 logicaMesaDisponible(boton, mesa);
             } else {
                 logicaMesaOcupada(boton, mesa);

@@ -14,8 +14,12 @@ import Utilerias.UtilLogica;
 import dialogos.ActualizarCliente;
 import dialogos.EliminarCliente;
 import dialogos.InfoComanda;
+import dialogos.InfoDetalle;
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.FlowLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -25,8 +29,10 @@ import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTable;
+import mappers.ComandaMapper;
 import observadores.IObservador;
 
 /**
@@ -77,12 +83,10 @@ public class AdministrarComandas extends JFrame implements IObservador {
         JPanel panelTabla = new JPanel(new BorderLayout());
         
         //Crea y agrega el botón encargado de generar reportes
-        JButton botonReportes = UtilBoton.crearBoton("Generar reporte");
-        panelBotones.add(botonReportes);
-        botonReportes.addActionListener(e -> {
-            this.dispose();
-            new ReporteComandas().setVisible(true);
-        });
+        if (CoordinadorPantallas.getInstance().esAdministrador()) {
+            JButton botonReportes = UtilBoton.crearBotonNavegar("Generar reporte", this, ReporteComandas::new);
+            panelBotones.add(botonReportes);
+        }
         
         /**
          * Arreglo de Strings con los campos de la tabla
@@ -103,9 +107,9 @@ public class AdministrarComandas extends JFrame implements IObservador {
         //ArrayList de suppliers que guarda los diálogos que se quieren abrir del CRUD
         //La lógica es la misma siempre, solo se cambian las clases que extienden de JDialog
         ArrayList<Supplier<? extends JDialog>> dialogos = new ArrayList<>();
-        dialogos.add(() -> new InfoComanda(this)); 
-        dialogos.add(() -> new ActualizarCliente(this, this));
-        dialogos.add(() -> new EliminarCliente(this, this));
+        dialogos.add(() -> new InfoComanda(this, this)); 
+        dialogos.add(() -> new ActualizarCliente(this, this)); //-> Esto luego se quita
+        dialogos.add(() -> new EliminarCliente(this, this)); //-> Esto luego se quita
         
         /**
          * Este método crea y configura toda la pantalla de administrar x cosa
@@ -128,17 +132,66 @@ public class AdministrarComandas extends JFrame implements IObservador {
                                                               dialogos, //Lista con los JDialog a abrir
                                                               columnaActiva); //Arreglo que contiene el índice para filtrar
 
-        /**
-         * Estas dos líneas se encargan de desaparecer de la interfaz botones del CRUD
-         * El método ensamblarPantallaAdministrar asume todo el CRUD, pero a veces no se ocupa
-         * Un administrador no registra comandas, y las comandas no pueden ser eliminadas
-         * Entonces el método esconderBotones se encarga de extirparlos:
-         * -Busca coincidencias entre el arreglo y el mapa de botones
-         * -Remueve del panel cada coincidencia
-         * -Al final recarga el panel
-         */
-        String[] botonesEliminar = {"registrar", "eliminar"};
-        UtilLogica.esconderBotones(panelBotones, mapaBotones, botonesEliminar);
+        //Arreglo para eliminar botones según el caso
+        String[] botonesEliminar;
+        
+        //Si es administrador, solo se limita a ver las comandas
+        if (CoordinadorPantallas.getInstance().esAdministrador()) {
+            botonesEliminar = new String[] {"actualizar", "eliminar", "registrar"};
+            UtilLogica.esconderBotones(panelBotones, mapaBotones, botonesEliminar);
+        }
+        
+        //Si es mesero, cambian varias cosas
+        else {
+            //Elimina el botón de "actualizar". Eso va en el panel de la información de la comanda
+            botonesEliminar = new String[] {"actualizar"};
+            UtilLogica.esconderBotones(panelBotones, mapaBotones, botonesEliminar);
+
+            //Cambia la naturaleza de "registrar" para que mande a registrar una comanda
+            JButton botonRegistrarComanda = mapaBotones.get("registrar");
+            botonRegistrarComanda.addActionListener(e -> {
+               CoordinadorPantallas.getInstance().navegar(AdministrarComandas.this, RegistrarComanda::new);
+            });
+            
+            //Cambia la naturaleza del botón "eliminar" para que solo cierre comandas
+            JButton botonCerrarComanda = mapaBotones.get("eliminar");
+            botonCerrarComanda.setText("Cerrar comanda"); //-> Envolver try catch supongo
+            panelBotones.add(botonCerrarComanda);
+            panelBotones.revalidate();
+            panelBotones.repaint();
+            
+            botonCerrarComanda.addActionListener(e -> {
+               
+                //Si no hay comanda
+                if (CoordinadorNegocio.getInstance().getComanda() == null) {
+                    UtilGeneral.dialogoAviso(AdministrarComandas.this, "Elija una comanda primero");
+                }
+                
+                //Confirmación
+                int opcion = JOptionPane.showConfirmDialog(
+                        AdministrarComandas.this,
+                        "¿Desea cerrar este producto?",
+                        "Confirmar",
+                        JOptionPane.YES_NO_OPTION
+                );
+                
+                
+                if (opcion == JOptionPane.YES_OPTION) {
+                    ComandaDTO c = CoordinadorNegocio.getInstance().getComanda();
+                    MesaDTO m = c.getMesa();
+                    m.setEstadoMesa(ComandaMapper.CERRADA);
+                    c.setMesa(m);
+                    CoordinadorNegocio.getInstance().actualizarComanda(c);
+                    CoordinadorNegocio.getInstance().setComanda(null);
+                }
+            });
+            
+            //Cambia el orden del botón "Regresar"
+            JButton botonReg = recuperarBoton(panelBotones, "regresar");
+            panelBotones.add(botonReg);
+            panelBotones.revalidate();
+            panelBotones.repaint();
+        }
         
         //Evento que se activa cuando seleccionas una fila de la columna
         tabla.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -168,12 +221,9 @@ public class AdministrarComandas extends JFrame implements IObservador {
                     * Ese diálogo muestra una tabla con los productos de la comanda
                     */
                    if (evt.getClickCount() == 2) {
-                        //Se hace una final solo para usarla dentro de este lambda
-                        final ComandaDTO comandaLambda = comanda;
-                        CoordinadorNegocio.getInstance().setComanda(comanda);
+                        List<DetallesComandaDTO> detallesCargados = CoordinadorNegocio.getInstance().consultarDetalles(); //->  Fuerza la carga de comandas
                         CoordinadorPantallas.getInstance().abrirDialogo(() -> {
-                             CoordinadorNegocio.getInstance().setComanda(comandaLambda);
-                             return new InfoComanda(AdministrarComandas.this);
+                             return new InfoComanda(AdministrarComandas.this, AdministrarComandas.this);
                         });
                    }
                 }
@@ -251,6 +301,8 @@ public class AdministrarComandas extends JFrame implements IObservador {
             comanda.setMesa(mesa);
             
             listaTemporal.add(comanda);
+            
+            CoordinadorNegocio.getInstance().setComanda(comanda);
         }
         mapearTabla();
     }
@@ -280,5 +332,21 @@ public class AdministrarComandas extends JFrame implements IObservador {
     @Override
     public void notificarCambio() {
         llenarTabla();
+    }
+    
+    /**
+     * Busca un botón en específicio de un panel por si se necesita y lo rescata
+     * 
+     * @param panel a buscar
+     * @param texto del botóna recuperar
+     * @return el botón recuperado
+     */
+    private JButton recuperarBoton(JPanel panel, String textoBoton) {
+        for (Component componente: panel.getComponents()) {
+            if (componente instanceof JButton boton && boton.getText().equalsIgnoreCase(textoBoton)) {
+                return boton;
+            }
+        } 
+        return null;
     }
 }

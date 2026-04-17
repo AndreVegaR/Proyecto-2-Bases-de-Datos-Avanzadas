@@ -2,6 +2,7 @@ package Utilerias;
 import Coordinadores.CoordinadorPantallas;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Supplier;
 import javax.swing.JButton;
@@ -101,7 +102,6 @@ public class UtilLogica {
                     * Convierte el arreglo en una lista para usar indexOf
                     * Busca el índice con base en el texto, o sea, en el filtro anteriormente declarado
                     * Utiliza "filtro" como parámetro, así que no importa el orden, sabe el índice del campo a filtrar
-                    *
                     */
                     int columnaFiltrada = Arrays.asList(columnasTabla).indexOf(filtro);
                     
@@ -158,8 +158,78 @@ public class UtilLogica {
 
          //Filtra dinámicamnente los elementos de la tabla
          sorter.setRowFilter(RowFilter.regexFilter(regex, columnaActiva));
-    } 
+    }
     
+    
+    
+    
+    public static void inyectarLogicaBusquedaMultiple(Map<String, JTextField> camposBusqueda,
+                                            String[] filtros,
+                                            String[] columnasTabla,
+                                            TableRowSorter<DefaultTableModel> sorter) {
+        
+        //Es la condición base del Regex, que ignora diferencia entre mayúsculas y minúsculas
+        String regexBase = "(?i)";
+        
+        //Entonces todo lo que pasa dentro es por cada iteración
+        for (String filtro: filtros) {
+
+            //Busca el campo que coincida con el filtro en específico
+            JTextField campo = camposBusqueda.get(filtro);
+            if (campo != null) {
+                
+                //Obtiene el índice de las columnas
+                int columnaFiltrada = Arrays.asList(columnasTabla).indexOf(filtro);
+                if (columnaFiltrada != -1) {
+                    
+                    /**
+                    * getDocument da acceso interno a donde se guarda el texto
+                    * addDocumentListener es que detecta cualquier cambio en el texto ingresado
+                    * Tiene tres overrides:
+                    * -insertUpdate actualiza cuando le agregas texto
+                    * -removeUpdate actualiza cuando le quitas texto
+                    * -changedUpate actualiza cuando cambian los atributos del texto
+                    * Y cada uno sabe que debe hacerlo cuando se llama al método interno filtrar()
+                    * Filtrar() llama al método aplicarFiltro que está más abajo
+                    */
+                    campo.getDocument().addDocumentListener(new javax.swing.event.DocumentListener() {
+                       @Override
+                       public void insertUpdate(javax.swing.event.DocumentEvent e) { filtrar(); }
+                       @Override
+                       public void removeUpdate(javax.swing.event.DocumentEvent e) { filtrar(); }
+                       @Override
+                       public void changedUpdate(javax.swing.event.DocumentEvent e) { filtrar(); }
+                       private void filtrar() {
+                           aplicarFiltroEspecifico(columnaFiltrada, regexBase, campo.getText(), sorter);
+                       }
+                    });
+                }
+            }
+        }
+    }
+    
+    
+    
+    /**
+    * Aplica el filtro a una columna específica basada en el texto de su propio campo
+    */
+    private static void aplicarFiltroEspecifico(int columnaIndice, 
+                                               String regexBase, 
+                                               String texto, 
+                                               TableRowSorter<DefaultTableModel> sorter) {
+        
+        //No se dispara el rowFilter en carencia de texto
+        if (texto.trim().isEmpty()) {
+            sorter.setRowFilter(null);
+        }
+        
+        //Arma el regex completo y lo aplica al sorter
+        else {
+            String regex = regexBase + texto;
+            sorter.setRowFilter(RowFilter.regexFilter(regex, columnaIndice));
+        }
+    }
+        
     
     
     /**

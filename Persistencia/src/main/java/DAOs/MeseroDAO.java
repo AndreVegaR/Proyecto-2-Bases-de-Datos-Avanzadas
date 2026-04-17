@@ -69,4 +69,27 @@ public class MeseroDAO {
             em.close();
         }
     }
+    
+    
+    
+    /**
+     * Consulta un mesero por su pin
+     * No usa el ID porque valida el pin ingreado desde presentación
+     * 
+     * @param pin
+     * @return 
+     */
+    public Mesero buscarPorPin(String pin) {
+        EntityManager em = ConexionBD.crearConexion();
+        String jpql = "SELECT m FROM Mesero m WHERE m.pin = :pin";
+        try {
+            return em.createQuery(jpql, Mesero.class)
+                     .setParameter("pin", pin)
+                     .getSingleResult();
+        } catch (Exception e) {
+            throw new PersistenciaException("Error al consultar al mesero: " + e.getMessage());
+        } finally {
+            em.close();
+        }
+    }
 }

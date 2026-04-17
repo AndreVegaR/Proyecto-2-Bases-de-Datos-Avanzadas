@@ -78,14 +78,14 @@ public class MenuPrincipal extends JFrame {
         panelCentral.setLayout(new BoxLayout(panelCentral, BoxLayout.Y_AXIS));
         panelCentral.setBorder(new EmptyBorder(50, 100, 50, 100));
 
-        //Agrega los botones según el rol del usuario
+        //Este botón siempre existe, pero su naturaleza es diferente según el rol
+        agregarPanel(panelCentral, UtilBoton.crearBotonNavegar("Administrar comandas", this, AdministrarComandas::new));
+        
+        //Si es administrador, desbloquea todo el power
         if (CoordinadorPantallas.getInstance().esAdministrador()) {
-            agregarPanel(panelCentral, UtilBoton.crearBotonNavegar("Administrar comandas", this, AdministrarComandas::new));
+            agregarPanel(panelCentral, UtilBoton.crearBotonNavegar("Administrar clientes", this, AdministrarClientes::new));
             agregarPanel(panelCentral, UtilBoton.crearBotonNavegar("Administrar productos", this, AdministrarProductos::new));
             agregarPanel(panelCentral, UtilBoton.crearBotonNavegar("Administrar ingredientes", this, AdministrarIngredientes::new));
-            agregarPanel(panelCentral, UtilBoton.crearBotonNavegar("Administrar clientes", this, AdministrarClientes::new));
-        } else {
-            agregarPanel(panelCentral, UtilBoton.crearBotonNavegar("Registrar comanda", this, RegistrarComanda::new));
         }
 
         //Este botón siempre existe

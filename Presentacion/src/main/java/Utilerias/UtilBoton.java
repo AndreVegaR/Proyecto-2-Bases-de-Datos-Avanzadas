@@ -167,6 +167,22 @@ public class UtilBoton {
         return boton;
     }
     
+     /**
+     * Método encargado de navegar de un JFrame a un JDialog.
+     * Cierra la ventana principal (JFrame) y abre un diálogo (JDialog).
+     * 
+     * @param actual ventana actual tipo JFrame
+     * @param siguiente Supplier que crea el siguiente JDialog
+     */
+    public static JButton navegarADialogo(String texto,JFrame actual, Supplier<JDialog> siguiente) {
+       JButton boton = crearBoton(texto);
+    
+    boton.addActionListener(e -> {
+        CoordinadorPantallas.getInstance().navegarADialogo(actual, siguiente);
+    });
+    
+    return boton;
+    }
     
     
     /**

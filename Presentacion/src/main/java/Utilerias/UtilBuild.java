@@ -114,9 +114,6 @@ public class UtilBuild {
         //Configuración básica del frame
         UtilGeneral.configurarFrame(tituloVentana, frame);
         
-        //Crea el campo de búsqueda y sus botones
-        JTextField campoBusqueda = dibujarCampoBusqueda(panelBusqueda, filtros, botonesFiltros);
-        
         //Crea y configura la tabla
         JTable tabla = UtilGeneral.crearTabla(columnasTabla);
         JScrollPane scroll = new JScrollPane(tabla);
@@ -136,8 +133,21 @@ public class UtilBuild {
             columnaActiva[0] = 1; 
         }
         
-        //Inyecta la lógica al campo de búsqueda
-        UtilLogica.inyectarLogicaBusqueda(campoBusqueda, filtros, columnasTabla, botonesFiltros, sorter, columnaActiva);
+        /**
+         * Crea un mapa de tipo String, JTextField
+         * Básicamnete crea un juego entre el campo de búsqueda ne específico y el filtro indicado
+         * Será pasado al método inyectarLogicaBusquedaMultiple para agregarle funcionalidad
+         */
+        Map<String, JTextField> camposBusqueda = new HashMap<>();
+        for (String filtro: filtros) {
+            JTextField campo = UtilGeneral.crearCampoFormulario(panelBusqueda, filtro, Constantes.NUM_CARACTERES);
+            camposBusqueda.put(filtro, campo);
+        }
+        
+        //Inyecta la lógica a los campos de búsqueda
+        UtilLogica.inyectarLogicaBusquedaMultiple(camposBusqueda, filtros, columnasTabla, sorter);
+        
+        //UtilLogica.inyectarLogicaBusqueda(campoBusqueda, filtros, columnasTabla, botonesFiltros, sorter, columnaActiva);
         
         //Crea el campo para CRUD
         botonesCRUD.putAll(dibujarBotonesCRUD(frame, panelBotones));
