@@ -59,7 +59,7 @@ public class MeseroDAO {
         EntityManager em = ConexionBD.crearConexion();
         try {
             em.clear();
-            String jpql = "SELECT m FROM Mesero";
+            String jpql = "SELECT m FROM Mesero m";
             return em.createQuery(jpql, Mesero.class).getResultList(); 
         }
         catch (Exception e) {
